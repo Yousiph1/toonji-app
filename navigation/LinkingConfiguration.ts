@@ -15,16 +15,26 @@ const linking: LinkingOptions<RootStackParamList> = {
     screens: {
       Root: {
         screens: {
-          TabOne: {
+          Home: {
             screens: {
-              TabOneScreen: 'one',
+               HomeScreen: 'home',
             },
           },
-          TabTwo: {
+          Charts: {
             screens: {
-              TabTwoScreen: 'two',
+              ChartsScreen: 'charts',
             },
           },
+          Favorites: {
+            screens: {
+             FavoritesScreen: "favorites"
+            }
+          },
+          Profile: {
+            screens: {
+              ProfileScreen: "/my/dprofile"
+            }
+          }
         },
       },
       Modal: 'modal',
