@@ -1,149 +1,297 @@
-import React,{useState} from 'react';
-import { StyleSheet, View,Pressable, ScrollView, Image, Text} from 'react-native';
+import React,{useState,useEffect, useCallback, useRef} from 'react';
+import { View, StyleSheet, ScrollView,  RefreshControl, ActivityIndicator, Animated} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import { FontAwesome, MaterialIcons} from '@expo/vector-icons';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import axios from 'axios'
 
 
-import { ThemedText, ThemedView } from '../components/Themed';
-import CardIcon from '../components/LyricsIcons'
+
+
 import colors from '../constants/Colors'
 import layout from '../constants/Layout'
+import {BASEURL} from '../constants/Credentials'
+import {ChartCard, ChartCardBar, ChartCardUser} from '../components/ChartCard'
 
 
 export default function ChartsScreen(){
-  const [selectedValue, setSelectedValue] = useState("java")
+
   return (
-    <View>
+    <MyTabs />
+  )
+}
+
+
+const Tab = createMaterialTopTabNavigator();
+
+const marL = ((layout.window.width / 3)/2) - 5
+
+
+function MyTabs() {
+  return (
+    <Tab.Navigator
+      initialRouteName="Today"
+      screenOptions={{
+        tabBarActiveTintColor: colors.mainColor,
+        tabBarLabelStyle: { fontSize: 12, fontWeight: 'bold' },
+        tabBarIndicatorStyle: {
+                                backgroundColor: colors.mainColor,marginLeft: marL,
+                                width: 10, height: 10, borderRadius: 50},
+        tabBarStyle: {
+                      backgroundColor: 'white', borderBottomColor: colors.mainColor,
+                      elevation: 0
+          },
+      }}
+    >
+      <Tab.Screen
+        name="Today"
+        component={Today}
+        options={{ tabBarLabel: 'Today' }}
+      />
+      <Tab.Screen
+        name="Week"
+        component={Week}
+        options={{ tabBarLabel: 'This Week' }}
+      />
+      <Tab.Screen
+        name="AllTime"
+        component={AllTime}
+        options={{ tabBarLabel: 'All Time' }}
+      />
+    </Tab.Navigator>
+  )
+}
+
+const Today = () => {
+  const [selectedValue, setSelectedValue] = useState<'Songs'|'Punchlines'>("Songs")
+  const [isLoading, setIsloading] = useState(false)
+  const [songs, setSongs] = useState<unknown[]>([])
+  const [bars, setBars] = useState<unknown[]>([])
+  const [refresh, setRefresh] = useState(false)
+
+
+  useEffect(()=> {
+    setIsloading(true)
+    axios.get(BASEURL + `m/charts/${selectedValue}/TODAY`)
+    .then(res => {
+      selectedValue === "Songs" ? setSongs(res.data) : setBars(res.data)
+      setIsloading(false)
+    })
+    .catch(err => {
+      setIsloading(false)
+      console.log(err);
+    })
+
+  },[selectedValue])
+
+
+ const onRefresh = useCallback(()=> {
+   setRefresh(true)
+   axios.get(BASEURL + `m/charts/${selectedValue}/TODAY`)
+   .then(res => {
+     selectedValue === "Songs" ? setSongs(res.data) : setBars(res.data)
+     setRefresh(false)
+   })
+   .catch(err => {
+     console.log(err);
+     setRefresh(false)
+   })
+ },[])
+
+
+  return (
+<>
+    <View style = {{width: layout.window.width}}>
     <Picker
         selectedValue={selectedValue}
         style={styles.picker}
         onValueChange={(itemValue) => setSelectedValue(itemValue)}
       >
-        <Picker.Item label="Lyrics" value="songs" />
-        <Picker.Item label="Bars" value="punchlines" />
+        <Picker.Item label="Lyrics" value="Songs" />
+        <Picker.Item label="Bars" value="Punchlines" />
+      </Picker>
+      </View>
+      <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={refresh}
+          onRefresh={onRefresh}
+        />
+      }
+      >
+      {isLoading &&  <ActivityIndicator size="large" color={colors.mainColor}/>}
+      {selectedValue === "Songs" && songs.map((bar,indx) => <ChartCard {...bar} pos = {indx + 1} key = {indx}/>)}
+      {selectedValue === "Punchlines" && bars.map((bar,indx)=> <ChartCardBar {...bar} key = {indx}/> )}
+      </ScrollView>
+      </>
+  )
+}
+
+const Week = () => {
+  const [selectedValue, setSelectedValue] = useState<'Songs'|'Punchlines'>("Songs")
+  const [isLoading, setIsloading] = useState(false)
+  const [songs, setSongs] = useState<unknown[]>([])
+  const [bars, setBars] = useState<unknown[]>([])
+  const [refresh, setRefresh] = useState(false)
+
+  useEffect(()=> {
+    setIsloading(true)
+    axios.get(BASEURL + `m/charts/${selectedValue}/WEEK`)
+    .then(res => {
+      selectedValue === "Songs" ? setSongs(res.data) : setBars(res.data)
+      setIsloading(false)
+    })
+    .catch(err => {
+      setIsloading(false)
+      console.log(err);
+    })
+
+  },[selectedValue])
+
+
+  const onRefresh = useCallback(()=> {
+   setRefresh(true)
+   axios.get(BASEURL + `m/charts/${selectedValue}/WEEK`)
+   .then(res => {
+     selectedValue === "Songs" ? setSongs(res.data) : setBars(res.data)
+     setRefresh(false)
+   })
+   .catch(err => {
+     console.log(err);
+     setRefresh(false)
+   })
+  },[])
+
+  return (
+    <>
+  <View style = {{width: layout.window.width}}>
+    <Picker
+        selectedValue={selectedValue}
+        style={styles.picker}
+        onValueChange={(itemValue) => setSelectedValue(itemValue)}
+      >
+        <Picker.Item label="Lyrics" value="Songs" />
+        <Picker.Item label="Bars" value="Punchlines" />
+      </Picker>
+    </View>
+      <ScrollView
+      contentContainerStyle = {{paddingBottom: 10}}
+      refreshControl={
+        <RefreshControl
+          refreshing={refresh}
+          onRefresh={onRefresh}
+        />
+      }
+      >
+        {isLoading &&  <ActivityIndicator size="large" color={colors.mainColor}/>}
+      {selectedValue === "Songs" && songs.map((bar,indx) => <ChartCard {...bar} pos = {indx + 1} key = {indx}/>)}
+      {selectedValue === "Punchlines" && bars.map((bar,indx)=> <ChartCardBar {...bar} key = {indx}/> )}
+      </ScrollView>
+      </>
+  )
+  }
+
+
+const AllTime = () => {
+  const [selectedValue, setSelectedValue] = useState<'Songs'|'Punchlines' | 'Users' | 'Artists'>("Songs")
+  const [isLoading, setIsloading] = useState(false)
+  const [songs, setSongs] = useState<unknown[]>([])
+  const [bars, setBars] = useState<unknown[]>([])
+  const [users, setUsers]  = useState<unknown[]>([])
+  const [artists, setArtists]  = useState<unknown[]>([])
+  const [refresh, setRefresh] = useState(false)
+
+  useEffect(()=> {
+    setIsloading(true)
+    axios.get(BASEURL + `m/charts/${selectedValue}/AllTime`)
+    .then(res => {
+      if(selectedValue === "Songs") {
+        setSongs(res.data)
+      }else if(selectedValue === "Punchlines"){
+        setBars(res.data)
+      }else if (selectedValue === "Artists") {
+        setArtists(res.data)
+      }else {
+        setUsers(res.data)
+      }
+      setIsloading(false)
+    })
+    .catch(err => {
+
+      setIsloading(false)
+      console.log(err);
+    })
+
+  },[selectedValue])
+
+
+  const onRefresh = useCallback(()=> {
+   setRefresh(true)
+   axios.get(BASEURL + `m/charts/${selectedValue}/AllTime`)
+   .then(res => {
+     selectedValue === "Songs" ? setSongs(res.data) : setBars(res.data)
+     setRefresh(false)
+   })
+   .catch(err => {
+     console.log(err);
+     setRefresh(false)
+   })
+  },[])
+
+  return (
+    <>
+    <View style = {{width: layout.window.width}}>
+    <Picker
+        selectedValue={selectedValue}
+        itemStyle = {styles.itemStyle}
+        style={styles.picker}
+        onValueChange={(itemValue) => setSelectedValue(itemValue)}
+      >
+        <Picker.Item label="Lyrics" value="Songs" />
+        <Picker.Item label="Bars" value="Punchlines" />
         <Picker.Item label="Artists" value="Artists" />
         <Picker.Item label="Users" value="Users" />
       </Picker>
-      <ThemedView style = {styles.filterContainer}>
-      <Pressable><ThemedText style = {styles.filter}>Today</ThemedText></Pressable>
-      <Pressable><ThemedText style = {styles.filter}>Week</ThemedText></Pressable>
-      <Pressable><ThemedText style = {styles.filter}>All-Time</ThemedText></Pressable>
-      </ThemedView>
+      </View>
+      <ScrollView
+      contentContainerStyle = {{paddingBottom: 10}}
+      refreshControl={
+        <RefreshControl
+          refreshing={refresh}
+          onRefresh={onRefresh}
+        />
+      }
+      >
 
-      <ScrollView contentContainerStyle = {{paddingBottom: 30}}>
-      <ChartCard />
-      <ChartCard />
-      <ChartCard />
-      <ChartCard />
-      <ChartCard />
-      <ChartCard />
-      <ChartCard />
-      <ChartCardBar />
-      <ChartCardBar />
-      <ChartCardBar />
-      <ChartCardBar />
+      {isLoading &&  <ActivityIndicator size="large" color={colors.mainColor}/>}
+      {selectedValue === "Songs" && songs.map((bar,indx) => <ChartCard {...bar} pos = {indx + 1} key = {indx}/>)}
+      {selectedValue === "Punchlines" && bars.map((bar,indx)=> <ChartCardBar {...bar} key = {indx}/> )}
+      {selectedValue === "Artists" && artists.map((item, indx) => <ChartCardUser {...item} pos = {indx + 1} key = {indx} verified = {true}/>)}
+      {selectedValue === "Users" && users.map((item, indx) => <ChartCardUser {...item} pos = {indx + 1} key = {indx}/>)}
       </ScrollView>
-
-    </View>
+      </>
   )
-}
-
-
-const ChartCard = () => {
-  return (
-    <ThemedView style = {styles.cardContainer}>
-    <ThemedText>1</ThemedText>
-
-    <View style = {styles.cardInfo}>
-    <Image source = {require('../assets/images/aotp.jpg')} style = {styles.cardImage} />
-    <View style = {{marginLeft: 10}}>
-    <ThemedText style = {styles.songTitle}>SongTitle</ThemedText>
-    <Text style = {styles.songArtist}>Song Artist </Text>
-    </View>
-    </View>
-
-    <View>
-    <CardIcon icon = {<FontAwesome name = "eye" color = {colors.mainColor} size = {15} />}
-                       number = {<ThemedText>100.00k</ThemedText>} />
-    <CardIcon icon = {<FontAwesome name = "star" color = {colors.mainColor} size = {15}/>}
-                        number = {<ThemedText>100.00k</ThemedText>} />
-    </View>
-
-    </ThemedView>
-  )
-}
-
-const ChartCardBar = () => {
-
-  return (
-    <ThemedView style = {{padding: 10, marginBottom: 5}}>
-
-    <View style = {{flexDirection: 'row', justifyContent: 'space-between'}}>
-    <View>
-    <ThemedText  style = {styles.songTitle}>Song Title </ThemedText>
-    <Text style = {styles.songArtist}>song artist </Text>
-    </View>
-    <CardIcon icon = {<MaterialIcons name = "local-fire-department" size = {18}
-              color = {colors.mainColor}/>}  number = {<ThemedText>33.3k</ThemedText>}/>
-    </View>
-
-    <ThemedText style = {{paddingVertical:5}}>
-    My dog barks some. Mentally you picture my dog, but I have not told you
-     the type of dog which I have. Perhaps you even picture Toto,
-     from "The Wizard of Oz." But I warn you, my dog is always with me. Woof!
-    </ThemedText>
-
-    <View style = {{flexDirection: 'row', justifyContent: 'space-between'}}>
-
-    <CardIcon icon = {<FontAwesome name = "copy" size = {18} color = {colors.mainColor}/>} />
-    <ThemedText>~KSI</ThemedText>
-    </View>
-
-    </ThemedView>
-  )
-}
-
+  }
 
 
 
 const styles = StyleSheet.create({
-    picker : {
-       color: colors.mainColor,
-     },
-    filterContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-    },
 
-    filter: {
-      fontWeight: 'bold',
-      width: layout.window.width / 3,
-      textAlign: 'center',
-      paddingVertical: 15,
-      borderBottomWidth: 2,
-      borderBottomColor: colors.mainColor
-    },
+    picker : {
+       color: 'white',
+       fontWeight: 'bold',
+       fontSize: 18,
+       backgroundColor: colors.mainColor
+     },
+     itemStyle: {
+       color: 'white',
+       fontWeight: 'bold'
+     },
     cardContainer: {
       flexDirection: 'row',
       justifyContent: 'space-around',
       alignItems: 'center',
       marginVertical: 2,
       paddingVertical: 10
-    },
-    cardInfo: {
-      flexDirection: 'row',
-      alignItems: 'center'
-    },
-    cardImage: {
-      width: 50,
-      height: 50
-    },
-    songTitle: {
-     fontWeight: 'bold'
-    },
-    songArtist: {
-      color: colors.mainColor
     },
 
 })

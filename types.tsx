@@ -16,6 +16,11 @@ declare global {
 export type RootStackParamList = {
   Root:  NavigatorScreenParams<RootTabParamList> | undefined;
   Read: {songId: string};
+  Artist: {userName: string};
+  Users: {userName: string};
+  Signup: undefined;
+  Splash: undefined;
+  Login: undefined;
   Modal: undefined;
   NotFound: undefined;
 };
@@ -29,7 +34,10 @@ export type cardData = {
   views: string;
   isFav: boolean;
   hottesBar: string;
+  artist: string;
+  barPreview: string;
   rating: string;
+  songCover: string;
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -48,3 +56,40 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>
 >;
+export type  awardReq  = {
+  type?: "breakdown" | "comment"
+  songId: string;
+  breakdown?: {
+    punchId: string;
+    brId: string;
+  },
+  comment?: {
+    commentId: string;
+  }
+}
+export type brType = {
+  name: string;
+  isThisUser: boolean,
+  totalVotes: number,
+  points: string;
+  date:  string;
+  userVote: 'UPVOTE' | 'DOWNVOTE';
+  breakdown: string;
+  brAwards: {
+    bronze: number;
+    silver: number;
+    gold: number;
+    platinum: number;
+    diamond: number;
+    copper: number
+  };
+  key: number;
+  songId: string;
+  punchId: string;
+  indx: string;
+  id: string;
+  picture: string;
+  showModal: (dd: awardReq) => void;
+  showEditModal: (dd:{br: string; songId: string; punchId: string; id: string}) => void;
+  deleteBreakdown: (dd: {punchId: string; id: string}) => void
+}

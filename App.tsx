@@ -16,7 +16,7 @@ export default function App() {
     return (
       <SafeAreaProvider style = {{marginTop: bar.currentHeight}}>
         <Navigation colorScheme={colorScheme} />
-        <StatusBar backgroundColor = "#764abc"/>
+        <StatusBar/>
       </SafeAreaProvider>
     );
   }

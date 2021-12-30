@@ -17,5 +17,7 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
   },
-  mainColor: '#764abc'
+  mainColor: '#764abc',
+  lightgray: "#f0f0f0"
+
 };

@@ -3,14 +3,17 @@ import {View, Text, Image, Pressable, StyleSheet} from 'react-native'
 import { Link } from '@react-navigation/native';
 import { FontAwesome, MaterialIcons, FontAwesome5, AntDesign } from '@expo/vector-icons';
 import {LinearGradient} from 'expo-linear-gradient'
+import * as Clipboard from 'expo-clipboard'
 
 
 import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import {ThemedText, ThemedView} from './Themed'
 import CardIcon from '../components/LyricsIcons'
-
+import useColorScheme from '../hooks/useColorScheme'
 import {cardData} from '../types'
+import axios from 'axios';
+import { BASEURL } from '../constants/Credentials';
 
 const {mainColor} = colors
 const cardWidth = layout.isSmallDevice ? 90/100 * layout.window.width : 85/100 * layout.window.width
@@ -18,23 +21,47 @@ const iconSize = 20
 
 export default function LyricsCard({data} :{data:cardData}){
       const [isFavorite, setIsFavorite] = useState(data.isFav)
+      const [copied, setCopied] = useState(false)
+      const theme = useColorScheme()
+
+      const copyToClipboard = () => {
+        let str = data.hottesBar + "\n" + "\t \t \t \t ~" + data.artist
+        Clipboard.setString(str)
+        setCopied(true)
+      }
+
+      const addToFavourites = () => {
+        axios.post(`${BASEURL}favourited/${data.songId}`)
+        .then(res => {
+           console.log(res)
+           setIsFavorite(!isFavorite)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      }
+
      return (
        <ThemedView style = {styles.cardContainer}>
-       <Image source = {require('../assets/images/aotp.jpg')} style = {styles.cardImage} />
-
+       <Image source = {{uri: data.songCover}} style = {styles.cardImage} />
        <LinearGradient
          colors={['transparent', 'transparent', 'black']}
          style={styles.cardGradient}>
        </LinearGradient>
 
-
        <View style = {styles.songInfo}>
        <View >
+       <Pressable style = {({pressed})=>[{backgroundColor: pressed ? "lightgray": ""}]}>
        <Link to = {{screen:'Read', params:{songId: data.songId}}}>
        <Text style = {styles.songTitle}>{data.songTitle}</Text>
        </Link>
+       </Pressable>
 
+       <Pressable style = {({pressed})=>[{backgroundColor: pressed ? "lightgray": ""}]}>
+        <Link to = {{screen: 'Artist', params:{userName: data.songArtist}}} >
        <Text style = {styles.songArtist}>{data.songArtist}</Text>
+        </Link>
+        </Pressable>
        </View>
        <View>
        <CardIcon  icon = {<FontAwesome size={30}  name = 'star'
@@ -42,8 +69,8 @@ export default function LyricsCard({data} :{data:cardData}){
        </View>
        </View>
 
-       <View style = {styles.hardestBarView}>
-       <ThemedText style = {styles.hardestBar}>{`${data.hottesBar.substr(0,100)}${data.hottesBar.length > 100 ? "...":""}`}</ThemedText>
+       <ThemedView style = {styles.hardestBarView}>
+       <ThemedText style = {styles.hardestBar}>{`${data.barPreview}`}</ThemedText>
        <View style = {styles.cardIcons}>
        <View style = {styles.cardsIconsLeft}>
 
@@ -57,18 +84,18 @@ export default function LyricsCard({data} :{data:cardData}){
        </View>
        <View style = {styles.cardIconsRight}>
 
-       <Pressable>
-       <CardIcon icon = {<FontAwesome size={iconSize}
-                        name = "copy"  color = {mainColor}/>}/>
+       <Pressable onPress = {copyToClipboard}>
+       <CardIcon icon = {<FontAwesome5 size={iconSize}
+                        name = "copy"  color = {copied ? mainColor : "lightgray"}/>}/>
        </Pressable>
 
-       <Pressable onPress = {()=> setIsFavorite(!isFavorite)}>
+       <Pressable onPress = {addToFavourites}>
        <CardIcon icon = {<AntDesign size={iconSize}  name = "heart" color = {isFavorite ? mainColor : "lightgray"}/>}/>
        </Pressable>
 
        </View>
        </View>
-       </View>
+       </ThemedView>
 
        </ThemedView>
      )

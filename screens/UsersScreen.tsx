@@ -3,18 +3,17 @@ import {View, Text, ScrollView, Pressable, Animated, Image, StyleSheet, Activity
 import {LinearGradient} from 'expo-linear-gradient'
 import { Link } from '@react-navigation/native';
 import  {FontAwesome,Ionicons,MaterialIcons} from '@expo/vector-icons'
+import Modal from "react-native-modal"
 import { StatusBar } from 'expo-status-bar'
-import * as SecureStore from 'expo-secure-store';
 import axios from 'axios'
 
-import {brType, RootStackScreenProps, RootTabScreenProps} from '../types'
+import {awardReq, brType, RootStackScreenProps} from '../types'
 import {ThemedText, ThemedView} from '../components/Themed'
 import  Breakdown from '../components/Breakdown'
-import {Achievement} from '../components/General'
+import {Achievement, AwardInfo} from '../components/General'
 import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
-import EditBrModal from '../components/EditBrModal';
 
 
 
@@ -23,22 +22,18 @@ const Height_Min = 53
 const Scroll_Dist = Height_Max - Height_Min
 
 
-export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>) {
-
+export default function UsersScreen({route, navigation}:RootStackScreenProps<'Users'>) {
+  const user = route.params.userName
   const [isLoading, setIsloading] = useState(false)
   const [isEnd, setIsEnd] = useState(false)
-  const [next, setNext] = useState(0)
-  const [isModalEditVisible, setEditModalVisible] = useState(false)
-  const [editData, setEditData] = useState({br:"", songId:"", punchId:"",id:""})
+  const [givingAward, setGivingAward] = useState(false)
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [awardData, setAwardData] = useState<awardReq>({type:"breakdown", songId:""})
+  const [awardsGiven, setAwardsGiven] = useState<string[]>([])
+  const [next, setNext] = useState(9)
   const [breakdowns, setBreakdowns] = useState<breakTyp[]>([])
   const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-',
                                              points: '-', battleRecord: '-', picture:""})
-
- const showEditModal = (data:{br:string; songId: string; punchId: string; id: string})  => {
-    setEditData(data)
-    setEditModalVisible(true)
- }
-
 
 
    const scrollY = useRef(new Animated.Value(0)).current
@@ -49,17 +44,17 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
    })
 
 
-  const nameSize =  scrollY.interpolate({
-    inputRange: [0,Scroll_Dist * 2],
-    outputRange: [1,  0.7],
-    extrapolate: 'clamp',
-  })
-
 
    const imageOpacity = scrollY.interpolate({
      inputRange: [0,Scroll_Dist/2,Scroll_Dist],
      outputRange: [1, 1, 0],
      extrapolate: 'clamp'
+   })
+
+   const nameSize =  scrollY.interpolate({
+     inputRange: [0,Scroll_Dist * 2],
+     outputRange: [1,  0.7],
+     extrapolate: 'clamp',
    })
 
    const shiftX = scrollY.interpolate({
@@ -68,26 +63,11 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
      extrapolate: 'clamp',
    })
 
-   async function getToken() {
-     try {
-       return await SecureStore.getItemAsync("userToken")
-     }catch(er) {
-       console.log(er)
-     }
-   }
 
    useEffect(() => {
-    const token = getToken()
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-     axios.get(BASEURL + 'my/profile',config)
+     axios.get(BASEURL + 'p/' + user)
      .then(res => {
-       if(res.data.type !== 'ERROR') {
-          setUserInfo(res.data)
-       }
+       setUserInfo(res.data)
      })
      .catch(err => {
        console.log(err)
@@ -97,20 +77,12 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
 
    useEffect(() => {
      setIsloading(true)
-     const token = getToken()
-     const config = {
-       headers: {
-         Authorization: `Bearer ${token}`
-       }
-     }
-     axios.get(BASEURL + 'p/my/breakdowns/0',config)
+     axios.get(BASEURL + 'p/breakdowns/'+ user + '/0')
      .then(res => {
-       if(res.data.type !== 'ERROR'){
-         setBreakdowns(res.data.breakdowns)
-         setIsloading(false)
-         setIsEnd(res.data.isEnd)
-         setNext(res.data.nextFetch)
-       }
+       setBreakdowns(res.data.breakdowns)
+       setIsloading(false)
+       setIsEnd(res.data.isEnd)
+       setNext(res.data.nextFetch)
      })
      .catch(err => {
        console.log(err)
@@ -120,7 +92,7 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
 
    const fetchMore =  useCallback(()=>{
      setIsloading(true)
-     axios.get(BASEURL + 'p/my/breakdowns/' + next)
+     axios.get(BASEURL + 'p/breakdowns/'+ user + '/' + next)
      .then(res => {
        setBreakdowns(prev => prev.concat(res.data.breakdowns))
        setIsloading(false)
@@ -135,6 +107,44 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
    },[])
 
 
+   const showModal = (confs: awardReq) => {
+     const {type, songId, breakdown, comment} = confs
+     if(type == "breakdown") {
+      setAwardData({type, songId, breakdown})
+    }else {
+      setAwardData({type, songId, comment})
+    }
+
+     setModalVisible(true);
+   }
+
+   const giveAward = () => {
+      const path = awardData.type === "breakdown" ? `${BASEURL}award-breakdown`: ""
+      let data = {}
+      if(awardData.type === "breakdown") {
+        data = {
+          songId: awardData.songId,
+          punchId: awardData.breakdown?.punchId,
+          brId: awardData.breakdown?.brId,
+          awardsGiven: awardsGiven
+        }
+      }
+      if(awardsGiven.length < 1) {
+        return
+      }
+      setGivingAward(true)
+      axios.post(path,data)
+      .then(res => {
+        console.log(res.data)
+        setGivingAward(false)
+      })
+      .catch(e => {
+        setGivingAward(false)
+        console.log(e.response.data)
+      })
+   }
+
+
   return (
     <View>
     <StatusBar  style = "light" backgroundColor = "black"/>
@@ -142,16 +152,14 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
 
     <Animated.View style = {[styles.imageGradient,{backgroundColor:'black'},{height}]}>
     </Animated.View>
-
     <Animated.Image source = {{uri: userInfo.picture}}
     style = {[styles.image,{height, opacity: imageOpacity}]} />
 
-    <Animated.View style = {[styles.gradientContainer,{height}]}>
     <LinearGradient
-      colors={['transparent', 'black']}
-      style={styles.imageGradient}>
+      colors={['transparent','transparent', 'black']}
+      style={[styles.imageGradient,{}]}>
+
     </LinearGradient>
-    </Animated.View>
 
     <Animated.View style = {[styles.nameContainer,{height}]}>
     <View style = {{flexBasis: '70%'}}>
@@ -166,31 +174,14 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
     </Pressable>
     </View>
     </Animated.View>
-
-    <View style = {{width: layout.window.width, flexDirection: 'row', alignItems: 'center',
-                   justifyContent: 'space-between', paddingHorizontal:10, marginTop: 3}}>
     <Pressable
      onPress = {()=> navigation.goBack() }
      style = {({pressed})=>[{opacity: pressed ? 0.5: 1}]}
     >
-    <View style = {{padding: 3, backgroundColor:'rgba(0, 0, 0, 0.3)', borderRadius:50}}>
-    <Ionicons name="ios-arrow-back-sharp" size={25} color={'white'} />
+    <View style = {{marginTop: 3, padding: 7, backgroundColor:'rgba(0, 0, 0, 0.3)', borderRadius:50}}>
+    <Ionicons name="ios-arrow-back-sharp" size={35} color={'white'} />
     </View>
     </Pressable>
-
-    <Animated.View style = {[{padding: 7, backgroundColor:'rgba(0, 0, 0, 0.3)', borderRadius: 20},{opacity: imageOpacity}]}>
-    <Pressable
-     onPress = {()=> navigation.goBack() }
-     style = {({pressed})=>[{opacity: pressed ? 0.5: 1}]}
-    >
-    <View style = {styles.optionDot}></View>
-    <View style = {styles.optionDot}></View>
-    <View style = {styles.optionDot}></View>
-    </Pressable>
-    </Animated.View>
-
-    </View>
-
     </Animated.View>
 
     <ScrollView contentContainerStyle = {styles.scrollContainer}
@@ -214,7 +205,7 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
     <View style = {{height: 3, width: 80, backgroundColor: colors.mainColor, marginBottom:10}}></View>
      <ThemedView style = {{width: layout.window.width, alignItems:'center', paddingVertical: 20}}>
     {breakdowns.map((a,indx) => {
-    return   <BreakView {...a}  key = {indx} showEditModal = {showEditModal}/>
+    return   <BreakView {...a}  key = {indx} showModal = {showModal}/>
     })}
     {(!isLoading && !isEnd) &&
       <Pressable onPress = {fetchMore}>
@@ -225,8 +216,62 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
     </ThemedView>
     </View>
     </ScrollView>
-    <EditBrModal setModalVisible = {() => setEditModalVisible(false)}
-                 isVisible = {isModalEditVisible} editData = {editData}/>
+    <Modal isVisible={isModalVisible}>
+      <ThemedView style={{ padding: 40, alignSelf:"center", borderRadius: 5,
+                     width: layout.isSmallDevice ? "90%":"60%"}}>
+        <ThemedText style = {{fontWeight:"bold", fontSize: 20, marginBottom: 30}}>
+        Award {`${awardData.type}`}
+        </ThemedText>
+        <View>
+        <View style = {styles.awardCollContainer}>
+        <AwardInfo numberOfCoins = {"10000"} awardName = "Platinum" remove = {(n: string) => {
+          setAwardsGiven(prv => [...prv.filter(a => a !== n)])
+        }}
+         image = {"../assets/images/platinum.png"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
+        <AwardInfo numberOfCoins = {"5000"} awardName = "Diamond" remove = {(n: string) => {
+          setAwardsGiven(prv => [...prv.filter(a => a !== n)])
+        }}
+         image = {"../assets/images/diamond.png"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
+        <AwardInfo numberOfCoins = {"1000"} awardName = "Gold" remove = {(n: string) => {
+          setAwardsGiven(prv => [...prv.filter(a => a !== n)])
+        }}
+         image = {"../assets/images/gold.png"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
+         </View>
+         <View style = {styles.awardCollContainer}>
+        <AwardInfo numberOfCoins = {"500"} awardName = "Silver" remove = {(n: string) => {
+          setAwardsGiven(prv => [...prv.filter(a => a !== n)])
+        }}
+         image = {"../assets/images/silver.jpg"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
+        <AwardInfo numberOfCoins = {"100"} awardName = "Bronze" remove = {(n: string) => {
+          setAwardsGiven(prv => [...prv.filter(a => a !== n)])
+        }}
+         image = {"../assets/images/bronze.jpg"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
+        <AwardInfo numberOfCoins = {"10"} awardName = "Copper" remove = {(n: string) => {
+          setAwardsGiven(prv => [...prv.filter(a => a !== n)])
+        }}
+         image = {"../assets/images/copper.jpg"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
+         </View>
+        </View>
+
+       <View  style = {{flexDirection: "row",
+        justifyContent: "space-between", marginTop: 20 }}>
+
+       <Pressable  onPress = {() => setModalVisible(false)}
+       style = {({pressed}) => [styles.closeButton, {opacity: pressed ? 0.7: 1}]}>
+        <Text style = {styles.buttonText}>close</Text>
+       </Pressable>
+
+       <Pressable  onPress = {giveAward}
+       style = {({pressed}) => [styles.buttonAw, {opacity: pressed ? 0.7: 1}]}>
+        {givingAward ? <ActivityIndicator size = "small" color = "white"/> :
+                       <Text style = {styles.buttonText}>Award</Text>}
+       </Pressable>
+
+       </View>
+
+      </ThemedView>
+
+    </Modal>
     </View>
   )
 }
@@ -236,15 +281,15 @@ interface breakTyp {
   artist: string;
   bar: string;
   breakdown: brType;
+  showModal: (dd: awardReq) => void;
   punchIndx: number;
   songId: string;
-  songTitle: string;
-  showEditModal: (dd:{br:string; songId: string; punchId: string, id: string}) => void
+  songTitle: string
 }
 
 
 const BreakView = (props: breakTyp) => {
- const {artist, bar, songId, songTitle, punchIndx, breakdown, showEditModal} = props
+ const {artist, bar, songId, songTitle, punchIndx, breakdown} = props
   return (
 
     <View style = {styles.breakViewContainer}>
@@ -257,14 +302,11 @@ const BreakView = (props: breakTyp) => {
     </Link>
     </View>
     <ThemedText style = {{marginBottom: 10, fontSize: 16}}>{bar}</ThemedText>
-    <Breakdown {...breakdown} showEditModal = {showEditModal} songId = {songId} punchId = {`${punchIndx}`}/>
+    <Breakdown {...breakdown} songId = {songId} punchId = {`${punchIndx}`}
+                showModal = {props.showModal}/>
     </View>
   )
 }
-
-
-
-
 
 
 const styles = StyleSheet.create({
@@ -279,24 +321,12 @@ const styles = StyleSheet.create({
     left: 0,
     backgroundColor: "black"
   },
-  optionDot: {
-    marginBottom: 3,
-    width: 5,
-    height: 5,
-    borderRadius: 50,
-    backgroundColor: "white"
-  },
-  gradientContainer: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    width: layout.window.width,
-    overflow: "hidden"
-  },
   imageGradient: {
     position: 'absolute',
     width: layout.window.width,
-    height: Height_Max
+    top: 0,
+    left: 0
+
   },
   nameContainer:  {
     position: 'absolute',
