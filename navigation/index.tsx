@@ -21,12 +21,14 @@ import LinkingConfiguration from './LinkingConfiguration';
 import UsersScreen from '../screens/UsersScreen';
 import SignUpScreen from '../screens/SignupScreen';
 import LoginScreen from '../screens/LoginScreen';
+import EditProfileScreen from '../screens/EditProfileScreen'
 import { ThemedText } from '../components/Themed';
 import axios from 'axios';
 import { BASEURL } from '../constants/Credentials';
+import CardMaker from '../screens/CardScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-export const AuthContext = React.createContext();
+export const AuthContext = React.createContext<any>(null);
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
 
@@ -62,7 +64,6 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
     }
   );
 
-  console.log(state)
 
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
@@ -72,7 +73,6 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       try {
         // Restore token stored in `SecureStore` or any other encrypted storage
         userToken = await SecureStore.getItemAsync('userToken');
-        console.log(userToken)
       } catch (e) {
         // Restoring token failed
       }
@@ -91,11 +91,9 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       },
 
       signOut: () => dispatch({ type: 'SIGN_OUT' }),
-    }),
-    []
-  );
+    }),[]);
 
-
+//!state.userToken
   return (
     <AuthContext.Provider value={authContext}>
     <NavigationContainer
@@ -103,7 +101,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack.Navigator>
       { state.isLoading ? <Stack.Screen name = "Splash" component = {SplashScreen} /> :
-        !state.userToken ?  <>
+         !state.userToken  ?  <>
       <Stack.Screen name="Signup" component={SignUpScreen} options={{title: 'sign up'}} />
       <Stack.Screen name = "Login" component = {LoginScreen} options ={{title: 'login'}} />
         </> :
@@ -112,10 +110,11 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           <Stack.Screen name = "Read" component = {ReadScreen} options ={{headerShown: false}} />
           <Stack.Screen name = "Artist" component = {ArtistScreen} options = {{headerShown: false}} />
           <Stack.Screen name = "Users" component = {UsersScreen} options = {{headerShown: false}} />
-          <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
+            <Stack.Screen name = "Edit" component = {EditProfileScreen} options = {{title: "Edit Profile"}} />
             <Stack.Screen name="Modal" component={ModalScreen} />
           </Stack.Group>
+          <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
         </>
       }
         </Stack.Navigator>
@@ -171,10 +170,16 @@ function BottomTabNavigator() {
        }}
        />
 
+       <BottomTab.Screen name = "Card" component = {CardMaker}
+        options = {{
+          tabBarIcon: ({color}) =>  <TabBarIcon name = "vcard" color = {color} iconsProvider = "fontawesome"/>}}
+        />
+
        <BottomTab.Screen name = "Profile" component = {ProfileScreen}
         options = {{
           tabBarIcon: ({color}) =>  <TabBarIcon name = "user" color = {color} iconsProvider = "fontawesome"/>}}
         />
+
     </BottomTab.Navigator>
   );
 }
@@ -191,10 +196,10 @@ function TabBarIcon(props: {
   let icon = <FontAwesome size = {25} style = {{}} name = "code"/>
 
   if(iconsProvider === "material") {
-    icon = <MaterialIcons size = {25} style = {{}} {...otherProps} />
+    icon = <MaterialIcons size = {25} {...otherProps} />
   }else if(iconsProvider === 'fontawesome') {
     icon = <FontAwesome size = {25} style = {{}} {...otherProps} />
-  }else if(iconsProvider === "entypo") {
+  }else {
     icon = <Entypo size = {25} style = {{}} {...otherProps} />
   }
 

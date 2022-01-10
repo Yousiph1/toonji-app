@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useCallback, useRef} from 'react'
-import {View, Text, ScrollView, Pressable, Animated, Image, StyleSheet, ActivityIndicator} from 'react-native'
+import {View, Text, ScrollView, Pressable, Animated, Image, StyleSheet, ActivityIndicator, RefreshControl} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import { Link } from '@react-navigation/native';
 import  {FontAwesome,Ionicons,MaterialIcons} from '@expo/vector-icons'
@@ -28,6 +28,7 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
   const [isLoading, setIsloading] = useState(false)
   const [isEnd, setIsEnd] = useState(false)
   const [next, setNext] = useState(0)
+  const [reload, setReload] = useState(false)
   const [isModalEditVisible, setEditModalVisible] = useState(false)
   const [editData, setEditData] = useState({br:"", songId:"", punchId:"",id:""})
   const [breakdowns, setBreakdowns] = useState<breakTyp[]>([])
@@ -88,12 +89,14 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
        if(res.data.type !== 'ERROR') {
           setUserInfo(res.data)
        }
+       setReload(false)
      })
      .catch(err => {
        console.log(err)
+       setReload(false)
      })
 
-   },[])
+   },[reload])
 
    useEffect(() => {
      setIsloading(true)
@@ -105,18 +108,18 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
      }
      axios.get(BASEURL + 'p/my/breakdowns/0',config)
      .then(res => {
-       if(res.data.type !== 'ERROR'){
          setBreakdowns(res.data.breakdowns)
          setIsloading(false)
          setIsEnd(res.data.isEnd)
          setNext(res.data.nextFetch)
-       }
+         setReload(false)
      })
      .catch(err => {
        console.log(err)
        setIsloading(false)
+       setReload(false)
      })
-   },[])
+   },[reload])
 
    const fetchMore =  useCallback(()=>{
      setIsloading(true)
@@ -133,6 +136,10 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
      })
 
    },[])
+   
+   const onRefresh = () => {
+     setReload(true)
+   }
 
 
   return (
@@ -142,8 +149,10 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
 
     <Animated.View style = {[styles.imageGradient,{backgroundColor:'black'},{height}]}>
     </Animated.View>
-
-    <Animated.Image source = {{uri: userInfo.picture}}
+    {
+      //{uri: userInfo.picture}
+     }
+    <Animated.Image source = {require('../assets/images/aotp.jpg')}
     style = {[styles.image,{height, opacity: imageOpacity}]} />
 
     <Animated.View style = {[styles.gradientContainer,{height}]}>
@@ -161,9 +170,14 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
     </View>
 
     <View>
-    <Pressable style={styles.button}>
-     <Text style={styles.text}>follow</Text>
+
+    <Pressable
+     style = {({pressed}) => [{opacity: pressed ? 0.7: 1},styles.button]}
+     onPress = {()=> navigation.navigate('Edit',{bio: userInfo.bio, prevName: userInfo.name, image: userInfo.picture})}
+     >
+     <Text style={styles.text}>Edit <FontAwesome name = "edit" size = {15}/></Text>
     </Pressable>
+
     </View>
     </Animated.View>
 
@@ -195,6 +209,12 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
 
     <ScrollView contentContainerStyle = {styles.scrollContainer}
     scrollEventThrottle = {16}
+    refreshControl = {
+      <RefreshControl
+        refreshing={reload}
+        onRefresh={onRefresh}
+      />
+    }
     onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}])}
     >
     <ThemedView style = {styles.achievementsContainer}>

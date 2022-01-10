@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
      flexDirection: "row",
      alignItems: 'center',
      borderBottomWidth: 1,
-     borderBottomColor: "lighgray"
+     borderBottomColor: "lightgray"
    }
 
 });

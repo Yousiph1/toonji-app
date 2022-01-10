@@ -78,20 +78,19 @@ const sendComment = async () => {
   if(comment === '') return
       axios.post(BASEURL + 'comment/'+songId,{comment},config)
       .then((res)=>{
-        let message = res.data.msg;
         const data = res.data
-       if(res.data.type === "SUCCESS"){
          setComment('')
          let comm: never[] = [...data.userComment,...comments] as never[]
          setComments([])
          setComments(comm)
-       }
-       if(data.type === 'ERROR' && message === "invalid or expired token"){
-         signOut()
-       }
        setSending(false)
       })
       .catch((err)=>{
+        const message = err.response.data.msg
+      
+        if(message === "invalid or expired token"){
+           signOut()
+        }
       console.log(err)
       setSending(false)
       })

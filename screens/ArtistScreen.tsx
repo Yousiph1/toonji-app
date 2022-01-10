@@ -12,6 +12,7 @@ import {Achievement} from '../components/General'
 import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
+import getToken from '../funcs/GetToken'
 
 
 
@@ -22,11 +23,14 @@ const Scroll_Dist = Height_Max - Height_Min
 export default function ArtistScreen({route, navigation}:RootStackScreenProps<'Artist'>) {
   const artist = route.params.userName
   const [isLoading, setIsloading] = useState(false)
+  const [followLoading, setFollowLoading] = useState(false)
+  const [following, setFollowing] = useState(false)
   const [isEnd, setIsEnd] = useState(false)
   const [next, setNext] = useState(9)
   const [songs, setSongs] = useState([])
   const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-', noSongs: '-',
-                                            topFans: '-', points: '-'})
+                                            topFans: '-', points: '-', following: false,
+                                            picture:''})
 
   const scrollY = useRef(new Animated.Value(0)).current
   const height = scrollY.interpolate({
@@ -84,6 +88,8 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
      })
    },[])
 
+   useEffect(()=> setFollowing(userInfo.following),[userInfo])
+
 
    const fetchMore =  useCallback(()=>{
      setIsloading(true)
@@ -101,51 +107,86 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
 
    },[])
 
+   const followFunc = async () => {
+     setFollowLoading(true)
+     const token = await getToken()
+     const config = {
+       headers: {
+         Authorization: `Bearer ${token}`
+       }
+     }
+     axios.post(`${BASEURL}p/follow/${artist}`,{},config)
+     .then(res => {
+       console.log(res)
+       setFollowLoading(false)
+       setFollowing(prv => !prv)
+     })
+     .catch(err => {
+       console.log(err)
+       setFollowLoading(false)
+     })
+   }
 
   return (
     <View>
     <StatusBar  style = "light" backgroundColor = "black"/>
+
     <Animated.View style = {[{position:'absolute', zIndex:1},{height}]}>
 
     <Animated.View style = {[styles.imageGradient,{backgroundColor:'black'},{height}]}>
     </Animated.View>
-    <Animated.Image source = {require('../assets/images/aotp.jpg')}
+
+    <Animated.Image source = {{uri: userInfo.picture}}
     style = {[styles.image,{height, opacity: imageOpacity}]} />
 
+    <Animated.View style = {[styles.gradientContainer,{height}]}>
     <LinearGradient
-      colors={['transparent','transparent', 'black']}
-      style={[styles.imageGradient,{}]}>
-
+      colors={['transparent', 'black']}
+      style={styles.imageGradient}>
     </LinearGradient>
+    </Animated.View>
 
     <Animated.View style = {[styles.nameContainer,{height}]}>
     <View style = {{flexBasis: '70%'}}>
-    <Animated.Text style = {[styles.name,{transform:[{translateX: shiftX},{scale: nameSize}]}]}>
-    {userInfo.name}
+    <Animated.Text style = {[styles.name,{transform:[{translateX: shiftX},{scale:nameSize}]}]}>
+    {userInfo.name}{" "}
 
     {userInfo.name !== "-" && <Animated.View style = {{transform:[{translateX: shiftI},{scale: nameSize}]}}>
     <View style = {{position:'absolute',height: 13, width:13, top: 6, left: 6,
                     backgroundColor: 'white',borderRadius:50}}></View>
     <MaterialIcons name="verified" size={25} color=  {colors.mainColor} />
     </Animated.View>}
-
     </Animated.Text>
     </View>
 
     <View>
-    <Pressable style={styles.button}>
-     <Text style={styles.text}>follow</Text>
+
+    <Pressable
+    style={({pressed}) => [styles.button,{opacity: pressed ? 0.7:1,backgroundColor: following ? "white": colors.mainColor}]}
+     onPress = {followFunc}
+     >
+     {followLoading ? <ActivityIndicator color = "white" size = "small"/>
+                                   :
+                      <Text
+                      style={[styles.text,{color: following ? colors.mainColor:"white"}]}
+                      >{userInfo.following ? 'following': 'follow'}</Text>
+              }
     </Pressable>
+
     </View>
     </Animated.View>
+    <View style = {{width: layout.window.width, flexDirection: 'row', alignItems: 'center',
+                   justifyContent: 'space-between', paddingHorizontal:10, marginTop: 3}}>
     <Pressable
      onPress = {()=> navigation.goBack() }
      style = {({pressed})=>[{opacity: pressed ? 0.5: 1}]}
     >
-    <View style = {{marginTop: 3, padding: 7, backgroundColor:'rgba(0, 0, 0, 0.3)', borderRadius:50}}>
-    <Ionicons name="ios-arrow-back-sharp" size={35} color={'white'} />
+    <View style = {{padding: 3, backgroundColor:'rgba(0, 0, 0, 0.3)', borderRadius:50}}>
+    <Ionicons name="ios-arrow-back-sharp" size={25} color={'white'} />
     </View>
     </Pressable>
+    </View>
+
     </Animated.View>
 
     <ScrollView contentContainerStyle = {styles.scrollContainer}
@@ -182,11 +223,6 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
   )
 }
 
-
-
-
-
-
 const styles = StyleSheet.create({
    scrollContainer: {
      marginVertical: Height_Max,
@@ -198,11 +234,17 @@ const styles = StyleSheet.create({
      top: 0,
      left: 0
    },
+   gradientContainer: {
+     position: "absolute",
+     left: 0,
+     top: 0,
+     width: layout.window.width,
+     overflow: "hidden"
+   },
    imageGradient: {
      position: 'absolute',
      width: layout.window.width,
-     top: 0,
-     left: 0
+     height: Height_Max
 
    },
    nameContainer:  {
@@ -228,6 +270,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.mainColor,
     marginBottom: 7
   },
+  optionDot: {
+
+  },
   text: {
     fontSize: 16,
     lineHeight: 21,
@@ -250,3 +295,19 @@ const styles = StyleSheet.create({
      padding: 20,
   }
 })
+
+/*
+<View style = {{flexBasis: '70%'}}>
+<Animated.Text style = {[styles.name,{transform:[{translateX: shiftX},{scale: nameSize}]}]}>
+{userInfo.name}{" "}
+
+{userInfo.name !== "-" && <Animated.View style = {{transform:[{translateX: shiftI},{scale: nameSize}]}}>
+<View style = {{position:'absolute',height: 13, width:13, top: 6, left: 6,
+                backgroundColor: 'white',borderRadius:50}}></View>
+<MaterialIcons name="verified" size={25} color=  {colors.mainColor} />
+</Animated.View>}
+
+</Animated.Text>
+
+</View>
+*/

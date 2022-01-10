@@ -46,7 +46,7 @@ export const UserInfo = ({name,points,date, options, picture}:{name:string;point
  const Options = ({options, data}:{options: {name: string; func : ()=> void}[], data: {id: string, indx?:string,songId: string}}) => {
    const [show, setShow] = useState(false)
   return (
-    <View style = {{position: 'relative', zIndex: 9999999,}}>
+    <View style = {{position: 'relative', zIndex: 9}}>
     <Pressable onPress = {() => setShow(prev => !prev)}>
     <View style = {{paddingHorizontal: 10}}>
     <View style = {styles.optionDot}></View>
@@ -57,13 +57,14 @@ export const UserInfo = ({name,points,date, options, picture}:{name:string;point
     {
     show && <ThemedView style = {styles.optionList}>
     {
-      options.map((option,indx) => {
+      options.map((option) => {
         return (
         <Pressable
-         onPress = {() => option.func()}
-         style = {({pressed}) => [{opacity: pressed ? 0.7 : 1}, {paddingVertical:7, paddingHorizontal: 10}]}
-         >
-        <ThemedText key = {indx}>{option.name}</ThemedText>
+         key = {option.name}
+         style = {({pressed}) => [{opacity: pressed ? 0.7 : 1},
+                                     {paddingVertical:7, paddingHorizontal: 10}]}
+         onPress = {option.func}>
+        <ThemedText>{option.name}</ThemedText>
         </Pressable>
       )
       })
@@ -127,12 +128,14 @@ const styles = StyleSheet.create({
    optionList: {
      position: 'absolute',
      paddingVertical: 7,
+     width: 70,
      elevation: 5,
      shadowOffset: {width: 0, height: 0},
      shadowRadius: 5,
      shadowOpacity: 0.2,
      shadowColor: 'darkgray',
      right: 20,
+     alignItems: 'center'
    },
    awardContainer : {
      justifyContent: "center",

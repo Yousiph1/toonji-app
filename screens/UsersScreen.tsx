@@ -14,6 +14,7 @@ import {Achievement, AwardInfo} from '../components/General'
 import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
+import getToken from '../funcs/GetToken';
 
 
 
@@ -25,14 +26,16 @@ const Scroll_Dist = Height_Max - Height_Min
 export default function UsersScreen({route, navigation}:RootStackScreenProps<'Users'>) {
   const user = route.params.userName
   const [isLoading, setIsloading] = useState(false)
+  const [followLoading, setFollowLoading] = useState(false)
   const [isEnd, setIsEnd] = useState(false)
   const [givingAward, setGivingAward] = useState(false)
   const [isModalVisible, setModalVisible] = useState(false);
   const [awardData, setAwardData] = useState<awardReq>({type:"breakdown", songId:""})
   const [awardsGiven, setAwardsGiven] = useState<string[]>([])
   const [next, setNext] = useState(9)
+  const [following, setFollowing] = useState(false)
   const [breakdowns, setBreakdowns] = useState<breakTyp[]>([])
-  const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-',
+  const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-', following: false,
                                              points: '-', battleRecord: '-', picture:""})
 
 
@@ -75,6 +78,8 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
 
    },[])
 
+    useEffect(()=> setFollowing(userInfo.following),[userInfo])
+
    useEffect(() => {
      setIsloading(true)
      axios.get(BASEURL + 'p/breakdowns/'+ user + '/0')
@@ -90,9 +95,15 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
      })
    },[])
 
-   const fetchMore =  useCallback(()=>{
+   const fetchMore =  useCallback(async ()=>{
      setIsloading(true)
-     axios.get(BASEURL + 'p/breakdowns/'+ user + '/' + next)
+     const token = await getToken()
+     const config = {
+       headers: {
+         Authorization: `Bearer ${token}`
+       }
+     }
+     axios.get(BASEURL + 'p/breakdowns/'+ user + '/' + next,config)
      .then(res => {
        setBreakdowns(prev => prev.concat(res.data.breakdowns))
        setIsloading(false)
@@ -118,7 +129,7 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
      setModalVisible(true);
    }
 
-   const giveAward = () => {
+   const giveAward = async () => {
       const path = awardData.type === "breakdown" ? `${BASEURL}award-breakdown`: ""
       let data = {}
       if(awardData.type === "breakdown") {
@@ -132,8 +143,14 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
       if(awardsGiven.length < 1) {
         return
       }
+      const token = await getToken()
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
       setGivingAward(true)
-      axios.post(path,data)
+      axios.post(path,data,config)
       .then(res => {
         console.log(res.data)
         setGivingAward(false)
@@ -142,6 +159,26 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
         setGivingAward(false)
         console.log(e.response.data)
       })
+   }
+
+   const follow = async () => {
+      setFollowLoading(true)
+      const token = await getToken()
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+      axios.post(`${BASEURL}p/follow/${user}`,{},config)
+     .then(res => {
+       console.log(res)
+       setFollowLoading(false)
+       setFollowing(prv => !prv)
+     })
+     .catch(err => {
+       console.log(err)
+       setFollowLoading(false)
+     })
    }
 
 
@@ -155,11 +192,12 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
     <Animated.Image source = {{uri: userInfo.picture}}
     style = {[styles.image,{height, opacity: imageOpacity}]} />
 
+    <Animated.View style = {[styles.gradientContainer,{height}]}>
     <LinearGradient
-      colors={['transparent','transparent', 'black']}
-      style={[styles.imageGradient,{}]}>
-
+      colors={['transparent', 'black']}
+      style={styles.imageGradient}>
     </LinearGradient>
+    </Animated.View>
 
     <Animated.View style = {[styles.nameContainer,{height}]}>
     <View style = {{flexBasis: '70%'}}>
@@ -169,8 +207,16 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
     </View>
 
     <View>
-    <Pressable style={styles.button}>
-     <Text style={styles.text}>follow</Text>
+    <Pressable
+    style={({pressed}) => [styles.button,{opacity: pressed ? 0.7:1,backgroundColor: following ? "white": colors.mainColor}]}
+    onPress = {follow}
+    >
+    {followLoading ? <ActivityIndicator color = "white" size = "small"/>
+                                  :
+                     <Text
+                     style={[styles.text,{color: following ? colors.mainColor:"white"}]}
+                     >{userInfo.following ? 'following': 'follow'}</Text>
+             }
     </Pressable>
     </View>
     </Animated.View>
@@ -179,7 +225,7 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
      style = {({pressed})=>[{opacity: pressed ? 0.5: 1}]}
     >
     <View style = {{marginTop: 3, padding: 7, backgroundColor:'rgba(0, 0, 0, 0.3)', borderRadius:50}}>
-    <Ionicons name="ios-arrow-back-sharp" size={35} color={'white'} />
+    <Ionicons name="ios-arrow-back-sharp" size={25} color={'white'} />
     </View>
     </Pressable>
     </Animated.View>
@@ -321,11 +367,17 @@ const styles = StyleSheet.create({
     left: 0,
     backgroundColor: "black"
   },
+  gradientContainer: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    width: layout.window.width,
+    overflow: "hidden"
+  },
   imageGradient: {
     position: 'absolute',
     width: layout.window.width,
-    top: 0,
-    left: 0
+    height: Height_Max
 
   },
   nameContainer:  {

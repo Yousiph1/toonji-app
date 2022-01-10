@@ -18,6 +18,7 @@ export type RootStackParamList = {
   Read: {songId: string};
   Artist: {userName: string};
   Users: {userName: string};
+  Edit: {prevName: string, bio: string, image: string, picture: string};
   Signup: undefined;
   Splash: undefined;
   Login: undefined;
@@ -50,6 +51,7 @@ export type RootTabParamList = {
   Charts: undefined;
   Favorites: undefined;
   Profile: undefined;
+  Card: undefined
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
