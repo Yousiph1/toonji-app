@@ -18,8 +18,14 @@ import {BASEURL} from '../constants/Credentials'
 import useColorScheme from '../hooks/useColorScheme';
 import { AwardInfo } from '../components/General';
 import EditBrModal from '../components/EditBrModal';
+import getToken from '../funcs/GetToken';
 
-let color: 'light' | 'dark' = "light"
+let color: 'light' | 'dark' = "light";
+
+(async function(){
+  const token = await getToken()
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}())
 export default function ReadScreen({route,navigation}: RootStackScreenProps<'Read'>) {
  const [isLoading, setIsLoading] = useState(false)
  const [showIcons, setShowIcons] = useState(false)
@@ -154,8 +160,8 @@ const giveAward = () => {
     </ScrollView>
 
       <Modal isVisible={isModalVisible}>
-        <ThemedView style={{ padding: 40, alignSelf:"center", borderRadius: 5,
-                       width: layout.isSmallDevice ? "90%":"60%"}}>
+        <ThemedView style={{ padding: 20, alignSelf:"center", borderRadius: 5,
+                       width:"98%"}}>
           <ThemedText style = {{fontWeight:"bold", fontSize: 20, marginBottom: 30}}>
           Award {`${awardData.type}`}
           </ThemedText>

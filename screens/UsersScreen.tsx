@@ -20,9 +20,13 @@ import getToken from '../funcs/GetToken';
 
 const Height_Max =  50/100 * layout.window.height
 const Height_Min = 53
-const Scroll_Dist = Height_Max - Height_Min
+const Scroll_Dist = Height_Max - Height_Min;
 
 
+(async function(){
+  const token = await getToken()
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}())
 export default function UsersScreen({route, navigation}:RootStackScreenProps<'Users'>) {
   const user = route.params.userName
   const [isLoading, setIsloading] = useState(false)
@@ -235,9 +239,9 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
     onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}])}
     >
     <ThemedView style = {styles.achievementsContainer}>
-    <Achievement top = {userInfo.points} bottom = "points"/>
-    <Achievement top = {userInfo.followers} bottom = "followers"/>
-    <Achievement top = {userInfo.battleRecord} bottom = "battles"/>
+    <Achievement top = {userInfo.points} bottom = "points" navigate = {false}/>
+    <Achievement thisUser = {false} userName = {userInfo.name} top = {userInfo.followers} bottom = "followers" navigate navigation = {navigation}/>
+    <Achievement thisUser = {false} userName = {userInfo.name} top = {userInfo.battleRecord} bottom = "battles" navigate navigation = {navigation}/>
     </ThemedView>
 
     <ThemedView style = {{padding: 20,marginHorizontal:5, borderRadius: 10}}>

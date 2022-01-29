@@ -5,6 +5,7 @@ import * as React from 'react';
 import { ColorSchemeName, Pressable, View } from 'react-native';
 import { FontAwesome, MaterialIcons, Entypo } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
+import axios from 'axios'
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -23,12 +24,16 @@ import SignUpScreen from '../screens/SignupScreen';
 import LoginScreen from '../screens/LoginScreen';
 import EditProfileScreen from '../screens/EditProfileScreen'
 import { ThemedText } from '../components/Themed';
-import axios from 'axios';
 import { BASEURL } from '../constants/Credentials';
 import CardMaker from '../screens/CardScreen';
+import getToken from '../funcs/GetToken';
+import FollowersScreen from '../screens/FollowersScreen';
+import TopFansScreen from '../screens/TopFansScreen';
+import BattlesScreen from '../screens/BattlesScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export const AuthContext = React.createContext<any>(null);
+
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
 
@@ -111,8 +116,9 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           <Stack.Screen name = "Artist" component = {ArtistScreen} options = {{headerShown: false}} />
           <Stack.Screen name = "Users" component = {UsersScreen} options = {{headerShown: false}} />
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
-            <Stack.Screen name = "Edit" component = {EditProfileScreen} options = {{title: "Edit Profile"}} />
-            <Stack.Screen name="Modal" component={ModalScreen} />
+            <Stack.Screen name = "Followers" component = {FollowersScreen} />
+            <Stack.Screen name = "TopFans" component = {TopFansScreen} />
+            <Stack.Screen name = "Battles" component = {BattlesScreen} />
           </Stack.Group>
           <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
         </>

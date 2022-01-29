@@ -38,13 +38,13 @@ export default function EditBrModal ({setModalVisible, isVisible, editData}:
 
   return (
   <Modal isVisible = {isVisible}>
-   <ThemedView style={{ padding: 40, alignSelf:"center", borderRadius: 5,
+   <ThemedView style={{ padding: 20, alignSelf:"center", borderRadius: 5,
                   width: layout.isSmallDevice ? "95%":"90%"}}>
    <ThemedText style = {{marginBottom: 20, fontWeight: "bold"}}>Edit Breakdown</ThemedText>
    <TextInput
-     multiline
+     multiline = {true}
      value = {text}
-     style={[styles.input,{height: 150, marginBottom: 20}]}
+     style={[styles.input,{height: 150, marginBottom: 20,textAlignVertical: "top"}]}
      onChangeText= {handleTextChange}
    />
 
@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
      borderWidth: 1,
      borderColor: colors.mainColor,
      padding: 10,
-     marginBottom: 5
    },
   closeButton: {
     paddingVertical: 5,

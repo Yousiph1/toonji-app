@@ -12,7 +12,10 @@ import axios from 'axios';
 import getToken from '../funcs/GetToken';
 import { awardReq, brType } from '../types';
 
-
+(async function(){
+  const token = await getToken()
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}())
 export default function Breakdown(props: brType ) {
 
   const {name, points, songId, breakdown, date, indx,
@@ -25,17 +28,9 @@ export default function Breakdown(props: brType ) {
 
 
   const handleVote = async (vote : 'UPVOTE' | 'DOWNVOTE') => {
-    const token = await getToken()
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-
-       axios.post(`${BASEURL}breakdown-vote/${songId}/${punchId}/${id}/${vote}`,{},config)
+  axios.post(`${BASEURL}breakdown-vote/${songId}/${punchId}/${id}/${vote}`)
        .then((res)=>{
          let hasVoted = userVote ? true: false
-         console.log(res.data)
          if(res.data.type === "SUCCESS"){
            setUserVote(vote)
            if(vote === 'UPVOTE') {
@@ -65,7 +60,7 @@ export default function Breakdown(props: brType ) {
                   [{name: "Delete", func : () => deleteBreakdown({punchId, id}) },
                   {name:"Edit", func: () => showEditModal({br: breakdown,songId, punchId, id})}] :
                   [{name:"Award",func: () =>showModal({type: "breakdown", songId, breakdown: {punchId, brId: id} })}]}} />
-     <View style = {styles.breakdownInnerContainer}>
+     <View style = {[styles.breakdownInnerContainer]}>
      <View style = {styles.breakdownText}>
      <View style = {styles.awardsContainer}>
      <Award awards = {brAwards}/>

@@ -87,7 +87,7 @@ const sendComment = async () => {
       })
       .catch((err)=>{
         const message = err.response.data.msg
-      
+
         if(message === "invalid or expired token"){
            signOut()
         }
@@ -262,11 +262,11 @@ const styles = StyleSheet.create({
      width: layout.window.width
    },
    commentContainer: {
-     width: 95/100 * layout.window.width,
+     width:layout.window.width,
      backgroundColor: colors.lightgray,
      padding: 10,
-     marginBottom: 5,
-     borderRadius: 5
+     borderBottomWidth: 1,
+     borderBottomColor: "grey",
    },
    input : {
      width: 95/100 * layout.window.width,
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   },
    comment: {
      marginLeft: 20,
-     fontSize: 18
+     fontSize: 15
    },
    iconsContainer: {
      flexDirection:'row',

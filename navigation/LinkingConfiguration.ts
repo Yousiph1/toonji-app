@@ -32,7 +32,9 @@ const linking: LinkingOptions<RootStackParamList> = {
           },
           Profile: {
             screens: {
-              ProfileScreen: "/my/dprofile"
+                Profile: {
+                  screens: "/my/profile"
+                }
             }
           }
         },

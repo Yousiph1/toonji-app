@@ -11,7 +11,12 @@ import {BASEURL} from '../constants/Credentials'
 
 import ScreenHeader from '../components/ScreenHeader'
 import { ThemedText, ThemedView } from '../components/Themed';
+import getToken from '../funcs/GetToken';
 
+(async function(){
+  const token = await getToken()
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}())
 export default function HomeScreen() {
   const [data,setData] = useState({songs:[],newArrivals:[]})
   const [isLoading, setIsLoading] = useState(false)
@@ -71,7 +76,7 @@ const SearchResults = ({songs, users}:{songs:
       <ScrollView>
      {
       (songs.length > 0) && songs.map(song => {
-        return (<View style = {styles.searchItemContainer}>
+        return (<View style = {styles.searchItemContainer} key = {song.songId}>
           <Image source = {{uri: song.songCover}} style = {{height: 70, width: 70}}/>
           <View style ={{marginLeft: 20}}>
 
@@ -95,7 +100,7 @@ const SearchResults = ({songs, users}:{songs:
       {
          (users.length > 0) && users.map( user => {
            return (
-             <View style = {styles.searchItemContainer}>
+             <View style = {styles.searchItemContainer} key = {user.name}>
                <Image source = {{uri: user.picture}} style = {{height: 70, width: 70}}/>
                <View style ={{marginLeft: 20}}>
 

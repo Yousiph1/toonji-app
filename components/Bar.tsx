@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useContext} from 'react'
-import {View, Text, StyleSheet, Pressable, ScrollView, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator} from 'react-native'
+import {View, Text, StyleSheet, AsyncStorage, Pressable, ScrollView, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator} from 'react-native'
 import { FontAwesome, MaterialIcons, FontAwesome5, AntDesign, Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
 
@@ -11,9 +11,22 @@ import colors from '../constants/Colors'
 import Breakdown from './Breakdown'
 import getToken from '../funcs/GetToken';
 import {AuthContext} from '../navigation/index'
-import { awardReq } from '../types';
+import { awardReq, brType } from '../types';
+//import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore'
 
 const mainColor = colors.mainColor
+let FONT_SIZE = 14
+let COLOR = "grey";
+const getData = async () => {
+  try {
+    const value = await AsyncStorage.getItem('fontSize')
+    console.log(value)
+    return value != null ? FONT_SIZE = Number(value) : null;
+  } catch(e) {
+    // error reading value
+  }
+}
+
 
 type bar = {
   indx: string; punchline:string; userFav: boolean;
@@ -35,7 +48,6 @@ export default function Bar({indx, punchline,userFav, hasIcons, rated,
   const [br, setBr] = useState("")
   const [inputHeight, setInputHeight] = useState(40)
   const [sending, setSending] = useState(false)
-
   const {signOut} = useContext(AuthContext)
 
    useEffect(()=> {
@@ -55,7 +67,8 @@ export default function Bar({indx, punchline,userFav, hasIcons, rated,
    })
    .catch(er => {
     console.log(er)
-   })
+  });
+
 }
 
 const handleTextChange = (text:string) => {
@@ -160,7 +173,7 @@ const addBarToFavourites = async () => {
   if(!hasIcons) punchline = punchline.substr(0,punchline.length - 3)
   return (
     <ThemedView style = {styles.container} >
-    <Pressable onPress = {()=>setShow(!show)}>
+    <Pressable onPress = {()=>setShow(!show)} style = {{width: "85%"}}>
     <ThemedText style = {styles.bar}>
     {punchline}
     </ThemedText>
@@ -231,14 +244,17 @@ const addBarToFavourites = async () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: layout.isSmallDevice ? 95/ 100 * layout.window.width : 85 / 100 * layout.window.width,
+    width: layout.isSmallDevice ? 95/ 100 * layout.window.width : 75 / 100 * layout.window.width,
   },
   bar: {
-    fontSize: 15
+    fontSize: FONT_SIZE,
+    color: COLOR,
+    marginLeft: 20
   },
   iconsContainer: {
     flexDirection: "row",
     marginBottom: 5,
+    marginLeft: 20
   },
   breakdownsContainer: {
     borderRadius: 5,

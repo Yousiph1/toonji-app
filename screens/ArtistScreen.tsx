@@ -18,7 +18,12 @@ import getToken from '../funcs/GetToken'
 
 const Height_Max =  50/100 * layout.window.height
 const Height_Min = 53
-const Scroll_Dist = Height_Max - Height_Min
+const Scroll_Dist = Height_Max - Height_Min;
+
+(async function(){
+  const token = await getToken()
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}())
 
 export default function ArtistScreen({route, navigation}:RootStackScreenProps<'Artist'>) {
   const artist = route.params.userName
@@ -109,13 +114,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
 
    const followFunc = async () => {
      setFollowLoading(true)
-     const token = await getToken()
-     const config = {
-       headers: {
-         Authorization: `Bearer ${token}`
-       }
-     }
-     axios.post(`${BASEURL}p/follow/${artist}`,{},config)
+     axios.post(`${BASEURL}p/follow/${artist}`)
      .then(res => {
        console.log(res)
        setFollowLoading(false)
@@ -169,7 +168,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
                                    :
                       <Text
                       style={[styles.text,{color: following ? colors.mainColor:"white"}]}
-                      >{userInfo.following ? 'following': 'follow'}</Text>
+                      >{following ? 'following': 'follow'}</Text>
               }
     </Pressable>
 
@@ -194,10 +193,10 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
      onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}])}
     >
     <ThemedView style = {styles.achievementsContainer}>
-    <Achievement top = {userInfo.noSongs} bottom = "songs"/>
-    <Achievement top = {userInfo.points} bottom = "points"/>
-    <Achievement top = {userInfo.followers} bottom = "followers"/>
-    <Achievement top = {userInfo.topFans} bottom = "top fans"/>
+    <Achievement navigate = {false} top = {userInfo.noSongs} bottom = "songs"/>
+    <Achievement navigate = {false} top = {userInfo.points} bottom = "points"/>
+    <Achievement thisUser = {false} userName = {userInfo.name} top = {userInfo.followers} bottom = "followers" navigate navigation = {navigation}/>
+    <Achievement thisUser = {false} userName = {userInfo.name} top = {userInfo.topFans} bottom = "top fans" navigate navigation = {navigation}/>
     </ThemedView>
 
     <ThemedView style = {{padding: 20,marginHorizontal:5, borderRadius: 10}}>

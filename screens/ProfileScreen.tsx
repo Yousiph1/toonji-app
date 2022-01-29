@@ -2,28 +2,48 @@ import React,{useState, useEffect, useCallback, useRef} from 'react'
 import {View, Text, ScrollView, Pressable, Animated, Image, StyleSheet, ActivityIndicator, RefreshControl} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import { Link } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import  {FontAwesome,Ionicons,MaterialIcons} from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios'
 
-import {brType, RootStackScreenProps, RootTabScreenProps} from '../types'
+import {brType, RootStackScreenProps, RootTabScreenProps, ThisUserParamList} from '../types'
 import {ThemedText, ThemedView} from '../components/Themed'
 import  Breakdown from '../components/Breakdown'
+import EditProfileScreen from './EditProfileScreen'
 import {Achievement} from '../components/General'
 import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
 import EditBrModal from '../components/EditBrModal';
-
-
+import FollowersScreen from './FollowersScreen'
+import FollowingScreen from './FollowingScreen'
+import BattlesScreen from './BattlesScreen'
+import SettingsScreen from './SettingsScreen'
 
 const Height_Max =  50/100 * layout.window.height
 const Height_Min = 53
 const Scroll_Dist = Height_Max - Height_Min
 
+const ProfileNav = createNativeStackNavigator<ThisUserParamList>()
 
-export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>) {
+
+export default function ProfileScreen() {
+
+  return (
+    <ProfileNav.Navigator>
+    <ProfileNav.Screen name = "Profile" component = {Profile} options = {{headerShown:false}}  />
+    <ProfileNav.Screen name = "Battles" component = {BattlesScreen} options = {{headerShown:false}}  />
+    <ProfileNav.Screen name = "Following" component = {FollowingScreen} />
+    <ProfileNav.Screen name = "Followers" component = {FollowersScreen} options = {{}}  />
+    <ProfileNav.Screen name = "Settings" component = {SettingsScreen} />
+    <ProfileNav.Screen name = "Edit" component = {EditProfileScreen} options = {{title: "Edit Profile", presentation: 'modal'}} />
+    </ProfileNav.Navigator>
+  )
+}
+
+ function Profile({navigation}: any) {
 
   const [isLoading, setIsloading] = useState(false)
   const [isEnd, setIsEnd] = useState(false)
@@ -32,7 +52,7 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
   const [isModalEditVisible, setEditModalVisible] = useState(false)
   const [editData, setEditData] = useState({br:"", songId:"", punchId:"",id:""})
   const [breakdowns, setBreakdowns] = useState<breakTyp[]>([])
-  const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-',
+  const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-', following:'-',
                                              points: '-', battleRecord: '-', picture:""})
 
  const showEditModal = (data:{br:string; songId: string; punchId: string; id: string})  => {
@@ -136,7 +156,7 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
      })
 
    },[])
-   
+
    const onRefresh = () => {
      setReload(true)
    }
@@ -192,14 +212,12 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
     </View>
     </Pressable>
 
-    <Animated.View style = {[{padding: 7, backgroundColor:'rgba(0, 0, 0, 0.3)', borderRadius: 20},{opacity: imageOpacity}]}>
+    <Animated.View style = {[{padding: 7, backgroundColor:'rgba(0, 0, 0, 0.3)', borderRadius: 50},{opacity: imageOpacity}]}>
     <Pressable
-     onPress = {()=> navigation.goBack() }
+     onPress = {()=> navigation.navigate("Settings") }
      style = {({pressed})=>[{opacity: pressed ? 0.5: 1}]}
     >
-    <View style = {styles.optionDot}></View>
-    <View style = {styles.optionDot}></View>
-    <View style = {styles.optionDot}></View>
+    <Ionicons name= "settings" size = {25} color = "white"/>
     </Pressable>
     </Animated.View>
 
@@ -218,9 +236,10 @@ export default function ProfileScreen({navigation}:RootTabScreenProps<'Profile'>
     onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}])}
     >
     <ThemedView style = {styles.achievementsContainer}>
-    <Achievement top = {userInfo.points} bottom = "points"/>
-    <Achievement top = {userInfo.followers} bottom = "followers"/>
-    <Achievement top = {userInfo.battleRecord} bottom = "battles"/>
+    <Achievement top = {userInfo.points} bottom = "points" navigate ={false} />
+    <Achievement thisUser = {true} userName = {userInfo.name} top = {userInfo.followers} bottom = "followers" navigate navigation = {navigation}/>
+    <Achievement thisUser = {true} userName = {userInfo.name} top = {userInfo.following} bottom = "following" navigate navigation = {navigation}/>
+    <Achievement thisUser = {true} userName = {userInfo.name} top = {userInfo.battleRecord} bottom = "battles" navigate navigation = {navigation}/>
     </ThemedView>
 
     <ThemedView style = {{padding: 20,marginHorizontal:5, borderRadius: 10}}>

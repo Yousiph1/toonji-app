@@ -11,7 +11,10 @@ import colors from '../constants/Colors'
 import getToken from '../funcs/GetToken';
 import { RootStackScreenProps } from '../types';
 
-
+(async function(){
+  const token = await getToken()
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}())
 export default function EditProfileScreen({route}: RootStackScreenProps<'Edit'>) {
   const {picture: img, bio: bi, prevName} = route.params
   const [image, setImage] = useState(img)
@@ -60,13 +63,7 @@ export default function EditProfileScreen({route}: RootStackScreenProps<'Edit'>)
     }
     formData.append('prevName',prevName)
     setLoading(true)
-    const token = await getToken()
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-    axios.post(`${BASEURL}profile/edit-profile/`,formData,config)
+    axios.post(`${BASEURL}profile/edit-profile/`,formData)
     .then(res => {
        console.log(res.data)
        setLoading(false)
@@ -100,10 +97,10 @@ export default function EditProfileScreen({route}: RootStackScreenProps<'Edit'>)
     <View style = {styles.inputContainer}>
     <ThemedText style = {styles.label}>Bio</ThemedText>
     <TextInput
-    style = {[styles.input,{height: 80}]}
+    style = {[styles.input,{height: 80,textAlignVertical: "top"}]}
     placeholder = "Bio"
     onChangeText = {handleBio}
-    multiline
+    multiline= {true}
     value = {bio}
     />
     <Text style = {styles.error}>{bioError ? bioError : ' '}</Text>

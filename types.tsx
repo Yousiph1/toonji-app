@@ -13,12 +13,32 @@ declare global {
   }
 }
 
+export type ProfileStackParamList = {
+  Followers: {name: string};
+}
+
+export type ArtistProfileList = ProfileStackParamList & {
+  TopFans: {name: string};
+}
+export type UsersProfileList = ProfileStackParamList & {
+  Battles: {name: string};
+}
+export type ThisUserParamList = ProfileStackParamList & {
+  Profile: undefined;
+  Edit: {prevName: string, bio: string, picture: string};
+  Following: {name: string};
+  Battles: {name: string};
+  Settings: undefined;
+}
+
 export type RootStackParamList = {
   Root:  NavigatorScreenParams<RootTabParamList> | undefined;
   Read: {songId: string};
   Artist: {userName: string};
   Users: {userName: string};
-  Edit: {prevName: string, bio: string, image: string, picture: string};
+  Followers: {name: string, thisUser: boolean};
+  TopFans: {name: string, thisUser: boolean};
+  Battles: {name: string, thisUser: boolean};
   Signup: undefined;
   Splash: undefined;
   Login: undefined;
@@ -50,7 +70,7 @@ export type RootTabParamList = {
   Home: undefined;
   Charts: undefined;
   Favorites: undefined;
-  Profile: undefined;
+  Profile: NavigatorScreenParams<ThisUserParamList>;
   Card: undefined
 };
 
