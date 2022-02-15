@@ -1,4 +1,4 @@
-import React,{useEffect,useRef,useState} from 'react'
+import React,{useContext, useEffect,useRef,useState} from 'react'
 import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable, TextInput} from 'react-native'
 import { Link } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -19,6 +19,7 @@ import useColorScheme from '../hooks/useColorScheme';
 import { AwardInfo } from '../components/General';
 import EditBrModal from '../components/EditBrModal';
 import getToken from '../funcs/GetToken';
+import { AuthContext } from '../navigation';
 
 let color: 'light' | 'dark' = "light";
 
@@ -37,6 +38,7 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
  const [awardsGiven, setAwardsGiven] = useState<string[]>([])
  const [bars, setBars] = useState([])
  const [pData, setPData] = useState([])
+ const {signOut} = useContext(AuthContext)
  const [headerData, setHeaderData] = useState({songTitle:'-',songArtist: '-', rating: '-', raters:'-',
                                                views:'-', favourited:false, noFavourited: '-',
                                                otherArtists: '-'})
@@ -104,6 +106,9 @@ const giveAward = () => {
    .catch(e => {
      setGivingAward(false)
      console.log(e.response.data)
+     if(e.response?.status === 401) {
+       signOut()
+     }
    })
 }
 

@@ -34,7 +34,7 @@ import BattlesScreen from '../screens/BattlesScreen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export const AuthContext = React.createContext<any>(null);
 
-
+axios.defaults.withCredentials = true
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
 
 
@@ -52,20 +52,20 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           return {
             ...prevState,
             isSignout: false,
-            userToken: action.token,
+            userToken: true,
           };
         case 'SIGN_OUT':
           return {
             ...prevState,
             isSignout: true,
-            userToken: null,
+            userToken: false,
           };
       }
     },
     {
       isLoading: true,
       isSignout: false,
-      userToken: null,
+      userToken: false,
     }
   );
 
@@ -81,8 +81,8 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       } catch (e) {
         // Restoring token failed
       }
-
-      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+      const token = userToken && userToken === "true" ? true : false
+      dispatch({ type: 'RESTORE_TOKEN', token });
     };
 
     bootstrapAsync();
@@ -90,12 +90,15 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 
   const authContext = React.useMemo(() => ({
 
-      signIn: async (token : string) => {
-             SecureStore.setItemAsync('userToken',  token);
-             dispatch({ type: 'SIGN_IN', token: token});
+      signIn: async () => {
+             SecureStore.setItemAsync('userToken',  "true");
+             dispatch({ type: 'SIGN_IN'});
       },
 
-      signOut: () => dispatch({ type: 'SIGN_OUT' }),
+      signOut: async () =>{
+         SecureStore.setItemAsync("userToken", "false")
+         dispatch({ type: 'SIGN_OUT' })
+      } ,
     }),[]);
 
 //!state.userToken

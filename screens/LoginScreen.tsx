@@ -39,8 +39,8 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
     if(!(name &&  password)) return
     setLoading(true)
     try{
-      const res = await axios.post(`${BASEURL}m/login`,{name, password})
-      signIn(res.data.token)
+      const res = await axios.post(`${BASEURL}login`,{name, password})
+      signIn()
     }catch(err) {
       console.log(err)
     }finally {

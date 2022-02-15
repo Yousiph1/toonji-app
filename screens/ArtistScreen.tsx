@@ -1,4 +1,4 @@
-import React,{useState, useEffect, useCallback,useRef} from 'react'
+import React,{useState, useEffect, useCallback,useRef, useContext} from 'react'
 import {View, Text, ScrollView, Pressable, Image, Animated, StyleSheet, ActivityIndicator} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import  {FontAwesome,MaterialIcons, Ionicons} from '@expo/vector-icons'
@@ -13,6 +13,8 @@ import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
 import getToken from '../funcs/GetToken'
+import { AuthContext } from '../navigation'
+
 
 
 
@@ -36,6 +38,8 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
   const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-', noSongs: '-',
                                             topFans: '-', points: '-', following: false,
                                             picture:''})
+
+  const {signOut} = useContext(AuthContext)
 
   const scrollY = useRef(new Animated.Value(0)).current
   const height = scrollY.interpolate({
@@ -123,6 +127,9 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
      .catch(err => {
        console.log(err)
        setFollowLoading(false)
+       if(err.response?.status === 401) {
+         signOut()
+       }
      })
    }
 

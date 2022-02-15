@@ -43,6 +43,9 @@ export default function Comments({songId, showModal}: {songId: songId, showModal
                 }
               })
               .catch(e => {
+                if(e.response?.status === 401) {
+                  signOut()
+                }
                 setIsLoading(false)
                 console.log(e)
               })
@@ -61,6 +64,9 @@ export default function Comments({songId, showModal}: {songId: songId, showModal
               })
               .catch(e => {
                 setIsLoading(false)
+                if(e.response?.status === 401) {
+                  signOut()
+                }
                 console.log(e)
               })
    }
@@ -87,9 +93,8 @@ const sendComment = async () => {
       })
       .catch((err)=>{
         const message = err.response.data.msg
-
-        if(message === "invalid or expired token"){
-           signOut()
+        if(e.response?.status === 401) {
+          signOut()
         }
       console.log(err)
       setSending(false)
@@ -108,6 +113,9 @@ const deleteComment = (id: string) => {
      console.log(res)
    })
    .catch(err => {
+     if(err.response?.status === 401) {
+       signOut()
+     }
     console.log(err)
    })
 }

@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react'
+import React, {useEffect, useState, useContext } from 'react'
 import { Pressable, TextInput, View , Text, StyleSheet, ActivityIndicator} from 'react-native'
 import Modal from "react-native-modal"
 
@@ -7,12 +7,13 @@ import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import axios from 'axios'
 import { BASEURL } from '../constants/Credentials'
-
+import { AuthContext } from '../navigation';
 export default function EditBrModal ({setModalVisible, isVisible, editData}:
   {setModalVisible:()=>void; isVisible:boolean; editData:{br: string; punchId: string; songId: string; id: string}}) {
 
   const [text, setText] = useState("")
   const [loading, setLoading] = useState(false)
+  const {signOut} = useContext(AuthContext)
 
   useEffect(()=> {
     setText(editData.br)
@@ -31,7 +32,9 @@ export default function EditBrModal ({setModalVisible, isVisible, editData}:
      setLoading(false)
    })
    .catch(e => {
-     console.log(e)
+     if(e.response?.satus === 401){
+       signOut()
+     }
      setLoading(false)
    })
   }

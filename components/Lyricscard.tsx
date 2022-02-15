@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useContext, useState} from 'react'
 import {View, Text, Image, Pressable, StyleSheet} from 'react-native'
 import { Link } from '@react-navigation/native';
 import { FontAwesome, MaterialIcons, FontAwesome5, AntDesign } from '@expo/vector-icons';
@@ -14,6 +14,7 @@ import useColorScheme from '../hooks/useColorScheme'
 import {cardData} from '../types'
 import axios from 'axios';
 import { BASEURL } from '../constants/Credentials';
+import { AuthContext } from '../navigation';
 
 const {mainColor} = colors
 const cardWidth = layout.isSmallDevice ? 90/100 * layout.window.width : 85/100 * layout.window.width
@@ -22,6 +23,7 @@ const iconSize = 20
 export default function LyricsCard({data} :{data:cardData}){
       const [isFavorite, setIsFavorite] = useState(data.isFav)
       const [copied, setCopied] = useState(false)
+      const {signOut} = useContext(AuthContext)
       const theme = useColorScheme()
 
       const copyToClipboard = () => {
@@ -37,6 +39,9 @@ export default function LyricsCard({data} :{data:cardData}){
            setIsFavorite(!isFavorite)
         })
         .catch(err => {
+          if(err.response?.satus === 401){
+            signOut()
+          }
           console.log(err)
         })
       }

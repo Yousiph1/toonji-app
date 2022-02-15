@@ -1,4 +1,4 @@
-import React,{useState, useEffect, useCallback, useRef} from 'react'
+import React,{useState, useEffect, useCallback, useRef, useContext} from 'react'
 import {View, Text, ScrollView, Pressable, Animated, Image, StyleSheet, ActivityIndicator, RefreshControl} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import { Link } from '@react-navigation/native';
@@ -21,6 +21,7 @@ import FollowersScreen from './FollowersScreen'
 import FollowingScreen from './FollowingScreen'
 import BattlesScreen from './BattlesScreen'
 import SettingsScreen from './SettingsScreen'
+import { AuthContext } from '../navigation';
 
 const Height_Max =  50/100 * layout.window.height
 const Height_Min = 53
@@ -59,7 +60,7 @@ export default function ProfileScreen() {
     setEditData(data)
     setEditModalVisible(true)
  }
-
+  const {signOut} = useContext(AuthContext)
 
 
    const scrollY = useRef(new Animated.Value(0)).current
@@ -114,6 +115,9 @@ export default function ProfileScreen() {
      .catch(err => {
        console.log(err)
        setReload(false)
+       if(err.response?.status === 401){
+         signOut()
+       }
      })
 
    },[reload])
@@ -138,6 +142,9 @@ export default function ProfileScreen() {
        console.log(err)
        setIsloading(false)
        setReload(false)
+       if(err.response?.status === 401){
+         signOut()
+       }
      })
    },[reload])
 

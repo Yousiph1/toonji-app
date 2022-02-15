@@ -12,7 +12,7 @@ import Breakdown from './Breakdown'
 import getToken from '../funcs/GetToken';
 import {AuthContext} from '../navigation/index'
 import { awardReq, brType } from '../types';
-import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore'
+import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore';
 
 const mainColor = colors.mainColor
 let FONT_SIZE = 18
@@ -67,12 +67,8 @@ export default function Bar({indx, punchline,userFav, hasIcons, rated,
     setShowBreakdowns(!showBreakdowns)
   axios.get(`${BASEURL}breakdowns/${songId}/${indx}`)
    .then(res => {
-     if(res.data.type === "ERROR"){
-
-    }else {
       setBrDowns([])
       setBrDowns(res.data)
-    }
    })
    .catch(er => {
     console.log(er)
@@ -84,15 +80,9 @@ const handleTextChange = (text:string) => {
   setBr(text)
 }
 
-const addBarToFavourites = async () => {
+const addBarToFavourites = () => {
      setIsFavorite(!isFavorite)
-     const token = await getToken()
-     const config = {
-       headers: {
-         Authorization: `Bearer ${token}`
-       }
-     }
-     axios.post(`${BASEURL}bar-favourited/${songId}/${_id}`,{}, config)
+     axios.post(`${BASEURL}bar-favourited/${songId}/${_id}`)
      .then(res => {
       const data = res.data
       if(data.type === 'ERROR' && data.msg === "invalid or expired token") {
@@ -100,11 +90,12 @@ const addBarToFavourites = async () => {
       }
      })
      .catch(err => {
+       if(err.response?.status === 401){signOut()}
        console.log(err)
      })
   }
 
- const firePressed = async () => {
+ const firePressed = () => {
    if(!hasFire){
      setFires(fires + 1)
      setHasFire(true)
@@ -112,35 +103,24 @@ const addBarToFavourites = async () => {
      setFires(prev => prev - 1)
      setHasFire(false)
    }
-   const token = await getToken()
-   const config = {
-     headers: {
-       Authorization: `Bearer ${token}`
-     }
-   }
-    axios.post(`${BASEURL}lyrics/fire/${songId}/${indx}`,{},config)
+
+    axios.post(`${BASEURL}lyrics/fire/${songId}/${indx}`)
       .then(res =>{
        const data = res.data
-       if(data.type === 'ERROR' && data.msg === "invalid or expired token") {
-         signOut()
-       }
+      
     })
      .catch((err)=>{
+       if(err.response?.status === 401){signOut()}
       console.log(err)
     })
  }
 
 
- const sendBreakdown = async () => {
+ const sendBreakdown = () => {
      if(br.trim() === '') return
      setSending(true)
-     const token = await getToken()
-     const config = {
-       headers: {
-         Authorization: `Bearer ${token}`
-       }
-     }
-     axios.post(BASEURL + 'breakdown/'+songId+"/"+indx,{breakdown: br.trim()},config)
+
+     axios.post(BASEURL + 'breakdown/'+songId+"/"+indx,{breakdown: br.trim()})
      .then((res)=>{
        let message = res.data.msg
        if(res.data.type === "SUCCESS"){
@@ -153,17 +133,15 @@ const addBarToFavourites = async () => {
             setSending(false)
           }
         })
-        .catch(er => {
-          console.log(er)
+        .catch(err => {
+         if(err.response?.status === 401){signOut()}
+         console.log(err)
         })
      }
-      if(res.data.type === "ERROR"){
-      if(message === "invalid or expired token") {
-        signOut()
-      }
-   }
+
    })
     .catch((err)=>{
+      if(err.response?.status === 401){signOut()}
       console.log(err)
       setSending(false)
    })
@@ -175,6 +153,7 @@ const addBarToFavourites = async () => {
        console.log(res)
      })
      .catch(err => {
+       if(err.response?.status === 401){signOut()}
        console.log(err)
      })
    }

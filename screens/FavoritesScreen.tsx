@@ -76,16 +76,13 @@ const Lyrics = () => {
         }
       }
       const res = await axios.get(BASEURL + `my/favourites/songs`,config)
-     if(res.data.type !== 'ERROR') {
        setSongs(res.data)
-       return
-     }
-     if(res.data.msg === "invalid or expired token") {
-        signOut()
-     }
 
     }catch(err) {
       console.log(err)
+      if(err.response?.status === 401){
+        signOut()
+      }
     }finally {
       setIsloading(false)
     }
@@ -128,6 +125,7 @@ const Bars = () => {
   const [isLoading, setIsloading] = useState(false)
   const [bars, setBars] = useState<unknown[]>([])
   const [refresh, setRefresh] = useState(false)
+  const {signOut} = useContext(AuthContext)
 
   async function getData() {
     try{
@@ -140,11 +138,12 @@ const Bars = () => {
       }
      const res = await axios.get(BASEURL + `my/favourites/bars`,config)
      if(res.data.type !== 'ERROR') setBars(res.data)
-     if(res.data.msg === "invalid or expired token") {
 
-     }
     }catch(err) {
       console.log(err)
+      if(err.response?.status === 401){
+        signOut()
+      }
     }finally {
       setIsloading(false)
     }
@@ -154,7 +153,6 @@ const Bars = () => {
      getData()
   },[])
 
-console.log(bars)
  const onRefresh = useCallback(()=> {
   getData()
  },[])

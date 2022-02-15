@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {View,Text,TextInput,Pressable, StyleSheet, ActivityIndicator,Image, ScrollView, TouchableOpacity, KeyboardAvoidingView} from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import { Entypo } from '@expo/vector-icons';
@@ -10,12 +10,13 @@ import { BASEURL } from '../constants/Credentials'
 import colors from '../constants/Colors'
 import getToken from '../funcs/GetToken';
 import { RootStackScreenProps } from '../types';
+import { AuthContext } from '../navigation';
 
 (async function(){
   const token = await getToken()
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }())
-export default function EditProfileScreen({route}: RootStackScreenProps<'Edit'>) {
+export default function EditProfileScreen({route}: any) {
   const {picture: img, bio: bi, prevName} = route.params
   const [image, setImage] = useState(img)
   const [name,setName] = useState(prevName)
@@ -24,7 +25,7 @@ export default function EditProfileScreen({route}: RootStackScreenProps<'Edit'>)
   const [nameError, setNameError] = useState("")
   const [bioError, setBioError] = useState("")
   const [loading, setLoading] = useState(false)
-
+  const {signOut} = useContext(AuthContext)
   const handleName = (text: string) => {
     if(text.match(/\W/)) return setNameError("Only english characters allowed")
     setNameError("")
@@ -71,6 +72,9 @@ export default function EditProfileScreen({route}: RootStackScreenProps<'Edit'>)
     .catch(err => {
       console.log(err)
       setLoading(false)
+      if(err.response?.status === 401) {
+        signOut()
+      }
     })
   }
   return (

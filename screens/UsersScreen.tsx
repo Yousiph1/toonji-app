@@ -1,4 +1,4 @@
-import React,{useState, useEffect, useCallback, useRef} from 'react'
+import React,{useState, useEffect, useCallback, useRef, useContext} from 'react'
 import {View, Text, ScrollView, Pressable, Animated, Image, StyleSheet, ActivityIndicator} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import { Link } from '@react-navigation/native';
@@ -15,6 +15,7 @@ import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
 import getToken from '../funcs/GetToken';
+import { AuthContext } from '../navigation';
 
 
 
@@ -41,7 +42,7 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
   const [breakdowns, setBreakdowns] = useState<breakTyp[]>([])
   const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-', following: false,
                                              points: '-', battleRecord: '-', picture:""})
-
+  const {signOut} = useContext(AuthContext)
 
    const scrollY = useRef(new Animated.Value(0)).current
    const height = scrollY.interpolate({
@@ -162,6 +163,9 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
       .catch(e => {
         setGivingAward(false)
         console.log(e.response.data)
+        if(e.response?.status === 401){
+          signOut()
+        }
       })
    }
 
@@ -182,6 +186,9 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
      .catch(err => {
        console.log(err)
        setFollowLoading(false)
+       if(err.response?.status === 401){
+         signOut()
+       }
      })
    }
 

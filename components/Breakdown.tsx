@@ -39,11 +39,11 @@ export default function Breakdown(props: brType ) {
              hasVoted ? setTotalVotes(totalVotes - 2):setTotalVotes(totalVotes - 1)
            }
        }
-      if(res.data.type === "ERROR" && res.data.msg === "invalide or expired token"){
-        signOut()
-     }
      })
       .catch((err)=>{
+        if(err.response?.status === 401) {
+          signOut()
+        }
         console.log(err)
       })
      }
