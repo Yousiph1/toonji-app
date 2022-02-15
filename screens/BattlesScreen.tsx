@@ -1,5 +1,5 @@
 import { Link } from '@react-navigation/native'
-import React,{ useEffect, useState } from 'react'
+import React,{ useCallback, useEffect, useState } from 'react'
 import {View,Text,ScrollView, ActivityIndicator, Image, StyleSheet, Pressable} from 'react-native'
 import axios from 'axios'
 import { ThemedView } from '../components/Themed'
@@ -24,7 +24,7 @@ const BattlesScreen = ({route}) => {
             })
   },[])
 
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     setLoading(true)
     axios.get(BASEURL + path)
     .then(res => {
@@ -38,11 +38,11 @@ const BattlesScreen = ({route}) => {
       setLoading(false)
       console.log(err)
     })
-  }
+  },[])
 
   return (
-    <ThemedView>
-    <ScrollView>
+    <ThemedView style ={{flex:1, paddingVertical: 20}}>
+    <ScrollView contentContainerStyle ={{flex: 1, alignItems: 'center'}}>
     {
       faceoffData.map((a,indx)=> {
             return (
@@ -52,7 +52,7 @@ const BattlesScreen = ({route}) => {
         }
         {(!loading && !isEnd) &&
           <Pressable onPress = {loadMore}>
-           <FontAwesome name = "refresh" size = {23} color = {colors.mainColor} />
+           <FontAwesome name = "refresh" size = {20} color = {colors.mainColor} />
            </Pressable>
          }
         {loading && <ActivityIndicator  color = {colors.mainColor} />}
@@ -71,17 +71,17 @@ const Battle: React.FC<{userData: battleData; opponentData: battleData}> = (prop
   let userPoints = props.userData.points
      let oppPoints = props.opponentData.points
    return (
-     <View style = {{flexDirection: 'row', justifyContent: "space-between", paddingRight: 20, alignItems: "center"}}>
+     <View style = {{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center"}}>
       <View style = {styles.userInfoContainer}>
       <Image source = {{uri: props.userData.picture}} style = {styles.image}/>
-      <Link to = {{screen:"Users",params:{userName: props.userData.name}}}><Text>{props.userData.name}</Text></Link>
-      <Text style = {[{color: userPoints > oppPoints ? "green": userPoints < oppPoints ? "red":""}]}>{userPoints}</Text>
+      <Link to = {{screen:"Users",params:{userName: props.userData.name}}}><Text>{'  ' + props.userData.name}</Text></Link>
+      <Text style = {[{color: userPoints > oppPoints ? "green": userPoints < oppPoints ? "red":colors.mainColor}]}>{'  '+userPoints}</Text>
       </View>
-      <Text> vs </Text>
+      <Text style = {{marginRight: 10, fontWeight: 'bold'}}> vs </Text>
       <View style = {styles.userInfoContainer}>
       <Image source = {{uri: props.opponentData.picture}} style = {styles.image}/>
-      <Link to = {{screen:"Users",params:{userName: props.opponentData.name}}}><Text>{props.opponentData.name}</Text></Link>
-      <Text style = {[{color: userPoints > oppPoints ? "red": userPoints < oppPoints ? "green":""}]}>{oppPoints}</Text>
+      <Link to = {{screen:"Users",params:{userName: props.opponentData.name}}}><Text>{'  ' + props.opponentData.name}</Text></Link>
+      <Text style = {[{color: userPoints > oppPoints ? "red": userPoints < oppPoints ? "green":colors.mainColor}]}>{'  '+ oppPoints}</Text>
       </View>
      </View>
    )
@@ -91,8 +91,8 @@ const styles = StyleSheet.create({
   userInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    marginBottom: 10
+    marginBottom: 10,
+    flexBasis: '40%',
   },
    image: {
      height: 40,
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
      backgroundColor: 'gray'
    },
    userInfoTextContainer: {
-     marginLeft: 10
+     marginLeft: 10,
    },
 })
 

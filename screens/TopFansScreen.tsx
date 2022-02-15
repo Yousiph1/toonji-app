@@ -36,7 +36,7 @@ export default function topFansScreen({route, navigation}) {
       setLoading(false)
       console.log(err)
     })
-   })
+  },[])
 
     const loadMore = useCallback(()=>{
       setLoading(true)
@@ -55,12 +55,12 @@ export default function topFansScreen({route, navigation}) {
     },[])
 
    return (
-     <ThemedView style = {{flex: 1}}>
-     <ScrollView>
+     <ThemedView style = {{flex: 1, padding: 20, justifyContent: 'center'}}>
+     <ScrollView >
      {topFans.map((f,ind) => {
        return (
-         <View style = {{flex: 1, flexDirection: 'row'}}>
-         <Text> {ind + 1} </Text>
+         <View style = {{flex: 1, paddingTop: 5, flexDirection: 'row', alignItems: 'center', borderBottomColor: 'grey', borderBottomWidth: 1}}>
+         <Text style = {{fontWeight: 'bold', fontSize: 20,marginTop: -7}}> {ind + 1} </Text>
          <User name = {f.name} points = {f.points} picture = {f.picture} />
          </View>
        )

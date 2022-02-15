@@ -34,7 +34,7 @@ export default function ProfileScreen() {
   return (
     <ProfileNav.Navigator>
     <ProfileNav.Screen name = "Profile" component = {Profile} options = {{headerShown:false}}  />
-    <ProfileNav.Screen name = "Battles" component = {BattlesScreen} options = {{headerShown:false}}  />
+    <ProfileNav.Screen name = "Battles" component = {BattlesScreen} options = {{title: 'Battles'}}  />
     <ProfileNav.Screen name = "Following" component = {FollowingScreen} />
     <ProfileNav.Screen name = "Followers" component = {FollowersScreen} options = {{}}  />
     <ProfileNav.Screen name = "Settings" component = {SettingsScreen} />

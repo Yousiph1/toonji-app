@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react'
-import {Text,ActivityIndicator, FlatList, Pressable, ScrollView} from 'react-native'
+import {Text,ActivityIndicator, FlatList, Pressable, ScrollView, View} from 'react-native'
 import axios from 'axios'
 
 import {User} from '../components/General'
@@ -36,7 +36,7 @@ export default function FollowingScreen({route, navigation}) {
       setLoading(false)
       console.log(err)
     })
-   })
+  },[])
 
     const loadMore = useCallback(()=>{
       setLoading(true)
@@ -55,7 +55,7 @@ export default function FollowingScreen({route, navigation}) {
     },[])
 
    return (
-     <ThemedView style = {{flex: 1}}>
+     <ThemedView style = {{flex: 1, padding: 20}}>
      <ScrollView>
      {following.map(f => {
        return (

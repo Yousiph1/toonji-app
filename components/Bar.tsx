@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useContext} from 'react'
-import {View, Text, StyleSheet, AsyncStorage, Pressable, ScrollView, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator} from 'react-native'
+import {View, Text, StyleSheet, Pressable, ScrollView, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator} from 'react-native'
 import { FontAwesome, MaterialIcons, FontAwesome5, AntDesign, Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
 
@@ -12,20 +12,11 @@ import Breakdown from './Breakdown'
 import getToken from '../funcs/GetToken';
 import {AuthContext} from '../navigation/index'
 import { awardReq, brType } from '../types';
-//import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore'
+import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore'
 
 const mainColor = colors.mainColor
-let FONT_SIZE = 14
+let FONT_SIZE = 18
 let COLOR = "grey";
-const getData = async () => {
-  try {
-    const value = await AsyncStorage.getItem('fontSize')
-    console.log(value)
-    return value != null ? FONT_SIZE = Number(value) : null;
-  } catch(e) {
-    // error reading value
-  }
-}
 
 
 type bar = {
@@ -46,11 +37,29 @@ export default function Bar({indx, punchline,userFav, hasIcons, rated,
   const [show, setShow] = useState(enabled)
   const [brDowns, setBrDowns] = useState<unknown[]>([])
   const [br, setBr] = useState("")
+  const [FONT_SIZE,setFONT_SIZE] = useState(18)
+  const [COLOR, setCOLOR] = useState('grey')
   const [inputHeight, setInputHeight] = useState(40)
   const [sending, setSending] = useState(false)
   const {signOut} = useContext(AuthContext)
 
    useEffect(()=> {
+     const getData = async () => {
+       try {
+         const value = await AsyncStorage.getItem('fontSize')
+         if(value) {
+           setFONT_SIZE(Number(value))
+         }
+         const cc = await AsyncStorage.getItem("color")
+         if(cc) {
+           setCOLOR(cc)
+         }
+         console.log(FONT_SIZE, COLOR)
+       } catch(e) {
+         // error reading value
+       }
+     }
+      getData()
      setShow(enabled)
    },[enabled])
 
@@ -174,7 +183,7 @@ const addBarToFavourites = async () => {
   return (
     <ThemedView style = {styles.container} >
     <Pressable onPress = {()=>setShow(!show)} style = {{width: "85%"}}>
-    <ThemedText style = {styles.bar}>
+    <ThemedText style = {[styles.bar,{color:COLOR, fontSize: FONT_SIZE}]}>
     {punchline}
     </ThemedText>
     </Pressable>
@@ -244,11 +253,10 @@ const addBarToFavourites = async () => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     width: layout.isSmallDevice ? 95/ 100 * layout.window.width : 75 / 100 * layout.window.width,
   },
   bar: {
-    fontSize: FONT_SIZE,
-    color: COLOR,
     marginLeft: 20
   },
   iconsContainer: {

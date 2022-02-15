@@ -1,4 +1,4 @@
-import React,{ useState } from 'react'
+import React,{ useEffect, useState } from 'react'
 import {Pressable, ScrollView, Text, View, StyleSheet} from 'react-native'
 import { ThemedView, ThemedText } from '../components/Themed'
 import {RadioButton} from 'react-native-paper'
@@ -10,6 +10,23 @@ const SettingsScreen: React.FC = () => {
   const [checked,setChecked] = useState("15px")
   const [colorChecked, setColorChecked] = useState('grey')
   const [themeChecked, setThemeChecked] = useState("Light")
+
+  useEffect(()=> {
+    const getData = async () => {
+      try {
+        const value = await AsyncStorage.getItem('fontSize')
+        if(value) setChecked(value.toString() + "px")
+        const cc = await AsyncStorage.getItem("color")
+        if(cc) setColorChecked(cc)
+        const theme  = await AsyncStorage.getItem("theme")
+        if(theme) setThemeChecked(theme)
+      } catch(e) {
+        // error reading value
+      }
+    }
+     getData()
+  },[])
+
 
   const  cacheChecked = async (val: string) => {
      const newVal = val.substr(0,2)
@@ -36,7 +53,7 @@ const SettingsScreen: React.FC = () => {
       await AsyncStorage.setItem("theme",val)
       setThemeChecked(val)
     }catch(e) {
-      
+
     }
 
   }
@@ -46,9 +63,9 @@ const SettingsScreen: React.FC = () => {
   <ScrollView>
   <View style = {styles.itemContainer}>
   <ThemedText  style = {styles.textHeading}>Lyrics Font Size </ThemedText>
-  <FontSetting label ={12} value = "12px" checked = {checked} setChecked = {cacheChecked}/>
   <FontSetting label ={15} value = "15px" checked = {checked} setChecked = {cacheChecked}/>
   <FontSetting label ={18} value = "18px" checked = {checked} setChecked = {cacheChecked}/>
+  <FontSetting label ={20} value = "20px" checked = {checked} setChecked = {cacheChecked}/>
   <FontSetting label ={22} value = "22px" checked = {checked} setChecked = {cacheChecked}/>
   </View>
 

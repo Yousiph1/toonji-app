@@ -10,12 +10,12 @@ import { FontAwesome } from '@expo/vector-icons'
 import colors from '../constants/Colors'
 
 export default function FollowersScreen({route, navigation}) {
-   const {name, thisUser} = {name: "zamani", thisUser: true} //route.params
+   const {name, thisUser} = route.params
    const [followers, setFollowers] = useState<{name: string, picture: string, points: string}[]>([])
    const [loading, setLoading] = useState(false)
    const [isEnd, setIsEnd] = useState(false)
    const [nextFech, setNextFech] = useState(0)
-   const url = !thisUser ? `${BASEURL}followers/${name}` : `${BASEURL}p/my/followers/${nextFech}`
+   const url = !thisUser ? `${BASEURL}p/followers/${name}/${nextFech}` : `${BASEURL}p/my/followers/${nextFech}`
    useLayoutEffect(()=> {
      navigation.setOptions({
        title: `${name}'s followers`
@@ -30,13 +30,12 @@ export default function FollowersScreen({route, navigation}) {
       setIsEnd(res.data.isEnd)
       setNextFech(res.data.nextFech)
       setLoading(false)
-      console.log(res.data)
     })
     .catch(err => {
       setLoading(false)
       console.log(err)
     })
-   })
+  },[])
 
     const loadMore = useCallback(()=>{
       setLoading(true)
@@ -55,7 +54,7 @@ export default function FollowersScreen({route, navigation}) {
     },[])
 
    return (
-     <ThemedView style = {{flex: 1}}>
+     <ThemedView style = {{flex: 1, padding: 20}}>
      <ScrollView>
      {followers.map(f => {
        return (

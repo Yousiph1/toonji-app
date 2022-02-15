@@ -10,20 +10,19 @@ export const Achievement = (props:{thisUser?: boolean; userName?: string; naviga
   const {navigate, navigation, userName, top, bottom, thisUser} = props
   const handleNavigation  = () => {
     if(!navigate) return
-    let screen = bottom.split(" ").map(w => w[0].toUpperCase + w.substr(1)).join("")
+    let screen = bottom.split(" ").map(w => w[0].toUpperCase() + w.substr(1)).join("")
     navigation.navigate(screen,{name: userName, thisUser})
   }
   return (
   <Pressable style = {({pressed}) => [{opacity: pressed ? 0.7:1},{
     flexBasis: '23%',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'lightgray',
     paddingVertical: 5,
   }]} onPress = {handleNavigation}>
-    <View>
     <ThemedText>{top}</ThemedText>
     <Text>{bottom}</Text>
-    </View>
     </Pressable>
   )
 }
@@ -58,7 +57,7 @@ export const User: React.FC<{name: string; points: string; picture: string}> = (
      <Image source = {{uri: picture}} style = {styles.image}/>
      <View style = {styles.userInfoTextContainer}>
      <Link to = {{screen:"Users",params:{userName: name}}}>
-     <ThemedText style = {{fontWeight: 'bold'}}>
+     <ThemedText style = {{fontWeight: 'bold', fontSize: 20}}>
      {name} <Text style = {{color: colors.mainColor}}>{ points} points</Text>
      </ThemedText>
      </Link>
@@ -135,8 +134,8 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
    image: {
-     height: 40,
-     width: 40,
+     height: 50,
+     width: 50,
      borderRadius: 50,
      backgroundColor: 'gray'
    },
