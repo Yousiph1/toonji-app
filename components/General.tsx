@@ -14,12 +14,14 @@ export const Achievement = (props:{thisUser?: boolean; userName?: string; naviga
     navigation.navigate(screen,{name: userName, thisUser})
   }
   return (
-  <Pressable style = {({pressed}) => [{opacity: pressed ? 0.7:1},{
+  <Pressable style = {({pressed}) => [{opacity: pressed && navigate ? 0.7:1},{
     flexBasis: '23%',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'lightgray',
     paddingVertical: 5,
+    marginRight: 5,
+    marginBottom: 5
   }]} onPress = {handleNavigation}>
     <ThemedText>{top}</ThemedText>
     <Text>{bottom}</Text>

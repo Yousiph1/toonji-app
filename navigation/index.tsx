@@ -30,6 +30,7 @@ import getToken from '../funcs/GetToken';
 import FollowersScreen from '../screens/FollowersScreen';
 import TopFansScreen from '../screens/TopFansScreen';
 import BattlesScreen from '../screens/BattlesScreen';
+import TopFanQuizScreen from '../screens/TopFanQuizScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export const AuthContext = React.createContext<any>(null);
@@ -118,6 +119,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           <Stack.Screen name = "Read" component = {ReadScreen} options ={{headerShown: false}} />
           <Stack.Screen name = "Artist" component = {ArtistScreen} options = {{headerShown: false}} />
           <Stack.Screen name = "Users" component = {UsersScreen} options = {{headerShown: false}} />
+          <Stack.Screen name = "TopFanQuiz" component = {TopFanQuizScreen} options = {{title: "Top Fan Quiz"}} />
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
             <Stack.Screen name = "Followers" component = {FollowersScreen} />
             <Stack.Screen name = "TopFans" component = {TopFansScreen} />

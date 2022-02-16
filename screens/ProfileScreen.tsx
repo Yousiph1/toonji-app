@@ -54,7 +54,7 @@ export default function ProfileScreen() {
   const [editData, setEditData] = useState({br:"", songId:"", punchId:"",id:""})
   const [breakdowns, setBreakdowns] = useState<breakTyp[]>([])
   const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-', following:'-',
-                                             points: '-', battleRecord: '-', picture:""})
+                                             points: '-', battleRecord: '-', picture:"", coins:'-'})
 
  const showEditModal = (data:{br:string; songId: string; punchId: string; id: string})  => {
     setEditData(data)
@@ -244,6 +244,7 @@ export default function ProfileScreen() {
     >
     <ThemedView style = {styles.achievementsContainer}>
     <Achievement top = {userInfo.points} bottom = "points" navigate ={false} />
+    <Achievement top = {userInfo.coins} bottom = "coins" navigate = {false} />
     <Achievement thisUser = {true} userName = {userInfo.name} top = {userInfo.followers} bottom = "followers" navigate navigation = {navigation}/>
     <Achievement thisUser = {true} userName = {userInfo.name} top = {userInfo.following} bottom = "following" navigate navigation = {navigation}/>
     <Achievement thisUser = {true} userName = {userInfo.name} top = {userInfo.battleRecord} bottom = "battles" navigate navigation = {navigation}/>
@@ -376,12 +377,14 @@ const styles = StyleSheet.create({
   },
    achievementsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    alignContent: 'space-between',
     marginVertical: 20,
     marginHorizontal: 5,
     borderRadius: 10,
     paddingVertical: 20,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   songsContainer: {
      marginTop: 20,

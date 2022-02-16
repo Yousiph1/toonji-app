@@ -4,6 +4,7 @@ import {LinearGradient} from 'expo-linear-gradient'
 import  {FontAwesome,MaterialIcons, Ionicons} from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
 import axios from 'axios'
+import Modal from "react-native-modal"
 
 import {RootStackScreenProps} from '../types'
 import {ThemedText, ThemedView} from '../components/Themed'
@@ -38,6 +39,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
   const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-', noSongs: '-',
                                             topFans: '-', points: '-', following: false,
                                             picture:''})
+  const [isModalVisible, setModalVisible] = useState(false)
 
   const {signOut} = useContext(AuthContext)
 
@@ -205,6 +207,11 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
     <Achievement thisUser = {false} userName = {userInfo.name} top = {userInfo.followers} bottom = "followers" navigate navigation = {navigation}/>
     <Achievement thisUser = {false} userName = {userInfo.name} top = {userInfo.topFans} bottom = "top fans" navigate navigation = {navigation}/>
     </ThemedView>
+    <Pressable onPress = {() => setModalVisible(true)} style = {({pressed}) => [{opacity: pressed ? 0.7:1}]}>
+    <ThemedView style = {{width: 80, borderRadius: 5, marginLeft: 20, marginBottom: 20, padding: 10, backgroundColor: colors.mainColor}}>
+    <Text style = {{fontWeight: 'bold', color: 'white'}}>Top Fan?</Text>
+    </ThemedView>
+    </Pressable>
 
     <ThemedView style = {{padding: 20,marginHorizontal:5, borderRadius: 10}}>
     <ThemedText style = {{fontWeight: 'bold'}}>Bio</ThemedText>
@@ -225,6 +232,34 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
     </View>
 
     </ScrollView>
+    <Modal isVisible = {isModalVisible}>
+     <ThemedView style={{ padding: 20, alignSelf:"center", borderRadius: 5,
+                    width: layout.isSmallDevice ? "95%":"90%"}}>
+      <ThemedText style = {{fontWeight: 'bold', marginBottom: 15, fontSize: 20}}>Top Fan Quiz </ThemedText>
+      <ThemedText style = {{fontSize: 16}}>
+      We are giving you a set of questions based on {userInfo.name}'s
+      songs lyrics and you get points based on how quickly and correct
+      you answer them. Ready ?
+      </ThemedText>
+     <View  style = {{flexDirection: "row",
+      justifyContent: "space-between", marginTop: 20 }}>
+
+     <Pressable  onPress = {() => setModalVisible(false)}
+     style = {({pressed}) => [styles.closeButton, {opacity: pressed ? 0.7: 1}]}>
+      <Text style = {styles.buttonText}>close</Text>
+     </Pressable>
+
+     <Pressable onPress = {() => {
+       setModalVisible(false)
+       navigation.navigate("TopFanQuiz", {name: userInfo.name})
+     }}
+     style = {({pressed}) => [styles.button, {opacity: pressed ? 0.7: 1}]}>
+     <Text style = {styles.buttonText}>Start</Text>
+     </Pressable>
+
+     </View>
+     </ThemedView>
+    </Modal>
     </View>
   )
 }
@@ -299,6 +334,17 @@ const styles = StyleSheet.create({
      marginTop: 20,
      alignItems: 'center',
      padding: 20,
+  },
+  closeButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    borderRadius: 4,
+    backgroundColor: "gray",
+    marginBottom: 7,
+  },
+  buttonText: {
+   color: 'white',
+   fontWeight: 'bold',
   }
 })
 

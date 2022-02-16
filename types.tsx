@@ -36,6 +36,7 @@ export type RootStackParamList = {
   Read: {songId: string};
   Artist: {userName: string};
   Users: {userName: string};
+  TopFanQuiz: {name: string},
   Followers: {name: string, thisUser: boolean};
   TopFans: {name: string, thisUser: boolean};
   Battles: {name: string, thisUser: boolean};
