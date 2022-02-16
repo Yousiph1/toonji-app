@@ -93,7 +93,7 @@ const sendComment = async () => {
       })
       .catch((err)=>{
         const message = err.response.data.msg
-        if(e.response?.status === 401) {
+        if(err.response?.status === 401) {
           signOut()
         }
       console.log(err)
