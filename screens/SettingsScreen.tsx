@@ -1,15 +1,19 @@
-import React,{ useEffect, useState } from 'react'
-import {Pressable, ScrollView, Text, View, StyleSheet} from 'react-native'
+import React,{ useContext, useEffect, useState } from 'react'
+import {Pressable, ScrollView, Text, View, StyleSheet, Alert} from 'react-native'
 import { ThemedView, ThemedText } from '../components/Themed'
 import {RadioButton} from 'react-native-paper'
 import colors from '../constants/Colors'
 import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore'
+import { AuthContext } from '../navigation'
+import { BASEURL } from '../constants/Credentials'
+import axios from 'axios'
 
 
 const SettingsScreen: React.FC = () => {
   const [checked,setChecked] = useState("15px")
   const [colorChecked, setColorChecked] = useState('grey')
   const [themeChecked, setThemeChecked] = useState("Light")
+  const {signOut} = useContext(AuthContext)
 
   useEffect(()=> {
     const getData = async () => {
@@ -58,6 +62,33 @@ const SettingsScreen: React.FC = () => {
 
   }
 
+  const logout = () => {
+    axios.post(`${BASEURL}p/log-out`)
+    .then(res => {
+       signOut()
+    })
+    .catch(err => {
+
+    })
+  }
+
+  const openAlert = () =>
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel"
+        },
+        { text: "Yes",
+          onPress: () => logout(),
+          style: "destructive"
+        }
+      ]
+    );
+
   return (
   <ThemedView style = {{flex: 1,paddingHorizontal:5}}>
   <ScrollView>
@@ -91,7 +122,8 @@ const SettingsScreen: React.FC = () => {
   </View>
 
   <View style = {styles.break}></View>
-  <Pressable style = {({pressed}) => [{opacity: pressed ? 0.7 : 1},{padding: 5, width: 100}]}>
+  <Pressable  onPress = {openAlert}
+  style = {({pressed}) => [{opacity: pressed ? 0.7 : 1},{padding: 5, width: 100}]}>
   <Text style = {{color: 'red'}}>Log out</Text>
   </Pressable>
   <View style = {styles.break}></View>

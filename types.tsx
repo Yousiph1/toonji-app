@@ -72,7 +72,7 @@ export type RootTabParamList = {
   Charts: undefined;
   Favorites: undefined;
   Profile: NavigatorScreenParams<ThisUserParamList>;
-  Card: undefined
+  BattleQuiz: undefined,
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<

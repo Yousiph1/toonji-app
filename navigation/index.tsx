@@ -3,7 +3,7 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName, Pressable, View } from 'react-native';
-import { FontAwesome, MaterialIcons, Entypo } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios'
 
@@ -25,7 +25,7 @@ import LoginScreen from '../screens/LoginScreen';
 import EditProfileScreen from '../screens/EditProfileScreen'
 import { ThemedText } from '../components/Themed';
 import { BASEURL } from '../constants/Credentials';
-import CardMaker from '../screens/CardScreen';
+import BattleQuiz from '../screens/BattleQuizScreen';
 import getToken from '../funcs/GetToken';
 import FollowersScreen from '../screens/FollowersScreen';
 import TopFansScreen from '../screens/TopFansScreen';
@@ -181,9 +181,9 @@ function BottomTabNavigator() {
        }}
        />
 
-       <BottomTab.Screen name = "Card" component = {CardMaker}
+       <BottomTab.Screen name = "BattleQuiz" component = {BattleQuiz}
         options = {{
-          tabBarIcon: ({color}) =>  <TabBarIcon name = "vcard" color = {color} iconsProvider = "fontawesome"/>}}
+          tabBarIcon: ({color}) =>  <MaterialCommunityIcons name="sword-cross" size={24} color= {color} />}}
         />
 
        <BottomTab.Screen name = "Profile" component = {ProfileScreen}
