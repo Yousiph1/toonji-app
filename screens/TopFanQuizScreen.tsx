@@ -39,28 +39,34 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,n
         })
       },[])
 
-      if(finished) {
-        axios.post(`${BASEURL}top-fan${name}/${totalPoints}`)
-        .then(res => {
-        })
-        .catch(e => {
 
-        })
-      }
+      useEffect(()=> {
+        if(finished) {
+          axios.post(`${BASEURL}top-fan/${name}/${totalPoints}`)
+          .then(res => {
+          })
+          .catch(e => {
+
+          })
+        }
+      },[finished])
+
       useEffect(() => {
         setQuestion(generatedQuestions[current])
       },[current,generatedQuestions])
 
     const submit = () =>{
+               if(answered) return
                let inpt = input
                let ans = question.questionAnswer.toLowerCase()
+               inpt = inpt.toLowerCase()
                ans = ans.replace(/in'/g,'ing')
-               ans = ans.replace(/\W_/g,'')
+               ans = ans.replace(/\W/g,'')
                inpt = inpt.replace(/in'/g,'ing')
-               inpt =  inpt.replace(/\W_/g,'')
+               inpt =  inpt.replace(/\W/g,'')
                let isCorrect = strSimilarity.compareTwoStrings(ans,inpt)
                let timeUsed = Date.now() - timeStart;
-
+               console.log(isCorrect)
                if(isCorrect > 0.8) {
                  if(timeUsed <= 10000) {
                    setTotalPoints(totalPoints + 10)
@@ -85,9 +91,14 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,n
                  setCorrect(false)
                }
                setAnswered(true)
+               console.log(totalPoints)
            }
 
    const nextQ = () => {
+     if(current === generatedQuestions.length - 1 ){
+       setFinished(true)
+       return
+     }
      setAnswered(false)
      setInput("")
      setCurrent(current + 1)
@@ -96,7 +107,8 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,n
   return(
     <ThemedView style = {{flex: 1, padding: 20, justifyContent: 'center'}}>
     {loading ? <ActivityIndicator size = "small" color = {colors.mainColor} />  :
-    <ScrollView contentContainerStyle = {{height: '70%', justifyContent: 'center'}}>
+    finished ? null :
+    <ScrollView contentContainerStyle = {{justifyContent: 'center'}}>
         <ThemedText style = {{fontSize: 20, fontWeight: 'bold',marginBottom: 20}}>{question.questionTitle}</ThemedText>
         <ThemedText style = {{fontSize: 18, marginBottom: 20}}>{question.questionText}</ThemedText>
 
@@ -125,7 +137,7 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,n
         </ScrollView>
       }
        {
-         answered &&   <View style = {[styles.popup,{backgroundColor: correct ? "green":'red'}]}>
+         (answered && !finished)  &&   <View style = {[styles.popup,{backgroundColor: correct ? "green":'red'}]}>
         <Text style = {{color: 'white', fontSize: 25, marginBottom: 20}}>{correct ? "Correct answer" : "Wrong answer"}</Text>
         <Pressable style = {({pressed})=> [styles.button,{opacity: pressed ? 0.7 : 1}]}
           onPress = {nextQ}
@@ -165,6 +177,7 @@ const styles = StyleSheet.create({
  },
  popup: {
    width: layout.window.width,
+   height: "40%",
    position: "absolute",
    alignItems: 'center',
    bottom: 0,
@@ -174,91 +187,3 @@ const styles = StyleSheet.create({
 })
 
 export default TopFanQuizScreen
-
-//
-// function StartQuiz() {
-//
-//     let questions = ""
-//     if(generatedQuestions.length > 0){
-//     questions = generatedQuestions.map((q,indx)=>{
-//         return <QuizQuestion key = {indx} questionTitle = {q.questionTitle}
-//         questionText = {q.questionText} id = {indx} inputId = {`${indx}-answer`}
-//         questionAnswer = {q.questionAnswer} resultId = {`${indx}-result`}
-//         action = {current === generatedQuestions.length - 1 ? "finish":"next"}
-//         qDisplay = {indx === current ? "start-quiz-main show-question":"start-quiz-main"}
-//          submitClick = {(e)=>{
-//              let inpt = document.getElementById(`${indx}-answer`).value.toLowerCase();
-//              if(inpt === "") return
-//              let ans = q.questionAnswer.toLowerCase()
-//              ans = ans.replace(/in'/g,'ing')
-//              ans = ans.replace(/\W/g,'')
-//              inpt = inpt.replace(/in'/g,'ing')
-//              inpt =  inpt.replace(/\W/g,'')
-//              let isCorrect = strSimilarity.compareTwoStrings(ans,inpt)
-//              let timeUsed = Date.now() - timeStart;
-//
-//              if(isCorrect > 0.8) {
-//                if(timeUsed <= 10000) {
-//                  setTotalPoints(totalPoints + 10)
-//                }else if(timeUsed <= 15000 && timeUsed > 10000) {
-//                  setTotalPoints(totalPoints + 7)
-//                }else if(timeUsed <= 20000 && timeUsed > 15000) {
-//                  setTotalPoints(totalPoints + 5)
-//                }else {
-//                  setTotalPoints(totalPoints + 3)
-//                }
-//                if(isCorrect <= 0.85) {
-//                  setTotalPoints(totalPoints + 1)
-//                }else if(isCorrect <= 0.90 && isCorrect > 0.85) {
-//                  setTotalPoints(totalPoints + 2)
-//                }else if(isCorrect <= 0.95 && isCorrect > 0.90) {
-//                  setTotalPoints(totalPoints + 3)
-//                }else {
-//                  setTotalPoints(totalPoints + 5)
-//                }
-//                document.getElementById(`${indx}-result`).classList.add("show-result-correct")
-//              }else {
-//                document.getElementById(`${indx}-result`).childNodes[0].innerText = "Wrong answer"
-//                document.getElementById(`${indx}-result`).classList.add("show-result-wrong")
-//              }
-//              e.target.style.display = "none"
-//          }}
-//        nextClick = {(e)=>{
-//          document.getElementById(`${indx}-result`).classList.remove("show-result-correct")
-//          document.getElementById(`${indx}-result`).classList.remove("show-result-wrong")
-//          setTimeStart(Date.now())
-//          setCurrent(current + 1);
-//          if(e.target.innerText === "finish") {
-//            let path = window.location.pathname;
-//            let param = path.substr(path.lastIndexOf('/'))
-//            axios.post(`${BASEURL}/top-fan${param}/${totalPoints}`)
-//              .then(res => {
-//                let msg = res.data.msg;
-//                if(res.data.type === 'ERROR') {
-//                  errorPrompt(msg)
-//                }else {
-//                  successPrompt(msg)
-//                }
-//              })
-//              .catch(e => {
-//                errorPrompt("something went wrong")
-//              })
-//            document.getElementById("quiz-finish-result").style.display = "block"
-//          }
-//        }}
-//          />
-//     })
-//   }else {
-//     questions = ""
-//   }
-//
-//   return (
-//
-//     <div id= "start-quiz-container">
-//     {questions}
-//     {getCoins && <div>
-//       <button className = "profile-buttons"><a href="/buy-coins.html" target ="_BLANK"
-//       rel="noopener noreferrer">buy coins</a></button>
-//       <button className = "profile-buttons" onClick = {() => window.history.back()}>back</button>
-//     </div>}
-//     </div>
