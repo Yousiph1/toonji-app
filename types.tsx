@@ -40,6 +40,7 @@ export type RootStackParamList = {
   Followers: {name: string, thisUser: boolean};
   TopFans: {name: string, thisUser: boolean};
   Battles: {name: string, thisUser: boolean};
+  BattleQuizReady: {roomId: string};
   Signup: undefined;
   Splash: undefined;
   Login: undefined;

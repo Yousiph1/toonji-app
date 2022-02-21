@@ -1,6 +1,7 @@
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import React,{useEffect, useState} from 'react';
 import {
+  ActivityIndicator,
   Pressable,
 StyleSheet,
 Text,
@@ -15,14 +16,14 @@ import { ThemedText, ThemedView } from '../components/Themed';
 import colors from '../constants/Colors'
 import { SOCKETURL } from '../constants/Credentials';
 import layout from '../constants/Layout'
+import { RootStackParamList, RootStackScreenProps } from '../types';
 
 let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 
 
-export default function BattleQuizScreen(){
-
-  const [battleId, setBattleId] = useState("")
+export default function BattleQuizScreen({route}:RootStackScreenProps<"BattleQuizReady">){
+  const battleId = route.params.roomId
   const [getQuestions,setGetQuestions] = useState(false)
   const [questions,setQuestions] = useState([])
   const [joined,setJoined] = useState(false)
@@ -32,12 +33,11 @@ export default function BattleQuizScreen(){
   const [linkFull,setLinkFull] = useState(false)
   const [opponentName,setOpponentName] = useState("")
   const [ownersName, setOwnersName] = useState("")
+  const [loading, setLoading] = useState(false)
   const [hasStarted, setHasStarted] = useState(false)
   const [battleInProcess,setBattleInProcess] = useState(false)
-  const [connect, setConnect] = useState(false)
 
   useEffect(()=> {
-    if(!connect) return
     socket = io(SOCKETURL +"-battle",{transports: ["websocket"]});
     socket.on("connect_error", (err) => {
      socket.disconnect()
@@ -71,6 +71,7 @@ export default function BattleQuizScreen(){
     })
 
     socket.on("questions", msg => {
+      setLoading(false)
       setQuestions(msg)
       setGetQuestions(true)
     })
@@ -92,17 +93,12 @@ export default function BattleQuizScreen(){
     return () => {
       socket.disconnect()
     }
-  },[connect])
+  },[])
 
-const getBattleId = (text: string) => {
-  let isUrl = text.lastIndexOf("/")
-  if(isUrl > 0) {
-    text = text.substr(isUrl + 1)
-  }
-  setBattleId(text)
-}
+
 const emitForQuestions = () => {
    try{
+    setLoading(true)
    socket.emit("get-questions",battleId)
    setHasStarted(true)
   } catch (e) {
@@ -112,19 +108,8 @@ const emitForQuestions = () => {
   return (
   <ThemedView style = {{flex: 1, justifyContent: 'center'}}>
 
-  <View style = {{flexDirection: 'row',paddingHorizontal: 10}}>
-  <TextInput
-    style={styles.input}
-    placeholder= "Enter battle ID"
-    value = {battleId}
-    onChangeText = {getBattleId}
-   />
-   <Pressable onPress = {()=> setConnect(true)} style = {({pressed})=> [styles.button, {opacity: pressed ? 0.7 : 1}]}>
-   <Text style = {{color: 'white'}}>Connect</Text>
-   </Pressable>
-   </View>
-
-   <View>
+   <View style = {{flex: 1}}>
+    {loading && <ActivityIndicator size = "small" color = {colors.mainColor} /> }
       {!getQuestions && <NotStartQuiz isValidLink = {isValidLink} joined = {joined}
       sGetQuestions = {emitForQuestions} showGetQuestion = {showGetQuestion}
        waitingForOwner = {waitingForOwner} linkFull = {linkFull} opponentName = {opponentName} inP = {battleInProcess}/>}
@@ -222,12 +207,16 @@ function StartQuiz(props:any) {
        const [question, setQuestion] = useState<{questionText: string; questionTitle: string; questionAnswer: string}>({questionText:"-", questionTitle:"-", questionAnswer:"-"})
        const [opponentPoints,setOpponentPoints] = useState(0)
        const [input, setInput] = useState("")
+       const [answered, setAnswered] = useState(false)
+       const [correct, setCorrect] = useState(false)
 
          useEffect(()=>{
-
-              socket.on("opponent-points", points => {
-
+            if(props.socket){
+              props.socket.on("opponent-points", (points: number) => {
+                     setOpponentPoints(prv => prv + points)
               })
+            }
+
          },[])
 
          useEffect(()=> {
@@ -235,6 +224,7 @@ function StartQuiz(props:any) {
              setQuestion(props.questions[current])
            }
          },[current, props.questions])
+
 
     function updatePoint() {
       let inpt = input
@@ -269,8 +259,12 @@ function StartQuiz(props:any) {
         newPoint += 5
         }
         setTotalPoints(prv => prv + newPoint)
+        setCorrect(true)
         props.socket.emit("new-points",[newPoint,props.roomId])
+      }else {
+         setCorrect(false)
       }
+       setAnswered(true)
     }
 
 
@@ -281,6 +275,7 @@ function StartQuiz(props:any) {
        return
      }
      setInput("")
+     setAnswered(false)
      setCurrent(current + 1)
    }
 
@@ -288,7 +283,20 @@ function StartQuiz(props:any) {
   return (
     <>
 
-    {!finished && <View>
+    {!finished && <View style = {{paddingTop: 50, marginHorizontal: 20, position: 'relative'}}>
+    <View style = {{flexDirection:"row", justifyContent: "space-between", marginBottom: 50}}>
+
+    <View style = {styles.pointsContainer}>
+    <Text style = {styles.point}>{opponentPoints}</Text>
+    <ThemedText style = {styles.player}>{props.oppName}</ThemedText>
+    </View>
+
+    <View  style={styles.pointsContainer}>
+    <Text style={styles.point}>{totalPoints}</Text>
+    <ThemedText style={styles.player}>You</ThemedText>
+    </View>
+
+    </View>
 
     <ThemedText style = {{fontSize: 20, fontWeight: 'bold',marginBottom: 20}}>{question.questionTitle}</ThemedText>
     <ThemedText style = {{fontSize: 18, marginBottom: 20}}>{question.questionText}</ThemedText>
@@ -307,20 +315,35 @@ function StartQuiz(props:any) {
     Skip
     </Text>
     </Pressable>
+    { !answered &&
     <Pressable style = {({pressed})=> [styles.button,{opacity: pressed ? 0.7 : 1}]}
       onPress = {updatePoint}
     >
-    <Text style = {{color: 'white'}}>
+     <Text style = {{color: 'white'}}>
     Submit
     </Text>
     </Pressable>
+  }
     </View>
 
     </View>
   }
 
+  {
+    (answered && !finished)  &&   <View style = {[styles.popup,{backgroundColor: correct ? "green":'red'}]}>
+   <Text style = {{color: 'white', fontSize: 25, marginBottom: 20}}>{correct ? "Correct answer" : "Wrong answer"}</Text>
+   <Pressable style = {({pressed})=> [styles.button,{opacity: pressed ? 0.7 : 1}]}
+     onPress = {nextQ}
+   >
+         <Text style = {{color: 'white'}}>
+         {current === props.questions.length - 1 ? "Finish": "Next"}
+           </Text>
+   </Pressable>
+   </View>
+ }
+
    {finished && <View>
-    <ThemedText style = {{fontSize: 20}}>End of Battle</ThemedText>
+    <ThemedText style = {{fontSize: 20,color:'green'}}>End of Battle</ThemedText>
     <ThemedText>your points <Text style = {{color : colors.mainColor}}>{totalPoints}</Text> : opponent's points <Text style = {{color: colors.mainColor}}>{opponentPoints}</Text></ThemedText>
     </View>
   }
@@ -331,8 +354,6 @@ function StartQuiz(props:any) {
 
 const styles = StyleSheet.create({
   input : {
-    flexBasis: '100%',
-    flexShrink:1,
     borderWidth: 1,
     borderColor: colors.mainColor,
     paddingHorizontal: 10,
@@ -360,6 +381,19 @@ const styles = StyleSheet.create({
    color: "white",
    padding: 10,
    backgroundColor: colors.mainColor,
-   marginTop: 20
+   margin: 20
+ },
+ pointsContainer: {
+   justifyContent: 'center',
+   alignItems: 'center'
+ },
+ point: {
+   color : colors.mainColor,
+   fontSize: 20,
+   marginBottom: 10,
+   fontWeight: 'bold'
+ },
+ player: {
+   fontWeight: 'bold'
  }
 })

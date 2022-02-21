@@ -1,8 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme, useLinkTo } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Link } from '@react-navigation/native'
 import * as React from 'react';
-import { ColorSchemeName, Pressable, View } from 'react-native';
+import { ColorSchemeName, Pressable, TextInput, View, StyleSheet,Text } from 'react-native';
 import { FontAwesome, MaterialIcons, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios'
@@ -23,14 +24,16 @@ import UsersScreen from '../screens/UsersScreen';
 import SignUpScreen from '../screens/SignupScreen';
 import LoginScreen from '../screens/LoginScreen';
 import EditProfileScreen from '../screens/EditProfileScreen'
-import { ThemedText } from '../components/Themed';
+import { ThemedText, ThemedView } from '../components/Themed';
 import { BASEURL } from '../constants/Credentials';
-import BattleQuiz from '../screens/BattleQuizScreen';
+
 import getToken from '../funcs/GetToken';
 import FollowersScreen from '../screens/FollowersScreen';
 import TopFansScreen from '../screens/TopFansScreen';
 import BattlesScreen from '../screens/BattlesScreen';
 import TopFanQuizScreen from '../screens/TopFanQuizScreen';
+import BattleQuizScreen from '../screens/BattleQuizScreen'
+import { useState } from 'react';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export const AuthContext = React.createContext<any>(null);
@@ -120,6 +123,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           <Stack.Screen name = "Artist" component = {ArtistScreen} options = {{headerShown: false}} />
           <Stack.Screen name = "Users" component = {UsersScreen} options = {{headerShown: false}} />
           <Stack.Screen name = "TopFanQuiz" component = {TopFanQuizScreen} options = {{title: "Top Fan Quiz"}} />
+          <Stack.Screen name = "BattleQuizReady" component = {BattleQuizScreen} options = {{headerShown: false}} />
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
             <Stack.Screen name = "Followers" component = {FollowersScreen} />
             <Stack.Screen name = "TopFans" component = {TopFansScreen} />
@@ -194,6 +198,57 @@ function BottomTabNavigator() {
     </BottomTab.Navigator>
   );
 }
+
+
+const BattleQuiz: React.FC = ({navigation}) =>  {
+  const [battleId, setBattleId] = React.useState("")
+  const getBattleId = (text: string) => {
+    let isUrl = text.lastIndexOf("/")
+    if(isUrl > 0) {
+      text = text.substr(isUrl + 1)
+    }
+    setBattleId(text)
+  }
+
+  const linkTo = useLinkTo()
+
+  return (
+    <ThemedView style = {{flex: 1, justifyContent: 'center'}}>
+
+    <View style = {{paddingHorizontal: 10}}>
+    <TextInput
+      style={styles.input}
+      placeholder= "Enter battle ID"
+      value = {battleId}
+      onChangeText = {getBattleId}
+     />
+
+     <Pressable onPress ={()=> navigation.navigate("BattleQuizReady",{roomId: battleId})} style = {({pressed})=> [styles.button, {opacity: pressed ? 0.7 : 1}]}>
+     <Text style = {{color: 'white'}}>Connect</Text>
+     </Pressable>
+     </View>
+     </ThemedView>
+  )
+}
+
+const styles = StyleSheet.create({
+  input : {
+    flexShrink:1,
+    borderWidth: 1,
+    borderColor: Colors.mainColor,
+    padding: 10,
+    marginBottom: 30,
+  },
+  button: {
+   alignItems: 'center',
+   paddingVertical: 10,
+   paddingHorizontal: 20,
+   borderRadius: 4,
+   backgroundColor: Colors.mainColor,
+   marginBottom: 7,
+ }
+})
+
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
