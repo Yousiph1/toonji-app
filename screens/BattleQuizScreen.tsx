@@ -3,6 +3,7 @@ import React,{useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  ScrollView,
 StyleSheet,
 Text,
 TextInput,
@@ -36,9 +37,9 @@ export default function BattleQuizScreen({route}:RootStackScreenProps<"BattleQui
   const [loading, setLoading] = useState(false)
   const [hasStarted, setHasStarted] = useState(false)
   const [battleInProcess,setBattleInProcess] = useState(false)
-
+socket = io(SOCKETURL +"-battle",{transports: ["websocket"]});
   useEffect(()=> {
-    socket = io(SOCKETURL +"-battle",{transports: ["websocket"]});
+
     socket.on("connect_error", (err) => {
      socket.disconnect()
    });
@@ -48,8 +49,8 @@ export default function BattleQuizScreen({route}:RootStackScreenProps<"BattleQui
      })
 
     socket.on("all-set",(msg)=> {
-      setShowGetQuestions(true)
       setOpponentName(msg)
+      setShowGetQuestions(true)
     })
     socket.on("opponent-disconnected",() => {
       if(!hasStarted) {
@@ -81,7 +82,7 @@ export default function BattleQuizScreen({route}:RootStackScreenProps<"BattleQui
     })
     socket.on("set", msg => {
        setWaitingForOwner(true)
-       setOwnersName(msg)
+       setOpponentName(msg)
     })
 
     socket.on("opponent-ended",msg => {
@@ -133,7 +134,7 @@ interface notStartQuiz {
 
 function NotStartQuiz(props:notStartQuiz) {
   return (
-    <View>
+    <View style  = {{flex: 1, justifyContent: 'center'}}>
     {!props.isValidLink && <InvalidLink />}
     {props.inP && <BattleInProgress />}
     {props.linkFull && !props.joined && <LinkFull />}
@@ -146,20 +147,20 @@ function NotStartQuiz(props:notStartQuiz) {
 
 function InvalidLink() {
   return (
-    <Text style = {styles.battleMessage}>this link has expired or it's invalid </Text>
+    <Text style = {styles.battleMessage}>This link has expired or it's invalid </Text>
   )
 }
 
 function BattleInProgress() {
   return (
-  <Text style = {styles.battleMessage}>there's a battle in progress on this link</Text>
+  <Text style = {styles.battleMessage}>There's a battle in progress on this link</Text>
   )
 }
 
 function JoinedLink() {
   return (
     <View>
-    <Text style = {styles.battleMessage}>waiting for opponent to join </Text>
+    <Text style = {styles.battleMessage}>Waiting for opponent to join </Text>
     </View>
   )
 }
@@ -175,7 +176,7 @@ function ShowGetQuestions(props: {opponent: string, sGetQuestions: () => void}) 
   return (
     <View>
     <Text style = {styles.battleMessage}>{props.opponent} joined click start to begin</Text>
-    {!hasclick && <Pressable style = {styles.button} onPress = {startClick}><Text style = {{color:'white'}}>start </Text></Pressable>}
+    {!hasclick && <Pressable style = {styles.button} onPress = {startClick}><Text style = {{color:'white'}}>Start</Text></Pressable>}
     {hasclick && <p>loading...</p>}
     </View>
   )
@@ -185,7 +186,7 @@ function WaitingForOwner() {
   return (
     <View>
     <Text style = {styles.battleMessage}>
-    all set waiting for link owner to start battle
+    All set waiting for link owner to start battle
     </Text>
     </View>
   )
@@ -194,7 +195,7 @@ function WaitingForOwner() {
 function LinkFull() {
   return (
     <Text style = {styles.battleMessage}>
-    this battle link is currently full
+    This battle link is currently full
     </Text>
   )
 }
@@ -283,8 +284,8 @@ function StartQuiz(props:any) {
   return (
     <>
 
-    {!finished && <View style = {{paddingTop: 50, marginHorizontal: 20, position: 'relative'}}>
-    <View style = {{flexDirection:"row", justifyContent: "space-between", marginBottom: 50}}>
+    {!finished && <View style = {{flex: 1, justifyContent: 'center', paddingTop: 50, marginHorizontal: 20, position: 'relative'}}>
+    <View style = {{flexDirection:"row", justifyContent: "space-between", marginBottom: 10}}>
 
     <View style = {styles.pointsContainer}>
     <Text style = {styles.point}>{opponentPoints}</Text>
@@ -297,10 +298,11 @@ function StartQuiz(props:any) {
     </View>
 
     </View>
-
+     <ScrollView contentContainerStyle = {{height: layout.window.height * 0.5, paddingBottom: 20}}>
     <ThemedText style = {{fontSize: 20, fontWeight: 'bold',marginBottom: 20}}>{question.questionTitle}</ThemedText>
     <ThemedText style = {{fontSize: 18, marginBottom: 20}}>{question.questionText}</ThemedText>
-
+    </ScrollView>
+    <View>
     <TextInput
       style={styles.input}
       placeholder="Answer"
@@ -325,7 +327,7 @@ function StartQuiz(props:any) {
     </Pressable>
   }
     </View>
-
+  </View>
     </View>
   }
 
@@ -342,9 +344,9 @@ function StartQuiz(props:any) {
    </View>
  }
 
-   {finished && <View>
-    <ThemedText style = {{fontSize: 20,color:'green'}}>End of Battle</ThemedText>
-    <ThemedText>your points <Text style = {{color : colors.mainColor}}>{totalPoints}</Text> : opponent's points <Text style = {{color: colors.mainColor}}>{opponentPoints}</Text></ThemedText>
+   {finished && <View style = {{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <ThemedText style = {{fontSize: 20,color:'green', marginBottom: 30}}>End of Battle</ThemedText>
+    <ThemedText style = {{fontSize: 18}}>Your points <Text style = {{color : colors.mainColor}}>{totalPoints}</Text> : Opponent's points <Text style = {{color: colors.mainColor}}>{opponentPoints}</Text></ThemedText>
     </View>
   }
     </>
@@ -354,11 +356,10 @@ function StartQuiz(props:any) {
 
 const styles = StyleSheet.create({
   input : {
-    borderWidth: 1,
-    borderColor: colors.mainColor,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.mainColor,
     paddingHorizontal: 10,
-    marginBottom: 5,
-    marginRight: 10
+    marginBottom: 10,
   },
   button: {
    alignItems: 'center',
@@ -378,6 +379,7 @@ const styles = StyleSheet.create({
    justifyContent: 'center',
  },
  battleMessage: {
+   textAlign: "center",
    color: "white",
    padding: 10,
    backgroundColor: colors.mainColor,
@@ -385,11 +387,12 @@ const styles = StyleSheet.create({
  },
  pointsContainer: {
    justifyContent: 'center',
-   alignItems: 'center'
+   alignItems: 'center',
+   marginBottom: 20
  },
  point: {
    color : colors.mainColor,
-   fontSize: 20,
+   fontSize: 30,
    marginBottom: 10,
    fontWeight: 'bold'
  },

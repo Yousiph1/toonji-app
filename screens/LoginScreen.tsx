@@ -40,6 +40,7 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
     setLoading(true)
     try{
       const res = await axios.post(`${BASEURL}login`,{name, password})
+      console.log(res.data)
       signIn()
     }catch(err) {
       console.log(err)
