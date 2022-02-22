@@ -1,26 +1,28 @@
 import { Link } from '@react-navigation/native'
-import React,{ useCallback, useEffect, useState } from 'react'
+import React,{ useCallback, useContext, useEffect, useState } from 'react'
 import {View,Text,ScrollView, ActivityIndicator, Image, StyleSheet, Pressable} from 'react-native'
 import axios from 'axios'
 import { ThemedView } from '../components/Themed'
 import { FontAwesome } from '@expo/vector-icons'
 import { BASEURL } from '../constants/Credentials'
 import colors from '../constants/Colors'
+import { RootStackScreenProps } from '../types'
+import { NotifyContext } from '../components/Notify'
 
-const BattlesScreen = ({route}) => {
+const BattlesScreen = ({route}:RootStackScreenProps<"Battles">) => {
   const [loading, setLoading] = useState(false)
   const [isEnd, setIsEnd] = useState(false)
   const [nextFetch, setNextFech] = useState(false)
   const [faceoffData, setFaceOffData] = useState<{userOne: battleData, userTwo:battleData}[]>([])
   const {name, thisUser} = route.params
   const path = thisUser ? 'my/battle-records' : `battle-records/${name}`
-
+  const {newNotification} = useContext(NotifyContext)
   useEffect(()=> {
     axios.get(BASEURL + path)
             .then(res =>{
                setFaceOffData(res.data)
             }).catch(e =>{
-              console.log(e)
+               newNotification(e.response?.data.msg, 'ERROR')
             })
   },[])
 
@@ -36,7 +38,7 @@ const BattlesScreen = ({route}) => {
     })
     .catch(err => {
       setLoading(false)
-      console.log(err)
+      newNotification(err.response?.data.msg, 'ERROR')
     })
   },[])
 

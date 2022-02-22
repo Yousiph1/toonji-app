@@ -14,6 +14,7 @@ import { BASEURL } from '../constants/Credentials';
 import { ThemedText, ThemedView } from '../components/Themed';
 import { Link } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import { NotifyContext } from '../components/Notify';
 
 export default function FavoritesScreen() {
 
@@ -65,24 +66,18 @@ const Lyrics = () => {
   const [songs, setSongs] = useState<unknown[]>([])
   const [refresh, setRefresh] = useState(false)
   const {signOut} = useContext(AuthContext)
-
+  const {newNotification} = useContext(NotifyContext)
   async function getData() {
     try{
       setIsloading(true)
-      const token = await SecureStore.getItemAsync("userToken")
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-      const res = await axios.get(BASEURL + `my/favourites/songs`,config)
+      const res = await axios.get(BASEURL + `my/favourites/songs`)
        setSongs(res.data)
 
     }catch(err) {
-      console.log(err)
       if(err.response?.status === 401){
         signOut()
       }
+      newNotification(err.response?.data.msg, 'ERROR')
     }finally {
       setIsloading(false)
     }
@@ -126,17 +121,11 @@ const Bars = () => {
   const [bars, setBars] = useState<unknown[]>([])
   const [refresh, setRefresh] = useState(false)
   const {signOut} = useContext(AuthContext)
-
+  const {newNotification} = useContext(NotifyContext)
   async function getData() {
     try{
       setIsloading(true)
-      const token = await SecureStore.getItemAsync("userToken")
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-     const res = await axios.get(BASEURL + `my/favourites/bars`,config)
+     const res = await axios.get(BASEURL + `my/favourites/bars`)
      if(res.data.type !== 'ERROR') setBars(res.data)
 
     }catch(err) {
@@ -144,6 +133,7 @@ const Bars = () => {
       if(err.response?.status === 401){
         signOut()
       }
+      newNotification(err.response?.data.msg, 'ERROR')
     }finally {
       setIsloading(false)
     }
@@ -224,11 +214,6 @@ const Bar = (props: favBar) => {
    )
 
 }
-
-
-
-
-
 
 const styles = StyleSheet.create({
    filtersContainer: {

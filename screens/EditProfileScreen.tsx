@@ -11,11 +11,8 @@ import colors from '../constants/Colors'
 import getToken from '../funcs/GetToken';
 import { RootStackScreenProps } from '../types';
 import { AuthContext } from '../navigation';
+import { NotifyContext } from '../components/Notify';
 
-(async function(){
-  const token = await getToken()
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}())
 export default function EditProfileScreen({route}: any) {
   const {picture: img, bio: bi, prevName} = route.params
   const [image, setImage] = useState(img)
@@ -26,6 +23,7 @@ export default function EditProfileScreen({route}: any) {
   const [bioError, setBioError] = useState("")
   const [loading, setLoading] = useState(false)
   const {signOut} = useContext(AuthContext)
+  const {newNotification} = useContext(NotifyContext)
   const handleName = (text: string) => {
     if(text.match(/\W/)) return setNameError("Only english characters allowed")
     setNameError("")
@@ -50,7 +48,7 @@ export default function EditProfileScreen({route}: any) {
 
     } catch (err) {
         setPicture(null);
-
+        newNotification("Uploading picture failed", 'ERROR')
     }
   };
 
@@ -66,15 +64,15 @@ export default function EditProfileScreen({route}: any) {
     setLoading(true)
     axios.post(`${BASEURL}profile/edit-profile/`,formData)
     .then(res => {
-       console.log(res.data)
+       newNotification(res.data.msg, 'SUCCESS')
        setLoading(false)
     })
     .catch(err => {
-      console.log(err)
       setLoading(false)
       if(err.response?.status === 401) {
         signOut()
       }
+      newNotification(err.response?.data.msg, 'ERROR')
     })
   }
   return (

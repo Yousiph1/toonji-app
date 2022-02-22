@@ -33,7 +33,7 @@ import TopFansScreen from '../screens/TopFansScreen';
 import BattlesScreen from '../screens/BattlesScreen';
 import TopFanQuizScreen from '../screens/TopFanQuizScreen';
 import BattleQuizScreen from '../screens/BattleQuizScreen'
-import { useState } from 'react';
+import Notify from '../components/Notify'
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export const AuthContext = React.createContext<any>(null);
@@ -95,18 +95,19 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   const authContext = React.useMemo(() => ({
 
       signIn: async () => {
-             SecureStore.setItemAsync('userToken',  "true");
+             await SecureStore.setItemAsync('userToken',  "true");
              dispatch({ type: 'SIGN_IN'});
       },
 
       signOut: async () =>{
-         SecureStore.setItemAsync("userToken", "false")
+          await SecureStore.setItemAsync("userToken", "false")
          dispatch({ type: 'SIGN_OUT' })
       } ,
     }),[]);
 
 //!state.userToken
   return (
+    <>
     <AuthContext.Provider value={authContext}>
     <NavigationContainer
       linking={LinkingConfiguration}
@@ -123,7 +124,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           <Stack.Screen name = "Artist" component = {ArtistScreen} options = {{headerShown: false}} />
           <Stack.Screen name = "Users" component = {UsersScreen} options = {{headerShown: false}} />
           <Stack.Screen name = "TopFanQuiz" component = {TopFanQuizScreen} options = {{title: "Top Fan Quiz"}} />
-          <Stack.Screen name = "BattleQuizReady" component = {BattleQuizScreen} options = {{headerShown: false}} />
+          <Stack.Screen name = "BattleQuizReady" component = {BattleQuizScreen} options = {{title: "Battle Quiz"}} />
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
             <Stack.Screen name = "Followers" component = {FollowersScreen} />
             <Stack.Screen name = "TopFans" component = {TopFansScreen} />
@@ -136,6 +137,8 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 
     </NavigationContainer>
     </AuthContext.Provider>
+     <Notify />
+    </>
   );
 }
 

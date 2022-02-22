@@ -1,4 +1,4 @@
-import React,{useState,useEffect, useCallback, useRef} from 'react';
+import React,{useState,useEffect, useCallback, useRef, useContext} from 'react';
 import { View, StyleSheet, ScrollView,  RefreshControl, ActivityIndicator, Animated} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -11,6 +11,7 @@ import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import {BASEURL} from '../constants/Credentials'
 import {ChartCard, ChartCardBar, ChartCardUser} from '../components/ChartCard'
+import { NotifyContext } from '../components/Notify';
 
 
 export default function ChartsScreen(){
@@ -68,6 +69,7 @@ const Today = () => {
   const [bars, setBars] = useState<unknown[]>([])
   const [refresh, setRefresh] = useState(false)
 
+  const {newNotification} = useContext(NotifyContext)
 
   useEffect(()=> {
     setIsloading(true)
@@ -78,7 +80,7 @@ const Today = () => {
     })
     .catch(err => {
       setIsloading(false)
-      console.log(err);
+      newNotification(err.response?.data.msg, 'ERROR')
     })
 
   },[selectedValue])
@@ -92,8 +94,8 @@ const Today = () => {
      setRefresh(false)
    })
    .catch(err => {
-     console.log(err);
      setRefresh(false)
+     newNotification(err.response?.data.msg, 'ERROR')
    })
  },[])
 
@@ -133,6 +135,8 @@ const Week = () => {
   const [bars, setBars] = useState<unknown[]>([])
   const [refresh, setRefresh] = useState(false)
 
+  const {newNotification} = useContext(NotifyContext)
+
   useEffect(()=> {
     setIsloading(true)
     axios.get(BASEURL + `m/charts/${selectedValue}/WEEK`)
@@ -142,7 +146,7 @@ const Week = () => {
     })
     .catch(err => {
       setIsloading(false)
-      console.log(err);
+      newNotification(err.response?.data.msg, 'ERROR')
     })
 
   },[selectedValue])
@@ -156,8 +160,9 @@ const Week = () => {
      setRefresh(false)
    })
    .catch(err => {
-     console.log(err);
      setRefresh(false)
+     newNotification(err.response?.data.msg, 'ERROR')
+
    })
   },[])
 
@@ -199,7 +204,7 @@ const AllTime = () => {
   const [users, setUsers]  = useState<unknown[]>([])
   const [artists, setArtists]  = useState<unknown[]>([])
   const [refresh, setRefresh] = useState(false)
-
+  const {newNotification} = useContext(NotifyContext)
   useEffect(()=> {
     setIsloading(true)
     axios.get(BASEURL + `m/charts/${selectedValue}/AllTime`)
@@ -216,9 +221,8 @@ const AllTime = () => {
       setIsloading(false)
     })
     .catch(err => {
-
       setIsloading(false)
-      console.log(err);
+      newNotification(err.response?.data.msg, 'ERROR')
     })
 
   },[selectedValue])
@@ -232,8 +236,8 @@ const AllTime = () => {
      setRefresh(false)
    })
    .catch(err => {
-     console.log(err);
      setRefresh(false)
+     newNotification(err.response?.data.msg, 'ERROR')
    })
   },[])
 

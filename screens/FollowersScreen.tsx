@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react'
+import React, {useCallback, useContext, useEffect, useLayoutEffect, useState} from 'react'
 import {Text, ActivityIndicator, Pressable, ScrollView} from 'react-native'
 import axios from 'axios'
 
@@ -8,13 +8,16 @@ import {BASEURL} from '../constants/Credentials'
 import { FontAwesome } from '@expo/vector-icons'
 
 import colors from '../constants/Colors'
+import { NotifyContext } from '../components/Notify'
+import { RootStackScreenProps } from '../types'
 
-export default function FollowersScreen({route, navigation}) {
+export default function FollowersScreen({route, navigation}:RootStackScreenProps<"Followers">) {
    const {name, thisUser} = route.params
    const [followers, setFollowers] = useState<{name: string, picture: string, points: string}[]>([])
    const [loading, setLoading] = useState(false)
    const [isEnd, setIsEnd] = useState(false)
    const [nextFech, setNextFech] = useState(0)
+   const {newNotification} = useContext(NotifyContext)
    const url = !thisUser ? `${BASEURL}p/followers/${name}/${nextFech}` : `${BASEURL}p/my/followers/${nextFech}`
    useLayoutEffect(()=> {
      navigation.setOptions({
@@ -33,7 +36,7 @@ export default function FollowersScreen({route, navigation}) {
     })
     .catch(err => {
       setLoading(false)
-      console.log(err)
+     newNotification(err.response?.data.msg, 'ERROR')
     })
   },[])
 
@@ -45,11 +48,10 @@ export default function FollowersScreen({route, navigation}) {
         setIsEnd(res.data.isEnd)
         setNextFech(res.data.nextFech)
         setLoading(false)
-        console.log(res.data)
       })
       .catch(err => {
         setLoading(false)
-        console.log(err)
+        newNotification(err.response?.data.msg, 'ERROR')
       })
     },[])
 

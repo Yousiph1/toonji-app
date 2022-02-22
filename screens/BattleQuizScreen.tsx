@@ -1,5 +1,5 @@
 import { DefaultEventsMap } from '@socket.io/component-emitter';
-import React,{useEffect, useState} from 'react';
+import React,{useEffect, useState, useContext} from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -18,7 +18,8 @@ import colors from '../constants/Colors'
 import { SOCKETURL } from '../constants/Credentials';
 import layout from '../constants/Layout'
 import { RootStackParamList, RootStackScreenProps } from '../types';
-
+import {NotifyContext} from '../components/Notify'
+import { AuthContext } from '../navigation';
 let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 
@@ -37,6 +38,10 @@ export default function BattleQuizScreen({route}:RootStackScreenProps<"BattleQui
   const [loading, setLoading] = useState(false)
   const [hasStarted, setHasStarted] = useState(false)
   const [battleInProcess,setBattleInProcess] = useState(false)
+
+ const {newNotification} = useContext(NotifyContext)
+ const {signOut} = useContext(AuthContext)
+
 socket = io(SOCKETURL +"-battle",{transports: ["websocket"]});
   useEffect(()=> {
 
@@ -56,11 +61,14 @@ socket = io(SOCKETURL +"-battle",{transports: ["websocket"]});
       if(!hasStarted) {
         setShowGetQuestions(false)
       }else {
+      newNotification("opponent has disconnected",'ERR0R')
       }
     })
 
     socket.on("login required",() => {
+      newNotification("You have to login to continue",'ERR0R')
       socket.disconnect()
+      signOut()
     })
 
     socket.on("invalid link", () => {
@@ -85,8 +93,8 @@ socket = io(SOCKETURL +"-battle",{transports: ["websocket"]});
        setOpponentName(msg)
     })
 
-    socket.on("opponent-ended",msg => {
-
+    socket.on("opponent-ended",(msg: string) => {
+       newNotification(msg,'ERR0R')
     })
     socket.on("link-full", () => {
       setLinkFull(true)
@@ -103,6 +111,7 @@ const emitForQuestions = () => {
    socket.emit("get-questions",battleId)
    setHasStarted(true)
   } catch (e) {
+      newNotification("Something went wrong",'ERR0R')
    }
 }
 

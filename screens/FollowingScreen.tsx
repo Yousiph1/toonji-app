@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react'
+import React, {useCallback, useContext, useEffect, useLayoutEffect, useState} from 'react'
 import {Text,ActivityIndicator, FlatList, Pressable, ScrollView, View} from 'react-native'
 import axios from 'axios'
 
@@ -8,6 +8,7 @@ import {BASEURL} from '../constants/Credentials'
 import { FontAwesome } from '@expo/vector-icons'
 
 import colors from '../constants/Colors'
+import { NotifyContext } from '../components/Notify'
 
 export default function FollowingScreen({route, navigation}) {
    const {name, thisUser} = route.params
@@ -15,6 +16,8 @@ export default function FollowingScreen({route, navigation}) {
    const [loading, setLoading] = useState(false)
    const [isEnd, setIsEnd] = useState(false)
    const [nextFech, setNextFech] = useState(0)
+   const {newNotification} = useContext(NotifyContext)
+
    const url = !thisUser ? `${BASEURL}p/following/${name}/${nextFech}` : `${BASEURL}p/my/following/${nextFech}`
    useLayoutEffect(()=> {
      navigation.setOptions({
@@ -30,11 +33,10 @@ export default function FollowingScreen({route, navigation}) {
       setIsEnd(res.data.isEnd)
       setNextFech(res.data.nextFech)
       setLoading(false)
-      console.log(res.data)
     })
     .catch(err => {
       setLoading(false)
-      console.log(err)
+      newNotification(err.response?.data.msg, 'ERROR')
     })
   },[])
 
@@ -46,11 +48,11 @@ export default function FollowingScreen({route, navigation}) {
         setIsEnd(res.data.isEnd)
         setNextFech(res.data.nextFech)
         setLoading(false)
-        console.log(res.data)
+
       })
       .catch(err => {
         setLoading(false)
-        console.log(err)
+        newNotification(err.response?.data.msg, 'ERROR')
       })
     },[])
 

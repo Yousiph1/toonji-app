@@ -15,18 +15,13 @@ import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
 import getToken from '../funcs/GetToken'
 import { AuthContext } from '../navigation'
-
+import {NotifyContext} from '../components/Notify'
 
 
 
 const Height_Max =  50/100 * layout.window.height
 const Height_Min = 53
 const Scroll_Dist = Height_Max - Height_Min;
-
-(async function(){
-  const token = await getToken()
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}())
 
 export default function ArtistScreen({route, navigation}:RootStackScreenProps<'Artist'>) {
   const artist = route.params.userName
@@ -42,6 +37,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
   const [isModalVisible, setModalVisible] = useState(false)
 
   const {signOut} = useContext(AuthContext)
+  const {newNotification} = useContext(NotifyContext)
 
   const scrollY = useRef(new Animated.Value(0)).current
   const height = scrollY.interpolate({
@@ -79,7 +75,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
        setUserInfo(res.data)
      })
      .catch(err => {
-       console.log(err)
+       newNotification(err.reponse?.data.msg,'ERR0R')
      })
 
    },[])
@@ -94,8 +90,8 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
        setNext(res.data.nextFetch)
      })
      .catch(err => {
-       console.log(err)
        setIsloading(false)
+       newNotification(err.reponse?.data.msg,'ERR0R')
      })
    },[])
 
@@ -112,8 +108,8 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
        setNext(res.data.nextFetch)
      })
      .catch(err => {
-       console.log(err)
        setIsloading(false)
+       newNotification(err.reponse?.data.msg,'ERR0R')
      })
 
    },[])
@@ -127,10 +123,11 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
        setFollowing(prv => !prv)
      })
      .catch(err => {
-       console.log(err)
        setFollowLoading(false)
        if(err.response?.status === 401) {
          signOut()
+       }else {
+         newNotification(err.reponse?.data.msg,'ERR0R')
        }
      })
    }
