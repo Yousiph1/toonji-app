@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React,{useContext, useState} from 'react'
 import {View, Text, TextInput,Pressable, StyleSheet, ActivityIndicator} from 'react-native'
+import { NotifyContext } from '../components/Notify'
 
 import {ThemedText, ThemedView} from '../components/Themed'
 import colors from '../constants/Colors'
@@ -16,7 +17,7 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
   const [passwordError, setPasswordError] = useState("")
   const [loading, setLoading] = useState(false)
   const {signIn} = useContext(AuthContext)
-
+  const {newNotification} = useContext(NotifyContext)
 
   const handleName = (text: string) => {
     if(text.match(/\W/)) return setNameError("Only english characters allowed")
@@ -40,10 +41,9 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
     setLoading(true)
     try{
       const res = await axios.post(`${BASEURL}login`,{name, password})
-      console.log(res.data)
       signIn()
     }catch(err) {
-      console.log(err)
+      newNotification(err.response?.data.msg, 'ERROR')
     }finally {
         setLoading(false)
     }

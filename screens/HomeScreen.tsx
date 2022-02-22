@@ -12,11 +12,7 @@ import {BASEURL} from '../constants/Credentials'
 import ScreenHeader from '../components/ScreenHeader'
 import { ThemedText, ThemedView } from '../components/Themed';
 import getToken from '../funcs/GetToken';
-
-(async function(){
-  const token = await getToken()
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}())
+import {NotifyContext} from '../components/Notify'
 export default function HomeScreen() {
   const [data,setData] = useState({songs:[],newArrivals:[]})
   const [isLoading, setIsLoading] = useState(false)

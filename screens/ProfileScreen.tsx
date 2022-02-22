@@ -22,6 +22,7 @@ import FollowingScreen from './FollowingScreen'
 import BattlesScreen from './BattlesScreen'
 import SettingsScreen from './SettingsScreen'
 import { AuthContext } from '../navigation';
+import { NotifyContext } from '../components/Notify';
 
 const Height_Max =  50/100 * layout.window.height
 const Height_Min = 53
@@ -61,7 +62,7 @@ export default function ProfileScreen() {
     setEditModalVisible(true)
  }
   const {signOut} = useContext(AuthContext)
-
+  const {newNotification} = useContext(NotifyContext)
 
    const scrollY = useRef(new Animated.Value(0)).current
    const height = scrollY.interpolate({

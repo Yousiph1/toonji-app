@@ -12,12 +12,12 @@ const Notify: React.FC = () => {
  const popup = useRef(new Animated.Value(0)).current
   const [message, setMessage] = useState("hello lyrics lover")
   const [type, setType] = useState<'ERROR'|'SUCCESS' |'NEUTRAL'>('NEUTRAL')
-    const notifyContext = {
-       newNotification : (mes: string, mesType: 'ERROR' |'SUCCESS'|'NEUTRAL') => {
-         setMessage(mes)
-         setType(mesType)
-       }
-    }
+    const notifyContext = React.useMemo(()=> ({
+      newNotification : (mes: string, mesType: 'ERROR' |'SUCCESS'|'NEUTRAL') => {
+        setMessage(mes)
+        setType(mesType)
+      }
+    }),[])
      useEffect(()=> {
        Animated.sequence([
          Animated.timing(popup,{toValue: -130,duration: 200,useNativeDriver: true}),
