@@ -1,6 +1,6 @@
 import axios from 'axios'
 import strSimilarity from 'string-similarity'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {View, Text, Pressable, ActivityIndicator, TextInput, StyleSheet, ScrollView} from 'react-native'
 import { ThemedText, ThemedView } from '../components/Themed'
 import { BASEURL } from '../constants/Credentials'
@@ -8,6 +8,8 @@ import { RootStackScreenProps } from '../types'
 
 import colors from '../constants/Colors'
 import layout from '../constants/Layout'
+import { NotifyContext } from '../components/Notify'
+import { AuthContext } from '../navigation'
 
 const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,navigation}) => {
   const {name} = route.params
@@ -22,7 +24,8 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,n
   const [finished, setFinished] = useState(false)
   const [answered, setAnswered] = useState(false)
   const [question, setQuestion] = useState<{questionText: string; questionTitle: string; questionAnswer: string}>({})
-
+  const {newNotification} = useContext(NotifyContext)
+  const {signOut} = useContext(AuthContext)
 
       useEffect(()=>{
         setLoading(true)
@@ -34,7 +37,9 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,n
         .catch(err => {
            setLoading(false)
             if(err.response?.status === 401) {
-              console.log(err)
+              signOut()
+            }else {
+              newNotification(err.response?.data.msg,'ERROR')
             }
         })
       },[])
@@ -44,9 +49,10 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,n
         if(finished) {
           axios.post(`${BASEURL}top-fan/${name}/${totalPoints}`)
           .then(res => {
+              newNotification(res.data.msg,'SUCCESS')
           })
           .catch(e => {
-
+               newNotification(e.response?.data.msg,'ERROR')
           })
         }
       },[finished])
@@ -91,7 +97,6 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,n
                  setCorrect(false)
                }
                setAnswered(true)
-               console.log(totalPoints)
            }
 
    const nextQ = () => {

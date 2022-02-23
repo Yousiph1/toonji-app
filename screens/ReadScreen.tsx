@@ -20,13 +20,10 @@ import { AwardInfo } from '../components/General';
 import EditBrModal from '../components/EditBrModal';
 import getToken from '../funcs/GetToken';
 import { AuthContext } from '../navigation';
+import { NotifyContext } from '../components/Notify';
 
 let color: 'light' | 'dark' = "light";
 
-(async function(){
-  const token = await getToken()
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}())
 export default function ReadScreen({route,navigation}: RootStackScreenProps<'Read'>) {
  const [isLoading, setIsLoading] = useState(false)
  const [showIcons, setShowIcons] = useState(false)
@@ -42,6 +39,8 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
  const [headerData, setHeaderData] = useState({songTitle:'-',songArtist: '-', rating: '-', raters:'-',
                                                views:'-', favourited:false, noFavourited: '-',
                                                otherArtists: '-'})
+
+const {newNotification} = useContext(NotifyContext)
 
 const showModal = (confs: awardReq) => {
   const {type, songId, breakdown, comment} = confs
@@ -72,8 +71,8 @@ const showEditModal = (data:{br:string; songId: string; punchId: string; id: str
      setIsLoading(false)
    })
    .catch(err => {
-     console.log(err)
      setIsLoading(false)
+     newNotification(err.response?.data.msg, 'ERROR')
    })
  },[])
 
@@ -100,14 +99,15 @@ const giveAward = () => {
    setGivingAward(true)
    axios.post(path,data)
    .then(res => {
-     console.log(res.data)
      setGivingAward(false)
+     newNotification(res.data.msg, 'SUCCESS')
    })
    .catch(e => {
      setGivingAward(false)
-     console.log(e.response.data)
      if(e.response?.status === 401) {
        signOut()
+     }else {
+       newNotification(e.response?.data.msg, 'ERROR')
      }
    })
 }

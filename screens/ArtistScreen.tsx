@@ -118,9 +118,9 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
      setFollowLoading(true)
      axios.post(`${BASEURL}p/follow/${artist}`)
      .then(res => {
-       console.log(res)
        setFollowLoading(false)
        setFollowing(prv => !prv)
+       newNotification(res.data.msg, 'SUCCESS')
      })
      .catch(err => {
        setFollowLoading(false)
@@ -196,7 +196,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
 
     <ScrollView contentContainerStyle = {styles.scrollContainer}
      scrollEventThrottle = {16}
-     onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}])}
+     onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}],{useNativeDriver:true})}
     >
     <ThemedView style = {styles.achievementsContainer}>
     <Achievement navigate = {false} top = {userInfo.noSongs} bottom = "songs"/>

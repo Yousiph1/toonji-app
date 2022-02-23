@@ -8,6 +8,7 @@ import colors from '../constants/Colors'
 import {RootStackScreenProps} from '../types'
 import {BASEURL} from '../constants/Credentials'
 import { AuthContext } from '../navigation'
+import { NotifyContext } from '../components/Notify'
 
 export default function SignUpScreen({navigation}:RootStackScreenProps<'Signup'>) {
   const [name, setName] = useState('')
@@ -19,6 +20,7 @@ export default function SignUpScreen({navigation}:RootStackScreenProps<'Signup'>
   const [repeatPassword, setRepeatPassword] = useState('')
   const [loading, setIsLoading] = useState(false)
   const {signIn} = useContext(AuthContext)
+  const {newNotification} = useContext(NotifyContext)
 
 const handleName = (text: string) => {
   if(text.match(/\W/)) return setNameError("Only english characters allowed")
@@ -59,8 +61,14 @@ const handleRepeatPasswrod = (text: string) => {
 }
 
 const handleSignup = async () => {
-  if(nameError || emailError || passwordError || loading) return
-  if(!(name && email && password && repeatPassword)) return
+  if(nameError || emailError || passwordError || loading) {
+    newNotification("Check inputs and try again", 'ERROR')
+    return
+  }
+  if(!(name && email && password && repeatPassword)){
+    newNotification("Check inputs and try again", 'ERROR')
+    return
+  }
 
   try{
     setIsLoading(true)
@@ -69,11 +77,11 @@ const handleSignup = async () => {
       signIn(res.data.token)
     }
   }catch(err){
-    console.log(err)
+    setIsLoading(false)
+    newNotification(err.response?.data.msg,'ERROR')
   }
-  setIsLoading(false)
-}
 
+}
 
   return (
     <ThemedView style = {styles.container}>

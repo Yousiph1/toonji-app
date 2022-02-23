@@ -37,15 +37,17 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
 
   const handleLogin = async () => {
     if(nameError || passwordError || loading) return
-    if(!(name &&  password)) return
+    if(!(name &&  password)) {
+      newNotification("Check inputs and try again","ERROR")
+      return
+    }
     setLoading(true)
     try{
       const res = await axios.post(`${BASEURL}login`,{name, password})
       signIn()
     }catch(err) {
+      setLoading(false)
       newNotification(err.response?.data.msg, 'ERROR')
-    }finally {
-        setLoading(false)
     }
   }
 

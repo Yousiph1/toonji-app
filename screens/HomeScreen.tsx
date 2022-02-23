@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from 'react';
+import React,{useContext, useEffect,useState} from 'react';
 import { StyleSheet, ScrollView, ActivityIndicator, Text, View, Image, Pressable} from 'react-native';
 import axios from 'axios'
 import { Link } from '@react-navigation/native';
@@ -18,7 +18,7 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false)
 //  const [searching, setSearching] = useState(false)
   const [searchData, setSearchData] = useState({songs: [], users:[]})
-
+  const {newNotification} = useContext(NotifyContext)
   useEffect(()=> {
     setIsLoading(true)
      axios.get(BASEURL)
@@ -27,8 +27,8 @@ export default function HomeScreen() {
        setIsLoading(false)
      })
      .catch(err => {
-       console.log(err)
        setIsLoading(false)
+       newNotification(err.response?.data.msg, 'ERROR')
      })
   },[])
 
@@ -43,7 +43,7 @@ export default function HomeScreen() {
       setSearchData(res.data)
     })
     .catch(err => {
-      console.log(err)
+       newNotification(err.response?.data.msg, 'ERROR')
     })
   }
 

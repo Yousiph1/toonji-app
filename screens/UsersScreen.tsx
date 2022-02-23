@@ -16,6 +16,7 @@ import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
 import getToken from '../funcs/GetToken';
 import { AuthContext } from '../navigation';
+import { NotifyContext } from '../components/Notify';
 
 
 
@@ -43,6 +44,7 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
   const [userInfo, setUserInfo] = useState({name:'-',bio: '-', followers: '-', following: false,
                                              points: '-', battleRecord: '-', picture:""})
   const {signOut} = useContext(AuthContext)
+  const {newNotification} = useContext(NotifyContext)
 
    const scrollY = useRef(new Animated.Value(0)).current
    const height = scrollY.interpolate({
@@ -78,7 +80,7 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
        setUserInfo(res.data)
      })
      .catch(err => {
-       console.log(err)
+       newNotification(err.response?.data.msg,'ERROR')
      })
 
    },[])
@@ -95,20 +97,16 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
        setNext(res.data.nextFetch)
      })
      .catch(err => {
-       console.log(err)
        setIsloading(false)
+       newNotification(err.response?.data.msg,'ERROR')
+
      })
    },[])
 
    const fetchMore =  useCallback(async ()=>{
      setIsloading(true)
-     const token = await getToken()
-     const config = {
-       headers: {
-         Authorization: `Bearer ${token}`
-       }
-     }
-     axios.get(BASEURL + 'p/breakdowns/'+ user + '/' + next,config)
+
+     axios.get(BASEURL + 'p/breakdowns/'+ user + '/' + next)
      .then(res => {
        setBreakdowns(prev => prev.concat(res.data.breakdowns))
        setIsloading(false)
@@ -116,8 +114,8 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
        setNext(res.data.nextFetch)
      })
      .catch(err => {
-       console.log(err)
        setIsloading(false)
+       newNotification(err.response?.data.msg,'ERROR')
      })
 
    },[])
@@ -148,23 +146,20 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
       if(awardsGiven.length < 1) {
         return
       }
-      const token = await getToken()
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
+
       setGivingAward(true)
-      axios.post(path,data,config)
+      axios.post(path,data)
       .then(res => {
-        console.log(res.data)
         setGivingAward(false)
+        newNotification(res.data.msg,'SUCCESS')
+
       })
       .catch(e => {
         setGivingAward(false)
-        console.log(e.response.data)
         if(e.response?.status === 401){
           signOut()
+        }else {
+          newNotification(e.response?.data.msg,'ERROR')
         }
       })
    }
@@ -172,22 +167,19 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
    const follow = async () => {
       setFollowLoading(true)
       const token = await getToken()
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-      axios.post(`${BASEURL}p/follow/${user}`,{},config)
+
+      axios.post(`${BASEURL}p/follow/${user}`,{})
      .then(res => {
-       console.log(res)
        setFollowLoading(false)
        setFollowing(prv => !prv)
+       newNotification(res.data.msg, 'SUCCESS')
      })
      .catch(err => {
-       console.log(err)
        setFollowLoading(false)
        if(err.response?.status === 401){
          signOut()
+       }else {
+         newNotification(err.response?.data.msg,'ERROR')
        }
      })
    }
@@ -243,7 +235,7 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
 
     <ScrollView contentContainerStyle = {styles.scrollContainer}
     scrollEventThrottle = {16}
-    onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}])}
+    onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}],{useNativeDriver:true})}
     >
     <ThemedView style = {styles.achievementsContainer}>
     <Achievement top = {userInfo.points} bottom = "points" navigate = {false}/>

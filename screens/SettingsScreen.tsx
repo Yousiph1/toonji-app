@@ -7,6 +7,7 @@ import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore'
 import { AuthContext } from '../navigation'
 import { BASEURL } from '../constants/Credentials'
 import axios from 'axios'
+import { NotifyContext } from '../components/Notify'
 
 
 const SettingsScreen: React.FC = () => {
@@ -14,7 +15,7 @@ const SettingsScreen: React.FC = () => {
   const [colorChecked, setColorChecked] = useState('grey')
   const [themeChecked, setThemeChecked] = useState("Light")
   const {signOut} = useContext(AuthContext)
-
+  const {newNotification} = useContext(NotifyContext)
   useEffect(()=> {
     const getData = async () => {
       try {
@@ -26,6 +27,7 @@ const SettingsScreen: React.FC = () => {
         if(theme) setThemeChecked(theme)
       } catch(e) {
         // error reading value
+
       }
     }
      getData()
@@ -38,7 +40,7 @@ const SettingsScreen: React.FC = () => {
        await AsyncStorage.setItem("fontSize",newVal)
        setChecked(val)
      }catch(e) {
-
+         newNotification("Failed to set font size", 'ERROR')
      }
 
   }
@@ -47,7 +49,7 @@ const SettingsScreen: React.FC = () => {
       await AsyncStorage.setItem("color",val)
       setColorChecked(val)
     }catch(e) {
-
+       newNotification("Failed to set lyrics color", 'ERROR')
     }
 
   }
@@ -57,7 +59,7 @@ const SettingsScreen: React.FC = () => {
       await AsyncStorage.setItem("theme",val)
       setThemeChecked(val)
     }catch(e) {
-
+        newNotification("Failed to set font size", 'ERROR')
     }
 
   }
@@ -68,7 +70,7 @@ const SettingsScreen: React.FC = () => {
        signOut()
     })
     .catch(err => {
-
+       newNotification("Failed to logout", 'ERROR')
     })
   }
 

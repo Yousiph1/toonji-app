@@ -11,11 +11,8 @@ import {AuthContext} from '../navigation/index'
 import axios from 'axios';
 import getToken from '../funcs/GetToken';
 import { awardReq, brType } from '../types';
+import { NotifyContext } from './Notify';
 
-(async function(){
-  const token = await getToken()
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}())
 export default function Breakdown(props: brType ) {
 
   const {name, points, songId, breakdown, date, indx,
@@ -25,32 +22,25 @@ export default function Breakdown(props: brType ) {
   const [totalVotes, setTotalVotes] = useState(props.totalVotes)
   const [userVote, setUserVote] = useState(props.userVote)
   const {signOut} = useContext(AuthContext)
-
+  const {newNotification} = useContext(NotifyContext)
 
   const handleVote = async (vote : 'UPVOTE' | 'DOWNVOTE') => {
   axios.post(`${BASEURL}breakdown-vote/${songId}/${punchId}/${id}/${vote}`)
        .then((res)=>{
          let hasVoted = userVote ? true: false
-         if(res.data.type === "SUCCESS"){
            setUserVote(vote)
            if(vote === 'UPVOTE') {
              hasVoted ? setTotalVotes(totalVotes + 2):setTotalVotes(totalVotes + 1)
            }else {
              hasVoted ? setTotalVotes(totalVotes - 2):setTotalVotes(totalVotes - 1)
            }
-       }
+           newNotification(res.data.msg,'SUCCESS')
      })
       .catch((err)=>{
-        if(err.response?.status === 401) {
-          signOut()
-        }
-        console.log(err)
+        let msg = err.response?.data.msg
+        if(err.response?.status === 401){signOut()}else{newNotification(msg,'ERROR')}
       })
      }
-
-
-
-
 
    return (
      <ThemedView style = {styles.breakdownContainer}>

@@ -13,6 +13,7 @@ import getToken from '../funcs/GetToken';
 import {AuthContext} from '../navigation/index'
 import { awardReq, brType } from '../types';
 import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore';
+import { NotifyContext } from './Notify';
 
 const mainColor = colors.mainColor
 let FONT_SIZE = 18
@@ -42,6 +43,7 @@ export default function Bar({indx, punchline,userFav, hasIcons, rated,
   const [inputHeight, setInputHeight] = useState(40)
   const [sending, setSending] = useState(false)
   const {signOut} = useContext(AuthContext)
+  const {newNotification} = useContext(NotifyContext)
 
    useEffect(()=> {
      const getData = async () => {
@@ -54,7 +56,6 @@ export default function Bar({indx, punchline,userFav, hasIcons, rated,
          if(cc) {
            setCOLOR(cc)
          }
-         console.log(FONT_SIZE, COLOR)
        } catch(e) {
          // error reading value
        }
@@ -71,7 +72,7 @@ export default function Bar({indx, punchline,userFav, hasIcons, rated,
       setBrDowns(res.data)
    })
    .catch(er => {
-    console.log(er)
+    newNotification(er.response?.data.msg, 'ERROR')
   });
 
 }
@@ -84,14 +85,11 @@ const addBarToFavourites = () => {
      setIsFavorite(!isFavorite)
      axios.post(`${BASEURL}bar-favourited/${songId}/${_id}`)
      .then(res => {
-      const data = res.data
-      if(data.type === 'ERROR' && data.msg === "invalid or expired token") {
-        signOut()
-      }
+      newNotification(res.data.msg,'SUCCESS')
      })
      .catch(err => {
-       if(err.response?.status === 401){signOut()}
-       console.log(err)
+       let msg = err.response?.data.msg
+       if(err.response?.status === 401){signOut()}else{newNotification(msg,'ERROR')}
      })
   }
 
@@ -106,12 +104,11 @@ const addBarToFavourites = () => {
 
     axios.post(`${BASEURL}lyrics/fire/${songId}/${indx}`)
       .then(res =>{
-       const data = res.data
-      
+      newNotification(res.data.msg,'SUCCESS')
     })
      .catch((err)=>{
-       if(err.response?.status === 401){signOut()}
-      console.log(err)
+       let msg = err.response?.data.msg
+       if(err.response?.status === 401){signOut()}else{newNotification(msg,'ERROR')}
     })
  }
 
@@ -134,27 +131,27 @@ const addBarToFavourites = () => {
           }
         })
         .catch(err => {
-         if(err.response?.status === 401){signOut()}
-         console.log(err)
+          let msg = err.response?.data.msg
+          if(err.response?.status === 401){signOut()}else{newNotification(msg,'ERROR')}
         })
      }
 
    })
     .catch((err)=>{
-      if(err.response?.status === 401){signOut()}
-      console.log(err)
       setSending(false)
+      let msg = err.response?.data.msg
+      if(err.response?.status === 401){signOut()}else{newNotification(msg,'ERROR')}
    })
    }
 
    const deleteBreakdown = ({punchId, id}:{punchId:string;id:string}) => {
      axios.post(`${BASEURL}delete/breakdown/${songId}/${punchId}/${id}`)
      .then(res => {
-       console.log(res)
+       newNotification(res.data.msg,'SUCCESS')
      })
      .catch(err => {
-       if(err.response?.status === 401){signOut()}
-       console.log(err)
+       let msg = err.response?.data.msg
+       if(err.response?.status === 401){signOut()}else{newNotification(msg,'ERROR')}
      })
    }
 

@@ -91,33 +91,18 @@ export default function ProfileScreen() {
      extrapolate: 'clamp',
    })
 
-   async function getToken() {
-     try {
-       return await SecureStore.getItemAsync("userToken")
-     }catch(er) {
-       console.log(er)
-     }
-   }
-
    useEffect(() => {
-    const token = getToken()
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-     axios.get(BASEURL + 'my/profile',config)
+     axios.get(BASEURL + 'my/profile')
      .then(res => {
-       if(res.data.type !== 'ERROR') {
-          setUserInfo(res.data)
-       }
+       setUserInfo(res.data)
        setReload(false)
      })
      .catch(err => {
-       console.log(err)
        setReload(false)
        if(err.response?.status === 401){
          signOut()
+       }else {
+         newNotification(err.response?.msg, "ERROR")
        }
      })
 
@@ -125,13 +110,7 @@ export default function ProfileScreen() {
 
    useEffect(() => {
      setIsloading(true)
-     const token = getToken()
-     const config = {
-       headers: {
-         Authorization: `Bearer ${token}`
-       }
-     }
-     axios.get(BASEURL + 'p/my/breakdowns/0',config)
+     axios.get(BASEURL + 'p/my/breakdowns/0')
      .then(res => {
          setBreakdowns(res.data.breakdowns)
          setIsloading(false)
@@ -140,11 +119,12 @@ export default function ProfileScreen() {
          setReload(false)
      })
      .catch(err => {
-       console.log(err)
        setIsloading(false)
        setReload(false)
        if(err.response?.status === 401){
          signOut()
+       }else {
+         newNotification(err.response?.data.msg, "ERROR")
        }
      })
    },[reload])
@@ -159,8 +139,8 @@ export default function ProfileScreen() {
        setNext(res.data.nextFetch)
      })
      .catch(err => {
-       console.log(err)
        setIsloading(false)
+       newNotification(err.response?.msg, "ERROR")
      })
 
    },[])
@@ -241,7 +221,7 @@ export default function ProfileScreen() {
         onRefresh={onRefresh}
       />
     }
-    onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}])}
+    onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}],{useNativeDriver:true})}
     >
     <ThemedView style = {styles.achievementsContainer}>
     <Achievement top = {userInfo.points} bottom = "points" navigate ={false} />

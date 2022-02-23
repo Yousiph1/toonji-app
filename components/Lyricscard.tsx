@@ -5,7 +5,6 @@ import { FontAwesome, MaterialIcons, FontAwesome5, AntDesign } from '@expo/vecto
 import {LinearGradient} from 'expo-linear-gradient'
 import * as Clipboard from 'expo-clipboard'
 
-
 import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import {ThemedText, ThemedView} from './Themed'
@@ -15,6 +14,7 @@ import {cardData} from '../types'
 import axios from 'axios';
 import { BASEURL } from '../constants/Credentials';
 import { AuthContext } from '../navigation';
+import { NotifyContext } from './Notify';
 
 const {mainColor} = colors
 const cardWidth = layout.isSmallDevice ? 90/100 * layout.window.width : 85/100 * layout.window.width
@@ -25,24 +25,26 @@ export default function LyricsCard({data} :{data:cardData}){
       const [copied, setCopied] = useState(false)
       const {signOut} = useContext(AuthContext)
       const theme = useColorScheme()
-
+      const {newNotification} = useContext(NotifyContext)
       const copyToClipboard = () => {
         let str = data.hottesBar + "\n" + "\t \t \t \t ~" + data.artist
         Clipboard.setString(str)
         setCopied(true)
+        newNotification("copied", "SUCCESS")
       }
 
       const addToFavourites = () => {
         axios.post(`${BASEURL}favourited/${data.songId}`)
         .then(res => {
-           console.log(res)
            setIsFavorite(!isFavorite)
+           newNotification(res.data.msg, 'SUCCESS')
         })
         .catch(err => {
           if(err.response?.satus === 401){
             signOut()
+          }else {
+            newNotification(err.response?.data.msg, 'ERROR')
           }
-          console.log(err)
         })
       }
 

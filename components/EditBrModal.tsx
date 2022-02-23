@@ -8,13 +8,14 @@ import layout from '../constants/Layout'
 import axios from 'axios'
 import { BASEURL } from '../constants/Credentials'
 import { AuthContext } from '../navigation';
+import { NotifyContext } from './Notify'
 export default function EditBrModal ({setModalVisible, isVisible, editData}:
   {setModalVisible:()=>void; isVisible:boolean; editData:{br: string; punchId: string; songId: string; id: string}}) {
 
   const [text, setText] = useState("")
   const [loading, setLoading] = useState(false)
   const {signOut} = useContext(AuthContext)
-
+  const {newNotification} = useContext(NotifyContext)
   useEffect(()=> {
     setText(editData.br)
   },[editData])
@@ -28,14 +29,16 @@ export default function EditBrModal ({setModalVisible, isVisible, editData}:
    setLoading(true)
    axios.post(`${BASEURL}edit-breakdown/${editData.songId}/${editData.punchId}/${editData.id}`,{newBreakdown: text})
    .then(res => {
-     console.log(res)
      setLoading(false)
+     newNotification(res.data.msg, 'SUCCESS')
    })
    .catch(e => {
+      setLoading(false)
      if(e.response?.satus === 401){
        signOut()
+     }else {
+       newNotification(e.resonse?.data.msg, 'ERROR')
      }
-     setLoading(false)
    })
   }
 

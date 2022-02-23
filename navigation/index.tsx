@@ -33,7 +33,7 @@ import TopFansScreen from '../screens/TopFansScreen';
 import BattlesScreen from '../screens/BattlesScreen';
 import TopFanQuizScreen from '../screens/TopFanQuizScreen';
 import BattleQuizScreen from '../screens/BattleQuizScreen'
-import Notify from '../components/Notify'
+import Notify, { NotifyContext } from '../components/Notify'
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export const AuthContext = React.createContext<any>(null);
@@ -41,8 +41,8 @@ export const AuthContext = React.createContext<any>(null);
 axios.defaults.withCredentials = true
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
 
-
-
+  const [message,setMessage] = React.useState("")
+  const [type, setType] = React.useState<"ERROR" | "SUCCESS" | "NEUTRAL">("NEUTRAL")
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -105,10 +105,18 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       } ,
     }),[]);
 
+    const notifyContext = React.useMemo(()=> ({
+      newNotification : (mes: string, mesType: 'ERROR' |'SUCCESS'|'NEUTRAL') => {
+        setMessage(mes)
+        setType(mesType)
+      }
+    }),[])
+
 //!state.userToken
   return (
     <>
     <AuthContext.Provider value={authContext}>
+    <NotifyContext.Provider value = {notifyContext}>
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -136,8 +144,9 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
         </Stack.Navigator>
 
     </NavigationContainer>
+     <Notify message = {message} type = {type} setMessage = {(msg:string)=> setMessage(msg)}/>
+    </NotifyContext.Provider>
     </AuthContext.Provider>
-     <Notify />
     </>
   );
 }

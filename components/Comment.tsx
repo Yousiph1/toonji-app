@@ -13,6 +13,7 @@ import Award from './Award'
 import getToken from '../funcs/GetToken';
 import { AuthContext } from '../navigation';
 import { awardReq } from '../types';
+import { NotifyContext } from './Notify';
 
 type songId = string;
 
@@ -29,6 +30,7 @@ export default function Comments({songId, showModal}: {songId: songId, showModal
   const [sending, setSending] = useState(false)
 
   const {signOut} = useContext(AuthContext)
+  const {newNotification} = useContext(NotifyContext)
 
    useEffect(()=> {
      setIsLoading(true)
@@ -43,11 +45,10 @@ export default function Comments({songId, showModal}: {songId: songId, showModal
                 }
               })
               .catch(e => {
-                if(e.response?.status === 401) {
-                  signOut()
-                }
                 setIsLoading(false)
-                console.log(e)
+                let msg = e.response?.data.msg
+                if(e.response?.status === 401){signOut()}else{newNotification(msg,'ERROR')}
+
               })
    },[])
 
@@ -64,25 +65,16 @@ export default function Comments({songId, showModal}: {songId: songId, showModal
               })
               .catch(e => {
                 setIsLoading(false)
-                if(e.response?.status === 401) {
-                  signOut()
-                }
-                console.log(e)
+              setIsLoading(false)
               })
    }
 
 
 const sendComment = async () => {
   setSending(true)
-  const token = await getToken()
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  }
 
   if(comment === '') return
-      axios.post(BASEURL + 'comment/'+songId,{comment},config)
+      axios.post(BASEURL + 'comment/'+songId,{comment})
       .then((res)=>{
         const data = res.data
          setComment('')
@@ -92,12 +84,8 @@ const sendComment = async () => {
        setSending(false)
       })
       .catch((err)=>{
-        const message = err.response.data.msg
-        if(err.response?.status === 401) {
-          signOut()
-        }
-      console.log(err)
-      setSending(false)
+        let msg = err.response?.data.msg
+        if(err.response?.status === 401){signOut()}else{newNotification(msg,'ERROR')}
       })
 }
 
@@ -110,13 +98,14 @@ const handleTextChange = (text:string) => {
 const deleteComment = (id: string) => {
    axios.post(`${BASEURL}delete/comment/${songId}/${id}`)
    .then(res => {
-     console.log(res)
+     newNotification(res.data.msg,'SUCCESS')
    })
    .catch(err => {
      if(err.response?.status === 401) {
        signOut()
+     }else {
+       newNotification(err.response?.data.msg, 'ERROR')
      }
-    console.log(err)
    })
 }
 
