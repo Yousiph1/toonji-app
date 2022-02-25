@@ -6,11 +6,14 @@ import colors from '../constants/Colors'
 
 
 
-export const Achievement = (props:{thisUser?: boolean; userName?: string; navigation?: any; top:string;bottom:string, navigate: boolean}) => {
+export const Achievement = (props:{thisUser?: boolean; userName?: string;
+   navigation?: any; top:string;bottom:string, navigate: boolean}) => {
   const {navigate, navigation, userName, top, bottom, thisUser} = props
   const handleNavigation  = () => {
     if(!navigate) return
-    let screen = bottom.split(" ").map(w => w[0].toUpperCase() + w.substr(1)).join("")
+    let screen = bottom.split(" ")
+                       .map(w => w[0].toUpperCase() + w.substr(1))
+                       .join("")
     navigation.navigate(screen,{name: userName, thisUser})
   }
   return (
@@ -29,12 +32,15 @@ export const Achievement = (props:{thisUser?: boolean; userName?: string; naviga
   )
 }
 
-export const UserInfo = ({name,points,date, options, picture}:{name:string;points:string;date:string;
-  picture: string; options: {data:{id: string, indx?:string,songId: string}, list: {name:string,func:()=>void}[]}}) => {
+export const UserInfo = ({name,points,date, options, picture}:{name:string;
+  points:string;date:string;
+  picture: string; options: {data:{id: string, indx?:string,songId: string},
+   list: {name:string,func:()=>void}[]}}) => {
 
   date = new Date(date).toLocaleString()
   return (
-   <View style = {{flexDirection: 'row', justifyContent: "space-between", paddingRight: 20, alignItems: "center"}}>
+   <View style = {{flexDirection: 'row', justifyContent: "space-between",
+    paddingRight: 20, alignItems: "center"}}>
     <View style = {styles.userInfoContainer}>
     <Image source = {{uri: picture}} style = {styles.image}/>
     <View style = {styles.userInfoTextContainer}>
@@ -52,9 +58,11 @@ export const UserInfo = ({name,points,date, options, picture}:{name:string;point
 
 }
 
-export const User: React.FC<{name: string; points: string; picture: string}> = ({name, points, picture}) => {
+export const User: React.FC<{name: string; points: string;
+   picture: string}> = ({name, points, picture}) => {
   return (
-    <View style = {{flexDirection: 'row', justifyContent: "space-between", paddingRight: 20, alignItems: "center"}}>
+    <View style = {{flexDirection: 'row', justifyContent: "space-between",
+     paddingRight: 20, alignItems: "center"}}>
      <View style = {styles.userInfoContainer}>
      <Image source = {{uri: picture}} style = {styles.image}/>
      <View style = {styles.userInfoTextContainer}>
@@ -70,7 +78,8 @@ export const User: React.FC<{name: string; points: string; picture: string}> = (
 }
 
 
- const Options = ({options, data}:{options: {name: string; func : ()=> void}[], data: {id: string, indx?:string,songId: string}}) => {
+ const Options = ({options, data}:{options: {name: string; func : ()=> void}[],
+ data: {id: string, indx?:string,songId: string}}) => {
    const [show, setShow] = useState(false)
   return (
     <View style = {{position: 'relative', zIndex: 1}}>
@@ -103,8 +112,8 @@ export const User: React.FC<{name: string; points: string; picture: string}> = (
 }
 
 
-export const AwardInfo = (props:{image: string; awardName: string; remove: (n:string) => void,
-                                 numberOfCoins: string, add: (n:string) => void}) => {
+export const AwardInfo = (props:{image: string; awardName: string;
+  remove: (n:string) => void, numberOfCoins: string, add: (n:string) => void}) => {
    const [selected, setSelected] = useState(false)
   //const sour = require(props.image)
   return (
@@ -121,7 +130,41 @@ export const AwardInfo = (props:{image: string; awardName: string; remove: (n:st
     style = {({pressed}) => [{opacity: pressed? 0.7: 1},styles.awardContainer,
                              {backgroundColor: selected ? "green":colors.mainColor}]}>
     <Text style = {styles.awardText}>{props.awardName}</Text>
-    <Image source = {require('../assets/images/platinum.png')} style = {styles.awardImage}/>
+    {props.awardName === "Platinum" &&
+      <Image
+        source = {require('../assets/images/platinum.png')}
+       style = {styles.awardImage}/>
+    }
+    {
+      props.awardName === "Diamond" &&
+      <Image
+      source = {require('../assets/images/diamond.png')}
+      style = {styles.awardImage}/>
+    }
+    {
+      props.awardName === "Gold" &&
+      <Image
+      source = {require('../assets/images/gold.png')}
+      style = {styles.awardImage}/>
+    }
+     {
+        props.awardName === "Silver" &&
+        <Image
+        source = {require('../assets/images/silver.jpg')}
+        style = {styles.awardImage}/>
+      }
+      {
+          props.awardName === "Bronze" &&
+          <Image
+          source = {require('../assets/images/bronze.jpg')}
+          style = {styles.awardImage}/>
+        }
+        {
+            props.awardName === "Copper" &&
+            <Image
+            source = {require('../assets/images/copper.jpg')}
+            style = {styles.awardImage}/>
+          }
     <Text style = {styles.awardText}>{props.numberOfCoins}</Text>
     </Pressable>
   )
@@ -171,8 +214,8 @@ const styles = StyleSheet.create({
    },
    awardImage: {
     borderRadius: 50,
-    width: "90%",
-    height: 70
+    width: "70%",
+    height: 50
   },
   awardText: {
     fontWeight: "bold",

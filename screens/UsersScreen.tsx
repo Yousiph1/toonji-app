@@ -140,7 +140,7 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
           songId: awardData.songId,
           punchId: awardData.breakdown?.punchId,
           brId: awardData.breakdown?.brId,
-          awardsGiven: awardsGiven
+          awardsGiven: awardsGiven.map(a => a.toLowerCase())
         }
       }
       if(awardsGiven.length < 1) {
@@ -235,7 +235,7 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
 
     <ScrollView contentContainerStyle = {styles.scrollContainer}
     scrollEventThrottle = {16}
-    onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}],{useNativeDriver:true})}
+    onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}],{useNativeDriver:false})}
     >
     <ThemedView style = {styles.achievementsContainer}>
     <Achievement top = {userInfo.points} bottom = "points" navigate = {false}/>
@@ -266,8 +266,8 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
     </View>
     </ScrollView>
     <Modal isVisible={isModalVisible}>
-      <ThemedView style={{ padding: 40, alignSelf:"center", borderRadius: 5,
-                     width: layout.isSmallDevice ? "90%":"60%"}}>
+      <ThemedView style={{ padding: 20, alignSelf:"center", borderRadius: 5,
+                     width: '98%'}}>
         <ThemedText style = {{fontWeight:"bold", fontSize: 20, marginBottom: 30}}>
         Award {`${awardData.type}`}
         </ThemedText>

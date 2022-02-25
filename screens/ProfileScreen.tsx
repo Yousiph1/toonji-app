@@ -221,7 +221,7 @@ export default function ProfileScreen() {
         onRefresh={onRefresh}
       />
     }
-    onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}],{useNativeDriver:true})}
+    onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}],{useNativeDriver:false})}
     >
     <ThemedView style = {styles.achievementsContainer}>
     <Achievement top = {userInfo.points} bottom = "points" navigate ={false} />

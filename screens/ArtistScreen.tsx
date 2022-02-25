@@ -196,7 +196,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
 
     <ScrollView contentContainerStyle = {styles.scrollContainer}
      scrollEventThrottle = {16}
-     onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}],{useNativeDriver:true})}
+     onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}],{useNativeDriver:false})}
     >
     <ThemedView style = {styles.achievementsContainer}>
     <Achievement navigate = {false} top = {userInfo.noSongs} bottom = "songs"/>

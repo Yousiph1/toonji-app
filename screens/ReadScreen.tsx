@@ -39,6 +39,7 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
  const [headerData, setHeaderData] = useState({songTitle:'-',songArtist: '-', rating: '-', raters:'-',
                                                views:'-', favourited:false, noFavourited: '-',
                                                otherArtists: '-'})
+const [userRating, setUserRating] = useState(0)
 
 const {newNotification} = useContext(NotifyContext)
 
@@ -67,6 +68,7 @@ const showEditModal = (data:{br:string; songId: string; punchId: string; id: str
      const {punchlines, ...otherKeys} = res.data.modefiedData
      setBars(punchlines)
      setHeaderData(otherKeys)
+     setUserRating(otherKeys.userRating)
      setPData(res.data.performanceData)
      setIsLoading(false)
    })
@@ -84,11 +86,11 @@ const giveAward = () => {
        songId: awardData.songId,
        punchId: awardData.breakdown?.punchId,
        brId: awardData.breakdown?.brId,
-       awardsGiven: awardsGiven
+       awardsGiven: awardsGiven.map(a => a.toLowerCase())
      }
    }else {
      data = {
-       awardsGiven,
+       awardsGiven: awardsGiven.map(a => a.toLowerCase()),
        songId: awardData.songId,
        commentId: awardData.comment?.commentId,
      }
@@ -96,6 +98,7 @@ const giveAward = () => {
    if(awardsGiven.length < 1) {
      return
    }
+
    setGivingAward(true)
    axios.post(path,data)
    .then(res => {
@@ -112,7 +115,22 @@ const giveAward = () => {
    })
 }
 
+ const giveStar = (num: number) => {
+   if(userRating > 0) return
 
+   axios.post(`${BASEURL}lyrics/rate/${num}/${route.params.songId}`)
+   .then(res => {
+     newNotification(res.data.msg, 'SUCCESS')
+     setUserRating(num)
+   })
+   .catch(e => {
+     if(e.response?.status === 401) {
+       signOut()
+     }else {
+       newNotification(e.response?.data.msg, 'ERROR')
+     }
+   })
+ }
 
   return (
     <>
@@ -145,14 +163,26 @@ const giveAward = () => {
                         color = {headerData.favourited ? colors.mainColor : 'lightgray'}/>}
                         number = {<ThemedText>{headerData.noFavourited}</ThemedText>} />
     <View style = {styles.stars}>
-    <CardIcon icon = {<FontAwesome size={20} name = 'star'
-                       color = {headerData.favourited ? colors.mainColor : 'lightgray'}/>}/>
-    <CardIcon icon = {<FontAwesome size={20} name = 'star'
-                      color = {headerData.favourited ? colors.mainColor : 'lightgray'}/>}/>
-    <CardIcon icon = {<FontAwesome size={20} name = 'star'
-                      color = {headerData.favourited ? colors.mainColor : 'lightgray'}/>}/>
-    <CardIcon icon = {<FontAwesome size={20} name = 'star'
-                      color = {headerData.favourited ? colors.mainColor : 'lightgray'}/>}/>
+      <Pressable onPress = {() => giveStar(1)}>
+      <CardIcon icon = {<FontAwesome size={20} name = 'star'
+             color = {userRating >= 1 ? colors.mainColor : 'lightgray'}/>}/>
+      </Pressable>
+      <Pressable onPress = {() => giveStar(2)}>
+      <CardIcon icon = {<FontAwesome size={20} name = 'star'
+            color = {userRating >= 2 ? colors.mainColor : 'lightgray'}/>}/>
+      </Pressable>
+      <Pressable onPress = {() => giveStar(3)}>
+      <CardIcon icon = {<FontAwesome size={20} name = 'star'
+           color = {userRating >= 3 ? colors.mainColor : 'lightgray'}/>}/>
+      </Pressable>
+      <Pressable onPress = {() => giveStar(4)}>
+      <CardIcon icon = {<FontAwesome size={20} name = 'star'
+          color = {userRating >= 4 ? colors.mainColor : 'lightgray'}/>}/>
+      </Pressable>
+      <Pressable onPress = {() => giveStar(5)}>
+      <CardIcon icon = {<FontAwesome size={20} name = 'star'
+             color = {userRating >= 5 ? colors.mainColor : 'lightgray'}/>}/>
+      </Pressable>
     </View>
     </View>
     {isLoading && <ActivityIndicator size = "large" color = {colors.mainColor} />}
@@ -274,6 +304,7 @@ const styles = StyleSheet.create({
   },
   stars: {
     flexDirection: "row",
+    alignItems: 'center',
     marginHorizontal: 20
   },
   performanceContainer: {

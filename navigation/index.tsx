@@ -120,7 +120,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack.Navigator>
+      <Stack.Navigator >
       { state.isLoading ? <Stack.Screen name = "Splash" component = {SplashScreen} /> :
          !state.userToken  ?  <>
       <Stack.Screen name="Signup" component={SignUpScreen} options={{title: 'sign up'}} />

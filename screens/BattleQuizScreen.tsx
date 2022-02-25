@@ -4,10 +4,10 @@ import {
   ActivityIndicator,
   Pressable,
   ScrollView,
-StyleSheet,
-Text,
-TextInput,
-View,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 
 } from 'react-native';
 import {io, Socket} from 'socket.io-client'
@@ -94,7 +94,7 @@ socket = io(SOCKETURL +"-battle",{transports: ["websocket"]});
     })
 
     socket.on("opponent-ended",(msg: string) => {
-       newNotification(msg,'ERR0R')
+       newNotification(msg,'NEUTRAL')
     })
     socket.on("link-full", () => {
       setLinkFull(true)
