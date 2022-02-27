@@ -21,6 +21,7 @@ import EditBrModal from '../components/EditBrModal';
 import getToken from '../funcs/GetToken';
 import { AuthContext } from '../navigation';
 import { NotifyContext } from '../components/Notify';
+import WebView from 'react-native-webview';
 
 let color: 'light' | 'dark' = "light";
 
@@ -38,7 +39,7 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
  const {signOut} = useContext(AuthContext)
  const [headerData, setHeaderData] = useState({songTitle:'-',songArtist: '-', rating: '-', raters:'-',
                                                views:'-', favourited:false, noFavourited: '-',
-                                               otherArtists: '-'})
+                                               otherArtists: '-',youtubeVideo:''})
 const [userRating, setUserRating] = useState(0)
 
 const {newNotification} = useContext(NotifyContext)
@@ -189,7 +190,11 @@ const giveAward = () => {
     {bars.map((bar, indx)=> <Bar key = {indx} indx = {indx} songId = {route.params.songId}
      {...bar} enabled = {showIcons} showModal = {showModal} showEditModal = {showEditModal}/> )}
      <ArtistPerformance data = {pData} />
-
+    
+     <WebView
+      style={{height: 200, width: layout.window.width * 0.8}}
+      source={{uri: `https://www.youtube.com/embed/${headerData.youtubeVideo}`}}
+      />
      <Comments songId = {route.params.songId} showModal = {showModal} />
 
     </ScrollView>
