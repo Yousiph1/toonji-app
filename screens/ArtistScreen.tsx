@@ -75,7 +75,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
        setUserInfo(res.data)
      })
      .catch(err => {
-       newNotification(err.reponse?.data.msg,'ERR0R')
+       newNotification(err.response?.data.msg,'ERROR')
      })
 
    },[])
@@ -91,7 +91,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
      })
      .catch(err => {
        setIsloading(false)
-       newNotification(err.reponse?.data.msg,'ERR0R')
+       newNotification(err.response?.data.msg,'ERROR')
      })
    },[])
 
@@ -109,7 +109,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
      })
      .catch(err => {
        setIsloading(false)
-       newNotification(err.reponse?.data.msg,'ERR0R')
+       newNotification(err.response?.data.msg,'ERROR')
      })
 
    },[])
@@ -127,7 +127,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
        if(err.response?.status === 401) {
          signOut()
        }else {
-         newNotification(err.reponse?.data.msg,'ERR0R')
+         newNotification(err.response?.data.msg,'ERROR')
        }
      })
    }

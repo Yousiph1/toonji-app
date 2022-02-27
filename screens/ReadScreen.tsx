@@ -140,10 +140,20 @@ const giveAward = () => {
     <View style = {styles.header}>
     <View>
     <ThemedText style = {styles.title}>{headerData.songTitle}</ThemedText>
-    <Link to = {{screen: 'Artist',params:{userName: headerData.songArtist}}}>
-    <ThemedText style = {styles.artist}>{headerData.songArtist}
-    {headerData.otherArtists !== '-' && headerData.otherArtists !== undefined ? ` ft ${headerData.otherArtists}`: ''}</ThemedText>
-    </Link>
+
+    <View style = {{flexDirection: 'row'}}>
+    <ArtistLink songArtist = {headerData.songArtist} isLast={true} />
+    {
+      (headerData.otherArtists && headerData.otherArtists !== "undefined" && headerData.otherArtists !== "-")
+        &&  <Text style = {styles.artist}>ft. </Text>
+    }
+    {
+      (headerData.otherArtists && headerData.otherArtists !== "undefined" && headerData.otherArtists !== "-")
+        &&  headerData.otherArtists.split(",").map((a,ind,arr) =><ArtistLink isLast = {ind === arr.length - 1 } key={a} songArtist = {a.trim()} />)
+    }
+    </View>
+
+
     </View>
     <View style = {styles.lyricsIcons}>
     <CardIcon icon = {<FontAwesome size={20} name = 'eye'
@@ -190,7 +200,7 @@ const giveAward = () => {
     {bars.map((bar, indx)=> <Bar key = {indx} indx = {indx} songId = {route.params.songId}
      {...bar} enabled = {showIcons} showModal = {showModal} showEditModal = {showEditModal}/> )}
      <ArtistPerformance data = {pData} />
-    
+
      <WebView
       style={{height: 200, width: layout.window.width * 0.8}}
       source={{uri: `https://www.youtube.com/embed/${headerData.youtubeVideo}`}}
@@ -262,6 +272,15 @@ const giveAward = () => {
 }
 
 
+const ArtistLink: React.FC<{songArtist:string; isLast: boolean}> =
+ ({songArtist,isLast}) => {
+  return (
+    <Link to = {{screen: 'Artist',params:{userName: songArtist}}}>
+    <Text style = {styles.artist}>{songArtist}{isLast ? "":","} </Text>
+    </Link>
+  )
+}
+
 type  performanceType = {artist: string; points: string}[]
 
 const ArtistPerformance = ({data}:{data: performanceType}) => {
@@ -299,7 +318,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   artist: {
-    color: colors.mainColor
+    color: colors.mainColor,
   },
   lyricsIcons: {
     flexDirection: 'row'
