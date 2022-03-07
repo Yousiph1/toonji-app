@@ -1,4 +1,4 @@
-import { FontAwesome, MaterialIcons, Ionicons, AntDesign, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons, Ionicons, AntDesign, Entypo, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
@@ -15,6 +15,7 @@ export default function useCachedResources() {
         // Load fonts
         await Font.loadAsync({
           ...FontAwesome.font,
+          ...FontAwesome5.font,
           ...MaterialIcons.font,
           ...Ionicons.font,
           ...AntDesign.font,
