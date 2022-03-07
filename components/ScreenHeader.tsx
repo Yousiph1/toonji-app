@@ -4,11 +4,7 @@ import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import {ThemedView} from './Themed'
 
-
-
-
-export default function
-ScreenHeader({placeholder, logo, goBack, searchFunc}:
+export default function ScreenHeader({placeholder, logo, goBack, searchFunc}:
              {placeholder: string; logo?: React.ReactNode,
               goBack?: React.ReactNode, searchFunc: (str: string) => void}) {
   const [searchParam, setSearchParam] = useState('')
@@ -34,7 +30,7 @@ ScreenHeader({placeholder, logo, goBack, searchFunc}:
 const headerStyles = StyleSheet.create({
   container: {
     width: layout.window.width,
-    height: 15/ 100  * layout.window.width,
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: "center",
     justifyContent: 'center',

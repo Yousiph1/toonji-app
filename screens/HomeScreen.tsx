@@ -11,11 +11,13 @@ import {BASEURL} from '../constants/Credentials'
 
 import ScreenHeader from '../components/ScreenHeader'
 import { ThemedText, ThemedView } from '../components/Themed';
-import getToken from '../funcs/GetToken';
 import {NotifyContext} from '../components/Notify'
+import { FontAwesome5 } from '@expo/vector-icons';
+
 export default function HomeScreen() {
   const [data,setData] = useState({songs:[],newArrivals:[]})
   const [isLoading, setIsLoading] = useState(false)
+  const [count, setCount] = useState(0)
 //  const [searching, setSearching] = useState(false)
   const [searchData, setSearchData] = useState({songs: [], users:[]})
   const {newNotification} = useContext(NotifyContext)
@@ -30,7 +32,17 @@ export default function HomeScreen() {
        setIsLoading(false)
        newNotification(err.response?.data.msg, 'ERROR')
      })
+
+    axios.get(`${BASEURL}p/notifications-count`)
+    .then(res => {
+      setCount(res.data.count)
+    })
+    .catch(err => {
+       
+    })
   },[])
+
+
 
   const getSearchResults = (query: string) => {
     if(query.trim() === "") {
@@ -49,7 +61,11 @@ export default function HomeScreen() {
 
   return (
     <>
-    <ScreenHeader  placeholder = "search toonji" logo = {<Logo />} searchFunc = {getSearchResults}/>
+    <ScreenHeader
+       placeholder = "search toonji" logo = {<Logo />}
+       searchFunc = {getSearchResults}
+       goBack = {<NotificationsLogo count = {count}/>}
+       />
      {(searchData.songs.length > 0 || searchData.users.length > 0) && <SearchResults songs = {searchData.songs} users = {searchData.users}/>}
     <ScrollView contentContainerStyle={styles.container}>
     <Text style = {styles.header}>recommended</Text>
@@ -119,6 +135,27 @@ const SearchResults = ({songs, users}:{songs:
      </ThemedView>
    )
 }
+
+
+const NotificationsLogo: React.FC<{count: number}> = ({count}) => (
+    <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}>
+    <Link to={{ screen: "Notifications" }}>
+      <View style={{ position: 'relative' }}>
+        {count > 0 && <Text style={{
+          position: 'absolute',
+          right: 0, backgroundColor: 'red',
+          color: 'white',
+          fontSize: 8,
+          borderRadius: 50,
+          paddingVertical: 2,
+          paddingHorizontal: 5,
+          zIndex: 1
+        }}>{count}</Text>}
+        <FontAwesome5 name="bell" size={24} />
+      </View>
+        </Link>
+    </Pressable>
+)
 
 const styles = StyleSheet.create({
   container: {

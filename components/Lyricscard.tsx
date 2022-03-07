@@ -40,7 +40,7 @@ export default function LyricsCard({data} :{data:cardData}){
            newNotification(res.data.msg, 'SUCCESS')
         })
         .catch(err => {
-          if(err.response?.satus === 401){
+          if(err.response?.status === 401){
             signOut()
           }else {
             newNotification(err.response?.data.msg, 'ERROR')

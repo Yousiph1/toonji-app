@@ -24,6 +24,7 @@ import UsersScreen from '../screens/UsersScreen';
 import SignUpScreen from '../screens/SignupScreen';
 import LoginScreen from '../screens/LoginScreen';
 import EditProfileScreen from '../screens/EditProfileScreen'
+import NotificationsScreen from '../screens/NotificationsScreen'
 import { ThemedText, ThemedView } from '../components/Themed';
 import { BASEURL } from '../constants/Credentials';
 
@@ -133,6 +134,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           <Stack.Screen name = "Users" component = {UsersScreen} options = {{headerShown: false}} />
           <Stack.Screen name = "TopFanQuiz" component = {TopFanQuizScreen} options = {{title: "Top Fan Quiz"}} />
           <Stack.Screen name = "BattleQuizReady" component = {BattleQuizScreen} options = {{title: "Battle Quiz"}} />
+          <Stack.Screen name = "Notifications" component = {NotificationsScreen}   />
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
             <Stack.Screen name = "Followers" component = {FollowersScreen} />
             <Stack.Screen name = "TopFans" component = {TopFansScreen} />

@@ -41,6 +41,7 @@ export type RootStackParamList = {
   TopFans: {name: string, thisUser: boolean};
   Battles: {name: string, thisUser: boolean};
   BattleQuizReady: {roomId: string};
+  Notifications: undefined;
   Signup: undefined;
   Splash: undefined;
   Login: undefined;
