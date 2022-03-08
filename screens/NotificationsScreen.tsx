@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {View,Text, StyleSheet, ScrollView} from 'react-native'
+import {View,Text, StyleSheet, ScrollView, ActivityIndicator} from 'react-native'
 import { ThemedText, ThemedView } from '../components/Themed'
 import axios from 'axios'
 import { BASEURL } from '../constants/Credentials'
@@ -12,11 +12,13 @@ const NotificationsScreen: React.FC = () => {
   const [followers, setFollowers] = useState<any[]>([])
   const [upvotes, setUpvotes] = useState<any[]>([])
   const [likes, setLikes] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(()=> {
+    setLoading(true)
     axios.get(`${BASEURL}p/notifications`)
     .then(res => {
-       console.log(res.data)
+       setLoading(false)
        setOthers(res.data.others)
        setAwards(res.data.awards)
        setFollowers(res.data.followers)
@@ -29,12 +31,15 @@ const NotificationsScreen: React.FC = () => {
        })
     })
     .catch(err => {
+      setLoading(false)
     })
   },[])
+  const num = likes.length + others?.length + followers?.length + awards?.length + upvotes?.length
 
   return (
-    <ThemedView style = {{flex: 1}}>
-    <ScrollView contentContainerStyle = {{flex: 1, width: '100%'}}>
+    <ThemedView style = {{flex: 1, paddingTop: 10, justifyContent: 'center'}}>
+    {loading && <ActivityIndicator size="large" color={colors.mainColor}/>}
+    {num > 0 && <ScrollView contentContainerStyle = {{flex: 1, width: '100%'}}>
     {others && others.map((a,indx)=> {
       return (
       <View key = {indx} style = {styles.mainContainer}>
@@ -95,6 +100,8 @@ const NotificationsScreen: React.FC = () => {
       )
     })}
     </ScrollView>
+  }
+    {(!num || num === 0) && !loading && <ThemedText style = {{fontSize: 20, color: 'gray', alignSelf: 'center'}}>No new notifications</ThemedText>}
     </ThemedView>
   )
 }

@@ -132,6 +132,7 @@ const SettingsScreen: React.FC = () => {
   <Pressable style = {({pressed}) => [{opacity: pressed ? 0.7 : 1,marginBottom: 20},{backgroundColor: 'red',padding:5, width: 110,borderRadius:5}]}>
   <Text style ={{color: 'white'}}>Delete Account</Text>
   </Pressable>
+  <Text style = {{marginTop: 100,marginBottom:10, alignSelf: 'center', color: 'gray'}}>made in Salaga, Ghana.</Text>
   </ScrollView>
   </ThemedView>
   )

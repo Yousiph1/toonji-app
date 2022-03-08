@@ -14,6 +14,8 @@ import { ThemedText, ThemedView } from '../components/Themed';
 import {NotifyContext} from '../components/Notify'
 import { FontAwesome5 } from '@expo/vector-icons';
 
+
+
 export default function HomeScreen() {
   const [data,setData] = useState({songs:[],newArrivals:[]})
   const [isLoading, setIsLoading] = useState(false)
@@ -38,7 +40,7 @@ export default function HomeScreen() {
       setCount(res.data.count)
     })
     .catch(err => {
-       
+
     })
   },[])
 
@@ -64,7 +66,7 @@ export default function HomeScreen() {
     <ScreenHeader
        placeholder = "search toonji" logo = {<Logo />}
        searchFunc = {getSearchResults}
-       goBack = {<NotificationsLogo count = {count}/>}
+       goBack = {<NotificationsLogo count = {count} setCount = {setCount}/>}
        />
      {(searchData.songs.length > 0 || searchData.users.length > 0) && <SearchResults songs = {searchData.songs} users = {searchData.users}/>}
     <ScrollView contentContainerStyle={styles.container}>
@@ -137,8 +139,8 @@ const SearchResults = ({songs, users}:{songs:
 }
 
 
-const NotificationsLogo: React.FC<{count: number}> = ({count}) => (
-    <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}>
+const NotificationsLogo: React.FC<{count: number, setCount: (val: number)=> void}> = ({count, setCount}) => (
+    <Pressable onPress = {()=>setCount(0)} style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}>
     <Link to={{ screen: "Notifications" }}>
       <View style={{ position: 'relative' }}>
         {count > 0 && <Text style={{
