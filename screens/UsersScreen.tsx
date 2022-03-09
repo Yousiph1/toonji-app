@@ -17,6 +17,7 @@ import {BASEURL} from '../constants/Credentials'
 import getToken from '../funcs/GetToken';
 import { AuthContext } from '../navigation';
 import { NotifyContext } from '../components/Notify';
+import { ThemeContext } from '../App';
 
 
 
@@ -339,9 +340,10 @@ interface breakTyp {
 
 const BreakView = (props: breakTyp) => {
  const {artist, bar, songId, songTitle, punchIndx, breakdown} = props
+ const {color} = React.useContext(ThemeContext)
   return (
 
-    <View style = {styles.breakViewContainer}>
+    <View style = {[styles.breakViewContainer,{backgroundColor: colors[`${color}`].gray}]}>
     <View>
     <Link to = {{screen:'Read',params:{songId}}}>
     <ThemedText>{songTitle}</ThemedText>

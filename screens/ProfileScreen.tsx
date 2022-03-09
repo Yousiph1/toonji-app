@@ -23,6 +23,7 @@ import BattlesScreen from './BattlesScreen'
 import SettingsScreen from './SettingsScreen'
 import { AuthContext } from '../navigation';
 import { NotifyContext } from '../components/Notify';
+import { ThemeContext } from '../App';
 
 const Height_Max =  50/100 * layout.window.height
 const Height_Min = 53
@@ -273,9 +274,10 @@ interface breakTyp {
 
 const BreakView = (props: breakTyp) => {
  const {artist, bar, songId, songTitle, punchIndx, breakdown, showEditModal} = props
+   const {color} = React.useContext(ThemeContext)
   return (
 
-    <View style = {styles.breakViewContainer}>
+    <View style = {[styles.breakViewContainer,{backgroundColor: colors[`${color}`].gray}]}>
     <View>
     <Link to = {{screen:'Read',params:{songId}}}>
     <ThemedText>{songTitle}</ThemedText>

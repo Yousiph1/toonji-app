@@ -3,12 +3,14 @@ import {View,Text, Image, StyleSheet, Pressable,TouchableOpacity} from 'react-na
 import { Link } from '@react-navigation/native';
 import {ThemedText, ThemedView} from './Themed'
 import colors from '../constants/Colors'
+import { ThemeContext } from '../App';
 
 
 
 export const Achievement = (props:{thisUser?: boolean; userName?: string;
    navigation?: any; top:string;bottom:string, navigate: boolean}) => {
   const {navigate, navigation, userName, top, bottom, thisUser} = props
+    const {color} = React.useContext(ThemeContext)
   const handleNavigation  = () => {
     if(!navigate) return
     let screen = bottom.split(" ")
@@ -21,7 +23,7 @@ export const Achievement = (props:{thisUser?: boolean; userName?: string;
     flexBasis: '23%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'lightgray',
+    backgroundColor: colors[`${color}`].gray,
     paddingVertical: 5,
     marginRight: 5,
     marginBottom: 5

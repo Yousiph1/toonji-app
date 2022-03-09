@@ -12,12 +12,10 @@ import Breakdown from './Breakdown'
 import getToken from '../funcs/GetToken';
 import {AuthContext} from '../navigation/index'
 import { awardReq, brType } from '../types';
-import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore';
 import { NotifyContext } from './Notify';
+import { ThemeContext } from '../App';
 
 const mainColor = colors.mainColor
-let FONT_SIZE = 18
-let COLOR = "grey";
 
 
 type bar = {
@@ -25,12 +23,15 @@ type bar = {
   hasIcons: boolean; songId:string;rated: boolean; rating: string;
  _id: string; artist: string; enabled: boolean;
  showModal: (dd:awardReq) => void;
+ COLOR: string;
+ FONT_SIZE: string;
+ FONT_FAMILY: string;
  showEditModal: (dd:{br: string; punchId: string; songId: string; id: string}) => void
 }
 
 export default function Bar({indx, punchline,userFav, hasIcons, rated,
                            rating, artist, _id, enabled,
-                           songId, showModal, showEditModal}: bar) {
+                           songId, showModal, showEditModal,COLOR, FONT_SIZE, FONT_FAMILY}: bar) {
   const [isFavorite, setIsFavorite] = useState(userFav)
   const [hasFire, setHasFire] = useState(rated)
   const [fires, setFires] = useState(parseInt(rating))
@@ -38,29 +39,13 @@ export default function Bar({indx, punchline,userFav, hasIcons, rated,
   const [show, setShow] = useState(enabled)
   const [brDowns, setBrDowns] = useState<unknown[]>([])
   const [br, setBr] = useState("")
-  const [FONT_SIZE,setFONT_SIZE] = useState(18)
-  const [COLOR, setCOLOR] = useState('grey')
   const [inputHeight, setInputHeight] = useState(40)
   const [sending, setSending] = useState(false)
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
+  const {color} = React.useContext(ThemeContext)
 
    useEffect(()=> {
-     const getData = async () => {
-       try {
-         const value = await AsyncStorage.getItem('fontSize')
-         if(value) {
-           setFONT_SIZE(Number(value))
-         }
-         const cc = await AsyncStorage.getItem("color")
-         if(cc) {
-           setCOLOR(cc)
-         }
-       } catch(e) {
-         // error reading value
-       }
-     }
-      getData()
      setShow(enabled)
    },[enabled])
 
@@ -159,7 +144,7 @@ const addBarToFavourites = () => {
   return (
     <ThemedView style = {styles.container} >
     <Pressable onPress = {()=>setShow(!show)} style = {{width: "85%"}}>
-    <ThemedText style = {[styles.bar,{color:COLOR, fontSize: FONT_SIZE}]}>
+    <ThemedText style = {[styles.bar,{color:COLOR, fontSize: FONT_SIZE, fontFamily: FONT_FAMILY}]}>
     {punchline}
     </ThemedText>
     </Pressable>
@@ -183,7 +168,7 @@ const addBarToFavourites = () => {
     </Pressable>
     </View>
   }
-  {showBreakdowns && <View style = {styles.breakdownsContainer}>
+  {showBreakdowns && <View style = {[styles.breakdownsContainer,{backgroundColor: colors[`${color}`].gray}]}>
     <ScrollView nestedScrollEnabled = {true} contentContainerStyle = {{  paddingHorizontal: 10,
       paddingTop: 10,}}>
       <KeyboardAvoidingView
@@ -215,10 +200,9 @@ const addBarToFavourites = () => {
       </Pressable>
       </KeyboardAvoidingView>
 
-    {brDowns.map((br,i) => {
-      return <Breakdown key = {i} {...br} songId = {songId}  showModal = {showModal}
-      punchId = {indx} indx = {`${i}`} showEditModal = {showEditModal} deleteBreakdown = {deleteBreakdown}/>
-    })}
+    {brDowns.map((br,i) => (<Breakdown key={i} {...br} songId={songId} showModal={showModal}
+      punchId={indx} indx={`${i}`} showEditModal={showEditModal}
+      deleteBreakdown={deleteBreakdown} />))}
    </ScrollView>
    </View>
  }
@@ -243,7 +227,6 @@ const styles = StyleSheet.create({
   breakdownsContainer: {
     borderRadius: 5,
     height: 50 / 100 * layout.window.height,
-    backgroundColor: colors.lightgray,
   },
   input : {
      width: '100%',

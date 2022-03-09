@@ -8,7 +8,7 @@ import { Text, View} from 'react-native';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-
+import {ThemeContext} from '../App'
 export function useThemeColor(
   props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
@@ -33,14 +33,16 @@ export type ViewProps = ThemeProps & View['props'];
 
 export function ThemedText(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
-
-  return <Text style={[{ color }, style]} {...otherProps} />;
+  const {color} = React.useContext(ThemeContext)
+//  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const textColor = Colors[`${color}`].text
+  return <Text style={[{ color: textColor }, style]} {...otherProps} />;
 }
 
 export function ThemedView(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
-
-  return <View style={[{ backgroundColor }, style]} {...otherProps} />;
+  const {color} = React.useContext(ThemeContext)
+//  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const bColor = Colors[`${color}`].background
+  return <View style={[{ backgroundColor: bColor }, style]} {...otherProps} />;
 }

@@ -8,14 +8,17 @@ import { AuthContext } from '../navigation'
 import { BASEURL } from '../constants/Credentials'
 import axios from 'axios'
 import { NotifyContext } from '../components/Notify'
-
+import {ThemeContext} from '../App'
 
 const SettingsScreen: React.FC = () => {
   const [checked,setChecked] = useState("15px")
   const [colorChecked, setColorChecked] = useState('grey')
   const [themeChecked, setThemeChecked] = useState("Light")
+  const [fontFamily, setFontFamily] = useState("")
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
+  const {changeTheme} = useContext(ThemeContext)
+
   useEffect(()=> {
     const getData = async () => {
       try {
@@ -25,9 +28,10 @@ const SettingsScreen: React.FC = () => {
         if(cc) setColorChecked(cc)
         const theme  = await AsyncStorage.getItem("theme")
         if(theme) setThemeChecked(theme)
+        const ff = await AsyncStorage.getItem("fontFamily")
+        if(ff) setFontFamily(ff)
       } catch(e) {
         // error reading value
-
       }
     }
      getData()
@@ -58,10 +62,20 @@ const SettingsScreen: React.FC = () => {
     try{
       await AsyncStorage.setItem("theme",val)
       setThemeChecked(val)
+      changeTheme(val)
     }catch(e) {
-        newNotification("Failed to set font size", 'ERROR')
+        newNotification("Failed to change theme", 'ERROR')
     }
 
+  }
+
+  const cacheFontFamily = async (val: string) => {
+    try{
+      await AsyncStorage.setItem("fontFamily", val)
+      setFontFamily(val)
+    }catch(e) {
+        newNotification("Failed to set font family", 'ERROR')
+    }
   }
 
   const logout = () => {
@@ -113,14 +127,17 @@ const SettingsScreen: React.FC = () => {
 
   <View style = {styles.itemContainer}>
   <ThemedText  style = {styles.textHeading}>Lyrics Font Family</ThemedText>
-  <FontSetting family = "space-mono" value = "mono-space" checked = {themeChecked} setChecked = {setThemeChecked} theme/>
+  <FontSetting family = "space-mono" value = "space-mono" checked = {fontFamily} setChecked = {cacheFontFamily} theme/>
+  <FontSetting family = "helvetica" value = "helvetica" checked = {fontFamily} setChecked = {cacheFontFamily} theme />
+  <FontSetting family = "roboto" value = "roboto" checked = {fontFamily} setChecked = {cacheFontFamily} theme />
+  <FontSetting family = "san francisco" value = "san francisco" checked = {fontFamily} setChecked = {cacheFontFamily} theme />
 
   </View>
 
   <View style = {styles.itemContainer}>
   <ThemedText  style = {styles.textHeading}>Theme</ThemedText>
-  <FontSetting value = "Light" checked = {themeChecked} setChecked = {cacheTheme} theme/>
-  <FontSetting value = "Dark" checked = {themeChecked} setChecked = {cacheTheme} theme/>
+  <FontSetting value = "light" checked = {themeChecked} setChecked = {cacheTheme} theme/>
+  <FontSetting value = "dark" checked = {themeChecked} setChecked = {cacheTheme} theme/>
   </View>
 
   <View style = {styles.break}></View>

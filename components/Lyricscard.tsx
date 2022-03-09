@@ -115,11 +115,11 @@ const styles = StyleSheet.create({
       width: cardWidth,
       position: 'relative',
       borderRadius: 5,
-      elevation: 5,
+      elevation: 10,
       shadowOffset: {width: 0, height: 0},
       shadowRadius: 5,
       shadowOpacity: 0.2,
-      shadowColor: 'black',
+      shadowColor: 'blue',
       marginBottom: 20,
     },
     cardImage: {

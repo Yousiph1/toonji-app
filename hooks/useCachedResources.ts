@@ -22,6 +22,9 @@ export default function useCachedResources() {
           ...Entypo.font,
           ...MaterialCommunityIcons.font,
           'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
+          'helvetica': require('../assets/fonts/Helvetica.ttf'),
+          'roboto': require('../assets/fonts/roboto.regular.ttf'),
+          'san francisco': require('../assets/fonts/SF-UI-Display-Regular.otf')
         });
       } catch (e) {
         // We might want to provide this error information to an error reporting service

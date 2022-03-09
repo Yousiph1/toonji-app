@@ -224,7 +224,6 @@ const BattleQuiz: React.FC = ({navigation}) =>  {
     setBattleId(text)
   }
 
-  const linkTo = useLinkTo()
 
   return (
     <ThemedView style = {{flex: 1, justifyContent: 'center'}}>

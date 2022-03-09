@@ -13,11 +13,11 @@ export default {
   dark: {
     text: '#fff',
     background: '#000',
+    gray: "#39383b",
     tint: tintColorDark,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
   },
   mainColor: '#764abc',
-  lightgray: "#f0f0f0"
 
 };

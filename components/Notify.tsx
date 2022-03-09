@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
      width: layout.isSmallDevice ? layout.window.width * 0.8 : layout.window.width * 0.7,
      position: 'absolute',
      padding: 10,
-     backgroundColor: "white",
      borderLeftWidth: 10,
      elevation: 5,
      shadowOffset: {width: 0, height: 0},

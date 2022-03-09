@@ -228,13 +228,13 @@ const Comment = (props: commentType ) => {
     <View style = {styles.iconsContainer}>
 
     <Pressable onPress = {() => commentReaction("LIKED")}>
-    <AntDesign name="like2" size={24} color= { reaction === "LIKED" ? colors.mainColor : "black"} />
+    <AntDesign name="like2" size={24} color= { reaction === "LIKED" ? colors.mainColor : "grey"} />
     </Pressable>
 
     <ThemedText>{likes}</ThemedText>
 
     <Pressable onPress = {() => commentReaction("DISLIKED")}>
-    <AntDesign name="dislike2" size={24} color= {reaction === "DISLIKED" ? colors.mainColor : "black"} />
+    <AntDesign name="dislike2" size={24} color= {reaction === "DISLIKED" ? colors.mainColor : "grey"} />
     </Pressable>
 
     </View>
@@ -255,12 +255,10 @@ const styles = StyleSheet.create({
      fontWeight: 'bold',
      marginVertical: 20,
      padding: 20,
-     backgroundColor: colors.lightgray,
      width: layout.window.width
    },
    commentContainer: {
      width:layout.window.width,
-     backgroundColor: colors.lightgray,
      padding: 10,
      borderBottomWidth: 1,
      borderBottomColor: "grey",

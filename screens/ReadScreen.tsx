@@ -22,8 +22,8 @@ import getToken from '../funcs/GetToken';
 import { AuthContext } from '../navigation';
 import { NotifyContext } from '../components/Notify';
 import WebView from 'react-native-webview';
-
-let color: 'light' | 'dark' = "light";
+import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore';
+import { ThemeContext } from '../App';
 
 export default function ReadScreen({route,navigation}: RootStackScreenProps<'Read'>) {
  const [isLoading, setIsLoading] = useState(false)
@@ -35,7 +35,11 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
  const [awardData, setAwardData] = useState<awardReq>({type:"breakdown", songId:""})
  const [awardsGiven, setAwardsGiven] = useState<string[]>([])
  const [bars, setBars] = useState([])
+ const [FONT_SIZE,setFONT_SIZE] = useState(18)
+ const [COLOR, setCOLOR] = useState('grey')
+ const [FONT_FAMILY, setFONT_FAMILY] = useState("")
  const [pData, setPData] = useState([])
+ const {color} = React.useContext(ThemeContext)
  const {signOut} = useContext(AuthContext)
  const [headerData, setHeaderData] = useState({songTitle:'-',songArtist: '-', rating: '-', raters:'-',
                                                views:'-', favourited:false, noFavourited: '-',
@@ -43,6 +47,22 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
 const [userRating, setUserRating] = useState(0)
 
 const {newNotification} = useContext(NotifyContext)
+
+ useEffect(()=> {
+   const getData = async () => {
+     try {
+       const value = await AsyncStorage.getItem('fontSize')
+       if(value) setFONT_SIZE(Number(value))
+       const cc = await AsyncStorage.getItem("color")
+       if(cc) setCOLOR(cc)
+       const ff = await AsyncStorage.getItem("fontFamily")
+       if(ff) setFONT_FAMILY(ff)
+     } catch(e) {
+       // error reading value
+     }
+   }
+    getData()
+ },[])
 
 const showModal = (confs: awardReq) => {
   const {type, songId, breakdown, comment} = confs
@@ -59,8 +79,6 @@ const showEditModal = (data:{br:string; songId: string; punchId: string; id: str
    setEditData(data)
    setEditModalVisible(true)
 }
-
- color = useColorScheme()
 
  useEffect(()=> {
    setIsLoading(true)
@@ -137,7 +155,7 @@ const giveAward = () => {
     <>
     <ScreenHeader placeholder = "search bars" goBack = {<Back goBack = {navigation.goBack}/>}/>
     <ScrollView contentContainerStyle = {styles.container} >
-    <View style = {styles.header}>
+    <View style = {[styles.header,{backgroundColor: colors[`${color}`].gray}]}>
     <View>
     <ThemedText style = {styles.title}>{headerData.songTitle}</ThemedText>
 
@@ -198,7 +216,8 @@ const giveAward = () => {
     </View>
     {isLoading && <ActivityIndicator size = "large" color = {colors.mainColor} />}
     {bars.map((bar, indx)=> <Bar key = {indx} indx = {indx} songId = {route.params.songId}
-     {...bar} enabled = {showIcons} showModal = {showModal} showEditModal = {showEditModal}/> )}
+     {...bar} COLOR = {COLOR} FONT_SIZE = {FONT_SIZE} FONT_FAMILY = {FONT_FAMILY}
+      enabled = {showIcons} showModal = {showModal} showEditModal = {showEditModal}/> )}
      <ArtistPerformance data = {pData} />
 
      <WebView
@@ -284,8 +303,9 @@ const ArtistLink: React.FC<{songArtist:string; isLast: boolean}> =
 type  performanceType = {artist: string; points: string}[]
 
 const ArtistPerformance = ({data}:{data: performanceType}) => {
+    const {color} = React.useContext(ThemeContext)
   return (
-    <View style = {styles.performanceContainer}>
+    <ThemedView style = {[styles.performanceContainer,{backgroundColor: colors[`${color}`].gray}]}>
     {data.map((p,indx)=>{
       return (<View key = {indx} style = {styles.artistPerformance}>
               <ThemedText>{p.artist}</ThemedText>
@@ -293,7 +313,7 @@ const ArtistPerformance = ({data}:{data: performanceType}) => {
               </View>
             )
     })}
-    </View>
+    </ThemedView>
   )
 }
 
@@ -302,7 +322,6 @@ const ArtistPerformance = ({data}:{data: performanceType}) => {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    backgroundColor: colors[color].background
   },
   header: {
     flex:1,
@@ -332,7 +351,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20
   },
   performanceContainer: {
-    backgroundColor: 'lightgray',
     width: 90/100 * layout.window.width,
     borderRadius: 5,
     marginVertical: 20,

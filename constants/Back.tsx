@@ -10,7 +10,7 @@ export default function Back({goBack}:{goBack: () => void}) {
   return (
     <Pressable
      onPress = {()=> goBack() }
-     style = {({pressed})=>[{backgroundColor: pressed ? "lightgray": colors[theme].background}]}
+     style = {({pressed})=>[{opacity: pressed ? 0.5 : 1}]}
     >
     <View style = {{padding: 5}}>
     <Ionicons name="ios-arrow-back-sharp" size={24} color={colors.mainColor} />
