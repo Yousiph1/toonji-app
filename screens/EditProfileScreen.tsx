@@ -12,6 +12,7 @@ import getToken from '../funcs/GetToken';
 import { RootStackScreenProps } from '../types';
 import { AuthContext } from '../navigation';
 import { NotifyContext } from '../components/Notify';
+import { ThemeContext } from '../App';
 
 export default function EditProfileScreen({route}: any) {
   const {picture: img, bio: bi, prevName} = route.params
@@ -24,6 +25,8 @@ export default function EditProfileScreen({route}: any) {
   const [loading, setLoading] = useState(false)
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
+  const {color} = useContext(ThemeContext)
+
   const handleName = (text: string) => {
     if(text.match(/\W/)) return setNameError("Only english characters allowed")
     setNameError("")
@@ -88,7 +91,7 @@ export default function EditProfileScreen({route}: any) {
     <View style = {styles.inputContainer}>
     <ThemedText style = {styles.label}>User name</ThemedText>
     <TextInput
-     style = {styles.input}
+     style = {[styles.input,{color: colors[`${color}`].text}]}
      placeholder = "User name"
      onChangeText = {handleName}
      value = {name}
@@ -99,7 +102,7 @@ export default function EditProfileScreen({route}: any) {
     <View style = {styles.inputContainer}>
     <ThemedText style = {styles.label}>Bio</ThemedText>
     <TextInput
-    style = {[styles.input,{height: 80,textAlignVertical: "top"}]}
+    style = {[styles.input,{color: colors[`${color}`].text},{height: 80,textAlignVertical: "top"}]}
     placeholder = "Bio"
     onChangeText = {handleBio}
     multiline= {true}

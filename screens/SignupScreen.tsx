@@ -9,6 +9,7 @@ import {RootStackScreenProps} from '../types'
 import {BASEURL} from '../constants/Credentials'
 import { AuthContext } from '../navigation'
 import { NotifyContext } from '../components/Notify'
+import { ThemeContext } from '../App'
 
 export default function SignUpScreen({navigation}:RootStackScreenProps<'Signup'>) {
   const [name, setName] = useState('')
@@ -21,7 +22,8 @@ export default function SignUpScreen({navigation}:RootStackScreenProps<'Signup'>
   const [loading, setIsLoading] = useState(false)
   const {signIn} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
-
+  const {color} = useContext(ThemeContext)
+  
 const handleName = (text: string) => {
   if(text.match(/\W/)) return setNameError("Only english characters allowed")
   setNameError("")
@@ -90,8 +92,8 @@ const handleSignup = async () => {
     </ThemedText>
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {styles.input}
-     placeholder = "enter name"
+     style = {[styles.input,{color: colors[`${color}`].text}]}
+     placeholder = "Enter user name"
      onChangeText = {handleName}
      value = {name}
     />
@@ -100,8 +102,8 @@ const handleSignup = async () => {
 
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {styles.input}
-     placeholder = "enter email"
+     style = {[styles.input,{color: colors[`${color}`].text}]}
+     placeholder = "Enter email"
      onChangeText = {handleEmail}
      value = {email}
     />
@@ -110,8 +112,8 @@ const handleSignup = async () => {
 
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {styles.input}
-     placeholder = "enter password"
+     style = {[styles.input,{color: colors[`${color}`].text}]}
+     placeholder = "Enter password"
      onChangeText = {handlePassword}
      value = {password}
      secureTextEntry
@@ -121,8 +123,8 @@ const handleSignup = async () => {
 
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {styles.input}
-     placeholder = "repeat password"
+     style = {[styles.input,{color: colors[`${color}`].text}]}
+     placeholder = "Repeat password"
      onChangeText = {handleRepeatPasswrod}
      value = {repeatPassword}
      secureTextEntry

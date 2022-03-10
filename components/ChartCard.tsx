@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, View, Image, Text} from 'react-native';
 import { FontAwesome, MaterialIcons} from '@expo/vector-icons';
 import { Link } from '@react-navigation/native';
@@ -8,6 +8,7 @@ import { Link } from '@react-navigation/native';
 import { ThemedText, ThemedView } from '../components/Themed';
 import CardIcon from '../components/LyricsIcons'
 import colors from '../constants/Colors'
+import { ThemeContext } from '../App';
 
 
 type cardPops = {
@@ -16,7 +17,7 @@ type cardPops = {
                   songCover: string;
                   lyricId:string;
                   view: string;
-                  rating: string;
+                  rating: number;
                   otherArtists: string;
                   pos: number;
                   key: number;
@@ -24,18 +25,17 @@ type cardPops = {
 
 export const ChartCard = (props: cardPops) => {
   const {songTitle, songArtist, view, rating, otherArtists, pos, lyricId, songCover } = props
-  let artistPreview = ""
+  let artistPreview = songArtist
    if(otherArtists !== '' && otherArtists !== undefined && otherArtists !== 'undefined') {
-     artistPreview = songArtist + ' ft ' + otherArtists
-     artistPreview = artistPreview.length > 20 ? artistPreview.substring(0,17) + "..." : artistPreview.substring(0,20)
-
+     artistPreview += ' ft ' + otherArtists
+     artistPreview = artistPreview.length > 30 ? artistPreview.substring(0,27) + "..." : artistPreview.substring(0,30)
    }else {
-     artistPreview = artistPreview.length > 20 ? artistPreview.substring(0,17) + "..." : artistPreview.substring(0,20)
+     artistPreview = artistPreview.length > 30 ? artistPreview.substring(0,27) + "..." : artistPreview.substring(0,30)
    }
   return (
 
     <ThemedView style = {styles.cardContainer}>
-    <ThemedText>{pos}</ThemedText>
+    <ThemedText style = {{flexBasis: '10%'}}>{pos}</ThemedText>
     <View style = {styles.cardInfo}>
     <Image source = {{uri: songCover}} style = {styles.cardImage} />
     <View style = {{marginLeft: 10}}>
@@ -48,11 +48,11 @@ export const ChartCard = (props: cardPops) => {
     </View>
     </View>
 
-    <View>
+    <View style = {{flexBasis: '20%'}}>
     <CardIcon icon = {<FontAwesome name = "eye" color = {colors.mainColor} size = {15} />}
-                       number = {<ThemedText>{view}</ThemedText>} />
+                       number = {<ThemedText>{" "}{view}</ThemedText>} />
     <CardIcon icon = {<FontAwesome name = "star" color = {colors.mainColor} size = {15}/>}
-                        number = {<ThemedText>{rating}</ThemedText>} />
+                        number = {<ThemedText>{" "}{isNaN(rating) ? "0.0": rating}</ThemedText>} />
     </View>
 
     </ThemedView>
@@ -74,9 +74,9 @@ type cardPropsBar = {
 export const ChartCardBar = (props: cardPropsBar) => {
   const {songTitle, songArtist, fires, otherArtists, punchline, artist, songId } = props
 
-  let artistPreview = ""
+  let artistPreview = songArtist
    if(otherArtists !== '' && otherArtists !== undefined && otherArtists !== 'undefined') {
-     artistPreview = songArtist + ' ft ' + otherArtists
+     artistPreview += ' ft ' + otherArtists
      artistPreview = artistPreview.length > 30 ? artistPreview.substring(0,27) + "..." : artistPreview.substring(0,30)
 
    }else {
@@ -126,7 +126,7 @@ interface userProps {
 
 export const ChartCardUser = (props: userProps) => {
    const {name, points, followers, pos, verified, picture} = props
-
+    const {color} = useContext(ThemeContext)
   return (
 
     <ThemedView style = {styles.userCardContainer}>
@@ -140,12 +140,12 @@ export const ChartCardUser = (props: userProps) => {
 
     <ThemedText style = {styles.songTitle}>{name} {verified ? <MaterialIcons name="verified" size={12} color=  {colors.mainColor} />:''}</ThemedText>
     <View style = {{flexDirection: 'row', marginTop: 7}}>
-    <View style = {styles.userStats}>
+    <View style = {[styles.userStats,{backgroundColor: colors[`${color}`].gray}]}>
     <ThemedText>{points}</ThemedText>
     <ThemedText style = {{color: 'gray'}}>points</ThemedText>
     </View>
 
-    <View style = {styles.userStats}>
+    <View style = {[styles.userStats,{backgroundColor: colors[`${color}`].gray}]}>
     <ThemedText>{followers}</ThemedText>
     <ThemedText style = {{color: 'gray'}}>followers</ThemedText>
     </View>
@@ -164,17 +164,18 @@ export const ChartCardUser = (props: userProps) => {
 const styles = StyleSheet.create({
     cardContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      justifyContent: 'space-between',
       alignItems: 'center',
       marginVertical: 2,
-      paddingVertical: 10
+      paddingVertical: 10,
+      paddingHorizontal: 10
     },
 
     cardInfo: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      flexBasis: '45%'
+      flexBasis: '55%'
     },
 
     cardImage: {
@@ -207,7 +208,8 @@ const styles = StyleSheet.create({
     },
     userStats: {
       backgroundColor: 'lightgray',
-      padding: 5,
+      paddingVertical: 3,
+      paddingHorizontal: 10,
       alignItems: 'center',
       justifyContent: 'center',
       marginRight: 10,

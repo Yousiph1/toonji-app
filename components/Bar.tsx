@@ -181,7 +181,7 @@ const addBarToFavourites = () => {
        }}
       >
       <TextInput
-        style={[styles.input,{height: inputHeight}]}
+        style={[styles.input,{color: colors[`${color}`].text}, {height: inputHeight}]}
         placeholder="write breakdown"
         onChangeText= {handleTextChange}
         onContentSizeChange={(event) => {

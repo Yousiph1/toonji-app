@@ -13,6 +13,7 @@ import ScreenHeader from '../components/ScreenHeader'
 import { ThemedText, ThemedView } from '../components/Themed';
 import {NotifyContext} from '../components/Notify'
 import { FontAwesome5 } from '@expo/vector-icons';
+import { ThemeContext } from '../App';
 
 
 
@@ -23,6 +24,8 @@ export default function HomeScreen() {
 //  const [searching, setSearching] = useState(false)
   const [searchData, setSearchData] = useState({songs: [], users:[]})
   const {newNotification} = useContext(NotifyContext)
+  const {color} = React.useContext(ThemeContext)
+
   useEffect(()=> {
     setIsLoading(true)
      axios.get(BASEURL)
@@ -69,7 +72,7 @@ export default function HomeScreen() {
        goBack = {<NotificationsLogo count = {count} setCount = {setCount}/>}
        />
      {(searchData.songs.length > 0 || searchData.users.length > 0) && <SearchResults songs = {searchData.songs} users = {searchData.users}/>}
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container,{backgroundColor: colors[`${color}`].darkgray}]}>
     <Text style = {styles.header}>recommended</Text>
     { isLoading &&  <ActivityIndicator size="large" color={colors.mainColor} />}
     {data.songs.map((song,indx) => <LyricCard key = {indx} data = {song} />)}
@@ -153,7 +156,7 @@ const NotificationsLogo: React.FC<{count: number, setCount: (val: number)=> void
           paddingHorizontal: 5,
           zIndex: 1
         }}>{count}</Text>}
-        <FontAwesome5 name="bell" size={24} />
+        <FontAwesome5 name="bell" size={24} color = "gray"/>
       </View>
         </Link>
     </Pressable>

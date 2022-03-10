@@ -15,6 +15,7 @@ import { ThemedText, ThemedView } from '../components/Themed';
 import { Link } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { NotifyContext } from '../components/Notify';
+import { ThemeContext } from '../App';
 
 export default function FavoritesScreen() {
 
@@ -39,7 +40,7 @@ function MyTabs() {
                                 backgroundColor: colors.mainColor,marginLeft: marL,
                                 width: 10, height: 10, borderRadius: 50},
         tabBarStyle: {
-                      backgroundColor: 'white', borderBottomColor: colors.mainColor,
+                      borderBottomColor: colors.mainColor,
                       elevation: 0
           },
       }}
@@ -67,6 +68,8 @@ const Lyrics = () => {
   const [refresh, setRefresh] = useState(false)
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
+  const {color} = useContext(ThemeContext)
+
   async function getData() {
     try{
       setIsloading(true)
@@ -97,7 +100,7 @@ const Lyrics = () => {
     <View style = {{width: layout.window.width}}>
 
       <ScrollView
-      contentContainerStyle = {{alignItems: 'center', width: '100%', paddingTop: 20}}
+      contentContainerStyle = {{alignItems: 'center', width: '100%', paddingTop: 20, backgroundColor: colors[`${color}`].darkgray}}
       refreshControl={
         <RefreshControl
           refreshing={refresh}
@@ -122,6 +125,8 @@ const Bars = () => {
   const [refresh, setRefresh] = useState(false)
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
+  const {color} = useContext(ThemeContext)
+
   async function getData() {
     try{
       setIsloading(true)
@@ -151,7 +156,7 @@ const Bars = () => {
   return (
     <View style = {{width: layout.window.width}}>
 
-      <ScrollView
+      <ScrollView contentContainerStyle = {{alignItems: 'center', width: '100%', paddingTop: 20,backgroundColor: colors[`${color}`].darkgray}}
       refreshControl={
         <RefreshControl
           refreshing={refresh}

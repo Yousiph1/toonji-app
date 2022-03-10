@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React,{useContext, useState} from 'react'
 import {View, Text, TextInput,Pressable, StyleSheet, ActivityIndicator} from 'react-native'
+import { ThemeContext } from '../App'
 import { NotifyContext } from '../components/Notify'
 
 import {ThemedText, ThemedView} from '../components/Themed'
@@ -18,7 +19,8 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
   const [loading, setLoading] = useState(false)
   const {signIn} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
-
+  const {color} = useContext(ThemeContext)
+  
   const handleName = (text: string) => {
     if(text.match(/\W/)) return setNameError("Only english characters allowed")
     setNameError("")
@@ -58,7 +60,7 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
     </ThemedText>
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {styles.input}
+     style = {[styles.input,{color: colors[`${color}`].text}]}
      placeholder = "enter name"
      onChangeText = {handleName}
      value = {name}
@@ -69,7 +71,7 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
 
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {styles.input}
+     style = {[styles.input,{color: colors[`${color}`].text}]}
      placeholder = "enter password"
      onChangeText = {handlePassword}
      value = {password}

@@ -14,6 +14,7 @@ import getToken from '../funcs/GetToken';
 import { AuthContext } from '../navigation';
 import { awardReq } from '../types';
 import { NotifyContext } from './Notify';
+import { ThemeContext } from '../App';
 
 type songId = string;
 
@@ -31,7 +32,8 @@ export default function Comments({songId, showModal}: {songId: songId, showModal
 
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
-
+  const {color} = useContext(ThemeContext)
+  
    useEffect(()=> {
      setIsLoading(true)
      axios.get(BASEURL + `comments/${songId}/${0}`)
@@ -123,7 +125,7 @@ const deleteComment = (id: string) => {
      }}
     >
     <TextInput
-      style={[styles.input,{height: inputHeight}]}
+      style={[styles.input,{color: colors[`${color}`].text},{height: inputHeight}]}
       placeholder="write comment"
       onChangeText= {handleTextChange}
       onContentSizeChange={(event) => {

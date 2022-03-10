@@ -12,6 +12,7 @@ import layout from '../constants/Layout'
 import {BASEURL} from '../constants/Credentials'
 import {ChartCard, ChartCardBar, ChartCardUser} from '../components/ChartCard'
 import { NotifyContext } from '../components/Notify';
+import { ThemeContext } from '../App';
 
 
 export default function ChartsScreen(){
@@ -38,7 +39,7 @@ function MyTabs() {
                                 backgroundColor: colors.mainColor,marginLeft: marL,
                                 width: 10, height: 10, borderRadius: 50},
         tabBarStyle: {
-                      backgroundColor: 'white', borderBottomColor: colors.mainColor,
+                     borderBottomColor: colors.mainColor,
                       elevation: 0
           },
       }}
@@ -70,6 +71,7 @@ const Today = () => {
   const [refresh, setRefresh] = useState(false)
 
   const {newNotification} = useContext(NotifyContext)
+  const {color} = React.useContext(ThemeContext)
 
   useEffect(()=> {
     setIsloading(true)
@@ -112,7 +114,7 @@ const Today = () => {
         <Picker.Item label="Bars" value="Punchlines" />
       </Picker>
       </View>
-      <ScrollView
+      <ScrollView contentContainerStyle = {{backgroundColor: colors[`${color}`].darkgray}}
       refreshControl={
         <RefreshControl
           refreshing={refresh}
@@ -136,6 +138,7 @@ const Week = () => {
   const [refresh, setRefresh] = useState(false)
 
   const {newNotification} = useContext(NotifyContext)
+  const {color} = useContext(ThemeContext)
 
   useEffect(()=> {
     setIsloading(true)
@@ -179,7 +182,7 @@ const Week = () => {
       </Picker>
     </View>
       <ScrollView
-      contentContainerStyle = {{paddingBottom: 10}}
+      contentContainerStyle = {{paddingBottom: 10, backgroundColor: colors[`${color}`].darkgray}}
       refreshControl={
         <RefreshControl
           refreshing={refresh}
@@ -188,8 +191,12 @@ const Week = () => {
       }
       >
         {isLoading &&  <ActivityIndicator size="large" color={colors.mainColor}/>}
-      {selectedValue === "Songs" && songs.map((bar,indx) => <ChartCard {...bar} pos = {indx + 1} key = {indx}/>)}
-      {selectedValue === "Punchlines" && bars.map((bar,indx)=> <ChartCardBar {...bar} key = {indx}/> )}
+      {selectedValue === "Songs" && songs.map((bar,indx) => {
+        return <ChartCard {...bar} pos={indx + 1} key={indx} />;
+      })}
+      {selectedValue === "Punchlines" && bars.map((bar,indx)=> {
+        return <ChartCardBar {...bar} key={indx} />;
+      } )}
       </ScrollView>
       </>
   )
@@ -205,6 +212,7 @@ const AllTime = () => {
   const [artists, setArtists]  = useState<unknown[]>([])
   const [refresh, setRefresh] = useState(false)
   const {newNotification} = useContext(NotifyContext)
+  const {color} = useContext(ThemeContext)
   useEffect(()=> {
     setIsloading(true)
     axios.get(BASEURL + `m/charts/${selectedValue}/AllTime`)
@@ -257,7 +265,7 @@ const AllTime = () => {
       </Picker>
       </View>
       <ScrollView
-      contentContainerStyle = {{paddingBottom: 10}}
+      contentContainerStyle = {{paddingBottom: 10, backgroundColor: colors[`${color}`].darkgray}}
       refreshControl={
         <RefreshControl
           refreshing={refresh}
