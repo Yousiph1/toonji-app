@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme, DarkTheme, useLinkTo } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Link } from '@react-navigation/native'
 import * as React from 'react';
 import { ColorSchemeName, Pressable, TextInput, View, StyleSheet,Text } from 'react-native';
 import { FontAwesome, MaterialIcons, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -10,7 +9,6 @@ import axios from 'axios'
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ArtistScreen from '../screens/ArtistScreen'
@@ -23,21 +21,16 @@ import LinkingConfiguration from './LinkingConfiguration';
 import UsersScreen from '../screens/UsersScreen';
 import SignUpScreen from '../screens/SignupScreen';
 import LoginScreen from '../screens/LoginScreen';
-import EditProfileScreen from '../screens/EditProfileScreen'
 import NotificationsScreen from '../screens/NotificationsScreen'
 import { ThemedText, ThemedView } from '../components/Themed';
-import { BASEURL } from '../constants/Credentials';
-
-import getToken from '../funcs/GetToken';
 import FollowersScreen from '../screens/FollowersScreen';
 import TopFansScreen from '../screens/TopFansScreen';
 import BattlesScreen from '../screens/BattlesScreen';
 import TopFanQuizScreen from '../screens/TopFanQuizScreen';
 import BattleQuizScreen from '../screens/BattleQuizScreen'
 import Notify, { NotifyContext } from '../components/Notify'
-
+import {AuthContext} from './context'
 const Stack = createNativeStackNavigator<RootStackParamList>();
-export const AuthContext = React.createContext<any>(null);
 
 axios.defaults.withCredentials = true
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
@@ -45,7 +38,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   const [message,setMessage] = React.useState("")
   const [type, setType] = React.useState<"ERROR" | "SUCCESS" | "NEUTRAL">("NEUTRAL")
   const [state, dispatch] = React.useReducer(
-    (prevState, action) => {
+    (prevState: any, action: { type: 'RESTORE_TOKEN' | 'SIGN_IN' | 'SIGN_OUT'; token?: boolean; }) => {
       switch (action.type) {
         case 'RESTORE_TOKEN':
           return {
@@ -124,8 +117,8 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       <Stack.Navigator >
       { state.isLoading ? <Stack.Screen name = "Splash" component = {SplashScreen} /> :
          !state.userToken  ?  <>
-      <Stack.Screen name="Signup" component={SignUpScreen} options={{title: 'sign up'}} />
-      <Stack.Screen name = "Login" component = {LoginScreen} options ={{title: 'login'}} />
+      <Stack.Screen name="Signup" component={SignUpScreen} options={{headerShown: false}} />
+      <Stack.Screen name = "Login" component = {LoginScreen} options ={{headerShown: false}} />
         </> :
         < >
           <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false}} />
@@ -181,7 +174,7 @@ function BottomTabNavigator() {
       <BottomTab.Screen
         name="Home"
         component={HomeScreen}
-        options={({ navigation }: RootTabScreenProps<'Home'>) => ({
+        options={() => ({
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} iconsProvider = "material"/>
         })}
       />
@@ -214,7 +207,7 @@ function BottomTabNavigator() {
 }
 
 
-const BattleQuiz: React.FC = ({navigation}) =>  {
+const BattleQuiz = ({navigation}:RootTabScreenProps<"BattleQuiz">) =>  {
   const [battleId, setBattleId] = React.useState("")
   const getBattleId = (text: string) => {
     let isUrl = text.lastIndexOf("/")

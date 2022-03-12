@@ -1,5 +1,5 @@
-import React,{useState,useEffect, useCallback, useRef, useContext} from 'react';
-import { View, StyleSheet, ScrollView,  RefreshControl, ActivityIndicator, Animated} from 'react-native';
+import React,{useState,useEffect, useCallback, useContext} from 'react';
+import { View, StyleSheet, ScrollView,  RefreshControl, ActivityIndicator} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import axios from 'axios'
@@ -114,7 +114,7 @@ const Today = () => {
         <Picker.Item label="Bars" value="Punchlines" />
       </Picker>
       </View>
-      <ScrollView contentContainerStyle = {{backgroundColor: colors[`${color}`].darkgray}}
+      <ScrollView contentContainerStyle = {{backgroundColor: colors[`${color}` as const].darkgray}}
       refreshControl={
         <RefreshControl
           refreshing={refresh}
@@ -182,7 +182,7 @@ const Week = () => {
       </Picker>
     </View>
       <ScrollView
-      contentContainerStyle = {{paddingBottom: 10, backgroundColor: colors[`${color}`].darkgray}}
+      contentContainerStyle = {{paddingBottom: 10, backgroundColor: colors[`${color}` as const].darkgray}}
       refreshControl={
         <RefreshControl
           refreshing={refresh}
@@ -265,7 +265,7 @@ const AllTime = () => {
       </Picker>
       </View>
       <ScrollView
-      contentContainerStyle = {{paddingBottom: 10, backgroundColor: colors[`${color}`].darkgray}}
+      contentContainerStyle = {{paddingBottom: 10, backgroundColor: colors[`${color}` as const].darkgray}}
       refreshControl={
         <RefreshControl
           refreshing={refresh}

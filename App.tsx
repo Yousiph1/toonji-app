@@ -7,11 +7,11 @@ import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import {AsyncStore as AsyncStorage} from './funcs/AsyncStore';
 
-export const ThemeContext = React.createContext<any>(null)
+export const ThemeContext = React.createContext<{changeTheme: (val:"light"|"dark") => void; color: "light"|"dark"}>({changeTheme: ()=>{},color:"light"})
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
-  const [colorScheme, setColorScheme] = useState(useColorScheme());
+  const [colorScheme, setColorScheme] = useState<"light"|"dark">(useColorScheme());
   useEffect(()=>{
 
     const getData = async () => {
@@ -40,7 +40,7 @@ export default function App() {
       <ThemeContext.Provider value = {themeContext} >
       <SafeAreaProvider style = {{marginTop: bar.currentHeight}}>
         <Navigation colorScheme={colorScheme} />
-        <StatusBar/>
+        <StatusBar style = "auto"/>
       </SafeAreaProvider>
       </ThemeContext.Provider>
     );

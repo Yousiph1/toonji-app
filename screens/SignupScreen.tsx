@@ -3,11 +3,10 @@ import {View, Text, TextInput,Pressable, StyleSheet, ActivityIndicator} from 're
 import axios from 'axios'
 
 import {ThemedText, ThemedView} from '../components/Themed'
-import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import {RootStackScreenProps} from '../types'
 import {BASEURL} from '../constants/Credentials'
-import { AuthContext } from '../navigation'
+import { AuthContext } from '../navigation/context'
 import { NotifyContext } from '../components/Notify'
 import { ThemeContext } from '../App'
 
@@ -23,7 +22,7 @@ export default function SignUpScreen({navigation}:RootStackScreenProps<'Signup'>
   const {signIn} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
   const {color} = useContext(ThemeContext)
-  
+
 const handleName = (text: string) => {
   if(text.match(/\W/)) return setNameError("Only english characters allowed")
   setNameError("")
@@ -88,11 +87,11 @@ const handleSignup = async () => {
   return (
     <ThemedView style = {styles.container}>
     <ThemedText style = {{fontSize: 25, fontWeight: 'bold', marginBottom:20}}>
-    sign up
+    Sign up
     </ThemedText>
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {[styles.input,{color: colors[`${color}`].text}]}
+     style = {[styles.input,{color: colors[`${color}` as const].text}]}
      placeholder = "Enter user name"
      onChangeText = {handleName}
      value = {name}
@@ -102,7 +101,7 @@ const handleSignup = async () => {
 
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {[styles.input,{color: colors[`${color}`].text}]}
+     style = {[styles.input,{color: colors[`${color}` as const].text}]}
      placeholder = "Enter email"
      onChangeText = {handleEmail}
      value = {email}
@@ -112,7 +111,7 @@ const handleSignup = async () => {
 
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {[styles.input,{color: colors[`${color}`].text}]}
+     style = {[styles.input,{color: colors[`${color}` as const].text}]}
      placeholder = "Enter password"
      onChangeText = {handlePassword}
      value = {password}
@@ -123,7 +122,7 @@ const handleSignup = async () => {
 
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {[styles.input,{color: colors[`${color}`].text}]}
+     style = {[styles.input,{color: colors[`${color}` as const].text}]}
      placeholder = "Repeat password"
      onChangeText = {handleRepeatPasswrod}
      value = {repeatPassword}

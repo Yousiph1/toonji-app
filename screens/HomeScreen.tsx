@@ -42,8 +42,7 @@ export default function HomeScreen() {
     .then(res => {
       setCount(res.data.count)
     })
-    .catch(err => {
-
+    .catch(_err => {
     })
   },[])
 
@@ -72,7 +71,7 @@ export default function HomeScreen() {
        goBack = {<NotificationsLogo count = {count} setCount = {setCount}/>}
        />
      {(searchData.songs.length > 0 || searchData.users.length > 0) && <SearchResults songs = {searchData.songs} users = {searchData.users}/>}
-    <ScrollView contentContainerStyle={[styles.container,{backgroundColor: colors[`${color}`].darkgray}]}>
+    <ScrollView contentContainerStyle={[styles.container,{backgroundColor: colors[`${color}` as const].darkgray}]}>
     <Text style = {styles.header}>recommended</Text>
     { isLoading &&  <ActivityIndicator size="large" color={colors.mainColor} />}
     {data.songs.map((song,indx) => <LyricCard key = {indx} data = {song} />)}

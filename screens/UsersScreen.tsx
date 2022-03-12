@@ -1,8 +1,8 @@
 import React,{useState, useEffect, useCallback, useRef, useContext} from 'react'
-import {View, Text, ScrollView, Pressable, Animated, Image, StyleSheet, ActivityIndicator} from 'react-native'
+import {View, Text, ScrollView, Pressable, Animated, StyleSheet, ActivityIndicator} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import { Link } from '@react-navigation/native';
-import  {FontAwesome,Ionicons,MaterialIcons} from '@expo/vector-icons'
+import  {FontAwesome,Ionicons} from '@expo/vector-icons'
 import Modal from "react-native-modal"
 import { StatusBar } from 'expo-status-bar'
 import axios from 'axios'
@@ -14,8 +14,7 @@ import {Achievement, AwardInfo} from '../components/General'
 import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
-import getToken from '../funcs/GetToken';
-import { AuthContext } from '../navigation';
+import { AuthContext } from '../navigation/context';
 import { NotifyContext } from '../components/Notify';
 import { ThemeContext } from '../App';
 
@@ -26,10 +25,6 @@ const Height_Min = 53
 const Scroll_Dist = Height_Max - Height_Min;
 
 
-(async function(){
-  const token = await getToken()
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}())
 export default function UsersScreen({route, navigation}:RootStackScreenProps<'Users'>) {
   const user = route.params.userName
   const [isLoading, setIsloading] = useState(false)
@@ -167,9 +162,8 @@ export default function UsersScreen({route, navigation}:RootStackScreenProps<'Us
 
    const follow = async () => {
       setFollowLoading(true)
-      const token = await getToken()
 
-      axios.post(`${BASEURL}p/follow/${user}`,{})
+      axios.post(`${BASEURL}p/follow/${user}`)
      .then(res => {
        setFollowLoading(false)
        setFollowing(prv => !prv)
@@ -343,7 +337,7 @@ const BreakView = (props: breakTyp) => {
  const {color} = React.useContext(ThemeContext)
   return (
 
-    <View style = {[styles.breakViewContainer,{backgroundColor: colors[`${color}`].gray}]}>
+    <View style = {[styles.breakViewContainer,{backgroundColor: colors[`${color}` as const].gray}]}>
     <View>
     <Link to = {{screen:'Read',params:{songId}}}>
     <ThemedText>{songTitle}</ThemedText>

@@ -23,7 +23,7 @@ export const Achievement = (props:{thisUser?: boolean; userName?: string;
     flexBasis: '23%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors[`${color}`].gray,
+    backgroundColor: colors[`${color}` as const].gray,
     paddingVertical: 5,
     marginRight: 5,
     marginBottom: 5

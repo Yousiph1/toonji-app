@@ -8,9 +8,7 @@ import axios from 'axios'
 import {ThemedText, ThemedView} from '../components/Themed'
 import { BASEURL } from '../constants/Credentials'
 import colors from '../constants/Colors'
-import getToken from '../funcs/GetToken';
-import { RootStackScreenProps } from '../types';
-import { AuthContext } from '../navigation';
+import { AuthContext } from '../navigation/context';
 import { NotifyContext } from '../components/Notify';
 import { ThemeContext } from '../App';
 
@@ -91,7 +89,7 @@ export default function EditProfileScreen({route}: any) {
     <View style = {styles.inputContainer}>
     <ThemedText style = {styles.label}>User name</ThemedText>
     <TextInput
-     style = {[styles.input,{color: colors[`${color}`].text}]}
+     style = {[styles.input,{color: colors[`${color}` as const].text}]}
      placeholder = "User name"
      onChangeText = {handleName}
      value = {name}
@@ -102,7 +100,7 @@ export default function EditProfileScreen({route}: any) {
     <View style = {styles.inputContainer}>
     <ThemedText style = {styles.label}>Bio</ThemedText>
     <TextInput
-    style = {[styles.input,{color: colors[`${color}`].text},{height: 80,textAlignVertical: "top"}]}
+    style = {[styles.input,{color: colors[`${color}` as const].text},{height: 80,textAlignVertical: "top"}]}
     placeholder = "Bio"
     onChangeText = {handleBio}
     multiline= {true}

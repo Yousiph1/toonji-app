@@ -11,7 +11,7 @@ import { ThemedText } from './Themed'
 import {BASEURL} from '../constants/Credentials'
 import Award from './Award'
 import getToken from '../funcs/GetToken';
-import { AuthContext } from '../navigation';
+import { AuthContext } from '../navigation/context';
 import { awardReq } from '../types';
 import { NotifyContext } from './Notify';
 import { ThemeContext } from '../App';
@@ -125,7 +125,7 @@ const deleteComment = (id: string) => {
      }}
     >
     <TextInput
-      style={[styles.input,{color: colors[`${color}`].text},{height: inputHeight}]}
+      style={[styles.input,{color: colors[`${color}` as const].text},{height: inputHeight}]}
       placeholder="write comment"
       onChangeText= {handleTextChange}
       onContentSizeChange={(event) => {

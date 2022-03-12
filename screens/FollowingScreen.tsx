@@ -1,16 +1,16 @@
 import React, {useCallback, useContext, useEffect, useLayoutEffect, useState} from 'react'
-import {Text,ActivityIndicator, FlatList, Pressable, ScrollView, View} from 'react-native'
+import {ActivityIndicator, Pressable, ScrollView} from 'react-native'
 import axios from 'axios'
 
 import {User} from '../components/General'
 import {ThemedView} from '../components/Themed'
 import {BASEURL} from '../constants/Credentials'
 import { FontAwesome } from '@expo/vector-icons'
-
 import colors from '../constants/Colors'
 import { NotifyContext } from '../components/Notify'
 
-export default function FollowingScreen({route, navigation}) {
+
+export default function FollowingScreen({route, navigation}:any) {
    const {name, thisUser} = route.params
    const [following, setfollowing] = useState<{name: string, picture: string, points: string}[]>([])
    const [loading, setLoading] = useState(false)

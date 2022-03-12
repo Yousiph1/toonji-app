@@ -4,7 +4,7 @@ import { ThemedView, ThemedText } from '../components/Themed'
 import {RadioButton} from 'react-native-paper'
 import colors from '../constants/Colors'
 import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore'
-import { AuthContext } from '../navigation'
+import { AuthContext } from '../navigation/context'
 import { BASEURL } from '../constants/Credentials'
 import axios from 'axios'
 import { NotifyContext } from '../components/Notify'
@@ -58,7 +58,7 @@ const SettingsScreen: React.FC = () => {
 
   }
 
-  const cacheTheme = async (val: string) => {
+  const cacheTheme = async (val: "light" | "dark") => {
     try{
       await AsyncStorage.setItem("theme",val)
       setThemeChecked(val)
@@ -80,10 +80,10 @@ const SettingsScreen: React.FC = () => {
 
   const logout = () => {
     axios.post(`${BASEURL}p/log-out`)
-    .then(res => {
+    .then(_res => {
        signOut()
     })
-    .catch(err => {
+    .catch(_err => {
        newNotification("Failed to logout", 'ERROR')
     })
   }

@@ -25,12 +25,12 @@ const NotificationsScreen: React.FC = () => {
        setUpvotes(res.data.upvotes)
        setLikes(res.data.likes)
        axios.delete(`${BASEURL}p/notifications`)
-       .then(res => {
+       .then(_res => {
        })
-       .catch(err => {
+       .catch(_err => {
        })
     })
-    .catch(err => {
+    .catch(_err => {
       setLoading(false)
     })
   },[])

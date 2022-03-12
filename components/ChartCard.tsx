@@ -140,12 +140,12 @@ export const ChartCardUser = (props: userProps) => {
 
     <ThemedText style = {styles.songTitle}>{name} {verified ? <MaterialIcons name="verified" size={12} color=  {colors.mainColor} />:''}</ThemedText>
     <View style = {{flexDirection: 'row', marginTop: 7}}>
-    <View style = {[styles.userStats,{backgroundColor: colors[`${color}`].gray}]}>
+    <View style = {[styles.userStats,{backgroundColor: colors[`${color}` as const].gray}]}>
     <ThemedText>{points}</ThemedText>
     <ThemedText style = {{color: 'gray'}}>points</ThemedText>
     </View>
 
-    <View style = {[styles.userStats,{backgroundColor: colors[`${color}`].gray}]}>
+    <View style = {[styles.userStats,{backgroundColor: colors[`${color}` as const].gray}]}>
     <ThemedText>{followers}</ThemedText>
     <ThemedText style = {{color: 'gray'}}>followers</ThemedText>
     </View>

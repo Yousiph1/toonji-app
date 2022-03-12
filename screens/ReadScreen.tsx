@@ -1,5 +1,5 @@
-import React,{useContext, useEffect,useRef,useState} from 'react'
-import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable, TextInput} from 'react-native'
+import React,{useContext, useEffect,useState} from 'react'
+import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable} from 'react-native'
 import { Link } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import Modal from "react-native-modal"
@@ -15,11 +15,9 @@ import Bar from '../components/Bar'
 import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import {BASEURL} from '../constants/Credentials'
-import useColorScheme from '../hooks/useColorScheme';
 import { AwardInfo } from '../components/General';
 import EditBrModal from '../components/EditBrModal';
-import getToken from '../funcs/GetToken';
-import { AuthContext } from '../navigation';
+import { AuthContext } from '../navigation/context';
 import { NotifyContext } from '../components/Notify';
 import WebView from 'react-native-webview';
 import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore';
@@ -136,7 +134,6 @@ const giveAward = () => {
 
  const giveStar = (num: number) => {
    if(userRating > 0) return
-
    axios.post(`${BASEURL}lyrics/rate/${num}/${route.params.songId}`)
    .then(res => {
      newNotification(res.data.msg, 'SUCCESS')
@@ -155,7 +152,7 @@ const giveAward = () => {
     <>
     <ScreenHeader placeholder = "search bars" goBack = {<Back goBack = {navigation.goBack}/>}/>
     <ScrollView contentContainerStyle = {styles.container} >
-    <View style = {[styles.header,{backgroundColor: colors[`${color}`].gray}]}>
+    <View style = {[styles.header,{backgroundColor: colors[`${color}` as const].gray}]}>
     <View>
     <ThemedText style = {styles.title}>{headerData.songTitle}</ThemedText>
 
@@ -163,14 +160,16 @@ const giveAward = () => {
     <ArtistLink songArtist = {headerData.songArtist} isLast={true} />
     {
       (headerData.otherArtists && headerData.otherArtists !== "undefined" && headerData.otherArtists !== "-")
-        &&  <Text style = {styles.artist}>ft. </Text>
+        ?  <Text style = {styles.artist}>ft. </Text> : <Text></Text>
     }
     {
       (headerData.otherArtists && headerData.otherArtists !== "undefined" && headerData.otherArtists !== "-")
-        &&  headerData.otherArtists.split(",").map((a,ind,arr) =><ArtistLink isLast = {ind === arr.length - 1 } key={a} songArtist = {a.trim()} />)
+        ?
+        headerData.otherArtists.split(",").map((a,ind,arr) =><ArtistLink isLast = {ind === arr.length - 1 } key={a} songArtist = {a.trim()} />)
+        :
+        null
     }
     </View>
-
 
     </View>
     <View style = {styles.lyricsIcons}>
@@ -305,7 +304,7 @@ type  performanceType = {artist: string; points: string}[]
 const ArtistPerformance = ({data}:{data: performanceType}) => {
     const {color} = React.useContext(ThemeContext)
   return (
-    <ThemedView style = {[styles.performanceContainer,{backgroundColor: colors[`${color}`].gray}]}>
+    <ThemedView style = {[styles.performanceContainer,{backgroundColor: colors[`${color}` as const].gray}]}>
     {data.map((p,indx)=>{
       return (<View key = {indx} style = {styles.artistPerformance}>
               <ThemedText>{p.artist}</ThemedText>

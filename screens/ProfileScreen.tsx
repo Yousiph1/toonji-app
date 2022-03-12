@@ -1,14 +1,13 @@
 import React,{useState, useEffect, useCallback, useRef, useContext} from 'react'
-import {View, Text, ScrollView, Pressable, Animated, Image, StyleSheet, ActivityIndicator, RefreshControl} from 'react-native'
+import {View, Text, ScrollView, Pressable, Animated, StyleSheet, ActivityIndicator, RefreshControl} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import { Link } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import  {FontAwesome,Ionicons,MaterialIcons} from '@expo/vector-icons'
+import  {FontAwesome,Ionicons} from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
-import * as SecureStore from 'expo-secure-store';
 import axios from 'axios'
 
-import {brType, RootStackScreenProps, RootTabScreenProps, ThisUserParamList} from '../types'
+import {brType, ThisUserParamList} from '../types'
 import {ThemedText, ThemedView} from '../components/Themed'
 import  Breakdown from '../components/Breakdown'
 import EditProfileScreen from './EditProfileScreen'
@@ -21,7 +20,7 @@ import FollowersScreen from './FollowersScreen'
 import FollowingScreen from './FollowingScreen'
 import BattlesScreen from './BattlesScreen'
 import SettingsScreen from './SettingsScreen'
-import { AuthContext } from '../navigation';
+import { AuthContext } from '../navigation/context';
 import { NotifyContext } from '../components/Notify';
 import { ThemeContext } from '../App';
 
@@ -277,7 +276,7 @@ const BreakView = (props: breakTyp) => {
    const {color} = React.useContext(ThemeContext)
   return (
 
-    <View style = {[styles.breakViewContainer,{backgroundColor: colors[`${color}`].gray}]}>
+    <View style = {[styles.breakViewContainer,{backgroundColor: colors[`${color}` as const].gray}]}>
     <View>
     <Link to = {{screen:'Read',params:{songId}}}>
     <ThemedText>{songTitle}</ThemedText>

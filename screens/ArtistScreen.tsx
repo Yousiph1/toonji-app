@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useCallback,useRef, useContext} from 'react'
-import {View, Text, ScrollView, Pressable, Image, Animated, StyleSheet, ActivityIndicator} from 'react-native'
+import {View, Text, ScrollView, Pressable, Animated, StyleSheet, ActivityIndicator} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import  {FontAwesome,MaterialIcons, Ionicons} from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
@@ -13,8 +13,7 @@ import {Achievement} from '../components/General'
 import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
-import getToken from '../funcs/GetToken'
-import { AuthContext } from '../navigation'
+import { AuthContext } from '../navigation/context'
 import {NotifyContext} from '../components/Notify'
 
 

@@ -13,7 +13,7 @@ import useColorScheme from '../hooks/useColorScheme'
 import {cardData} from '../types'
 import axios from 'axios';
 import { BASEURL } from '../constants/Credentials';
-import { AuthContext } from '../navigation';
+import { AuthContext } from '../navigation/context';
 import { NotifyContext } from './Notify';
 
 const {mainColor} = colors

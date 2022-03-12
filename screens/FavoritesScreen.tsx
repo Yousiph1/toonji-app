@@ -1,11 +1,10 @@
 import React,{useState, useEffect, useCallback, useContext} from 'react'
 import {View, Text, ScrollView, StyleSheet, RefreshControl, ActivityIndicator, Pressable} from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import * as SecureStore from 'expo-secure-store';
 import axios from 'axios'
 
 
-import { AuthContext } from '../navigation'
+import { AuthContext } from '../navigation/context'
 import LyricsCard from  '../components/Lyricscard'
 import colors from '../constants/Colors'
 import layout from '../constants/Layout'
@@ -65,7 +64,7 @@ const Lyrics = () => {
 
   const [isLoading, setIsloading] = useState(false)
   const [songs, setSongs] = useState<unknown[]>([])
-  const [refresh, setRefresh] = useState(false)
+  const [refresh] = useState(false)
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
   const {color} = useContext(ThemeContext)
@@ -100,7 +99,7 @@ const Lyrics = () => {
     <View style = {{width: layout.window.width}}>
 
       <ScrollView
-      contentContainerStyle = {{alignItems: 'center', width: '100%', paddingTop: 20, backgroundColor: colors[`${color}`].darkgray}}
+      contentContainerStyle = {{alignItems: 'center', width: '100%', paddingTop: 20, backgroundColor: colors[`${color}` as const].darkgray}}
       refreshControl={
         <RefreshControl
           refreshing={refresh}
@@ -122,7 +121,7 @@ const Bars = () => {
 
   const [isLoading, setIsloading] = useState(false)
   const [bars, setBars] = useState<unknown[]>([])
-  const [refresh, setRefresh] = useState(false)
+  const [refresh] = useState(false)
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
   const {color} = useContext(ThemeContext)
@@ -156,7 +155,7 @@ const Bars = () => {
   return (
     <View style = {{width: layout.window.width}}>
 
-      <ScrollView contentContainerStyle = {{alignItems: 'center', width: '100%', paddingTop: 20,backgroundColor: colors[`${color}`].darkgray}}
+      <ScrollView contentContainerStyle = {{alignItems: 'center', width: '100%', padding: 20,backgroundColor: colors[`${color}` as const].darkgray}}
       refreshControl={
         <RefreshControl
           refreshing={refresh}
@@ -182,7 +181,7 @@ type favBar = {
 }
 
 const Bar = (props: favBar) => {
-   const {bar, userFav, songId, songTitle, songArtist, otherArtists, saidBy, id} = props
+   const {bar, userFav, songId, songTitle, songArtist, otherArtists, saidBy} = props
    const [fav, setFav] = useState(userFav)
    return (
      <ThemedView style = {styles.barContainer}>
@@ -239,5 +238,6 @@ const styles = StyleSheet.create({
      marginVertical: 5,
      marginHorizontal: 20,
      borderRadius: 5,
+     width: '100%'
    }
 })

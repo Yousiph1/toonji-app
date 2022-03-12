@@ -7,7 +7,7 @@ import { NotifyContext } from '../components/Notify'
 import {ThemedText, ThemedView} from '../components/Themed'
 import colors from '../constants/Colors'
 import { BASEURL } from '../constants/Credentials'
-import { AuthContext } from '../navigation'
+import { AuthContext } from '../navigation/context'
 import { RootStackScreenProps } from '../types'
 
 
@@ -20,7 +20,7 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
   const {signIn} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
   const {color} = useContext(ThemeContext)
-  
+
   const handleName = (text: string) => {
     if(text.match(/\W/)) return setNameError("Only english characters allowed")
     setNameError("")
@@ -45,7 +45,7 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
     }
     setLoading(true)
     try{
-      const res = await axios.post(`${BASEURL}login`,{name, password})
+      await axios.post(`${BASEURL}login`,{name, password})
       signIn()
     }catch(err) {
       setLoading(false)
@@ -60,7 +60,7 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
     </ThemedText>
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {[styles.input,{color: colors[`${color}`].text}]}
+     style = {[styles.input,{color: colors[`${color}` as const].text}]}
      placeholder = "enter name"
      onChangeText = {handleName}
      value = {name}
@@ -71,7 +71,7 @@ export default function LoginScreen({navigation}:RootStackScreenProps<"Login">) 
 
     <View style = {styles.inputContainer}>
     <TextInput
-     style = {[styles.input,{color: colors[`${color}`].text}]}
+     style = {[styles.input,{color: colors[`${color}` as const].text}]}
      placeholder = "enter password"
      onChangeText = {handlePassword}
      value = {password}

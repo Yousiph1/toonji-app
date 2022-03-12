@@ -35,7 +35,7 @@ export function ThemedText(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const {color} = React.useContext(ThemeContext)
 //  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
-  const textColor = Colors[`${color}`].text
+  const textColor = Colors[`${color}` as const].text
   return <Text style={[{ color: textColor }, style]} {...otherProps} />;
 }
 
@@ -43,6 +43,6 @@ export function ThemedView(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const {color} = React.useContext(ThemeContext)
 //  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
-  const bColor = Colors[`${color}`].background
+  const bColor = Colors[`${color}` as const].background
   return <View style={[{ backgroundColor: bColor }, style]} {...otherProps} />;
 }

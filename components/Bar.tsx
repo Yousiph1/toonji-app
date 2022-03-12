@@ -168,7 +168,7 @@ const addBarToFavourites = () => {
     </Pressable>
     </View>
   }
-  {showBreakdowns && <View style = {[styles.breakdownsContainer,{backgroundColor: colors[`${color}`].gray}]}>
+  {showBreakdowns && <View style = {[styles.breakdownsContainer,{backgroundColor: colors[`${color}` as const].gray}]}>
     <ScrollView nestedScrollEnabled = {true} contentContainerStyle = {{  paddingHorizontal: 10,
       paddingTop: 10,}}>
       <KeyboardAvoidingView
@@ -181,7 +181,7 @@ const addBarToFavourites = () => {
        }}
       >
       <TextInput
-        style={[styles.input,{color: colors[`${color}`].text}, {height: inputHeight}]}
+        style={[styles.input,{color: colors[`${color}` as const].text}, {height: inputHeight}]}
         placeholder="write breakdown"
         onChangeText= {handleTextChange}
         onContentSizeChange={(event) => {

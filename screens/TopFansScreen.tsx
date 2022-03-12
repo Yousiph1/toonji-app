@@ -1,5 +1,5 @@
 import React, {useCallback, useContext, useEffect, useLayoutEffect, useState} from 'react'
-import {Text,ActivityIndicator, FlatList, Pressable, ScrollView, View} from 'react-native'
+import {Text,ActivityIndicator, Pressable, ScrollView, View} from 'react-native'
 import axios from 'axios'
 
 import {User} from '../components/General'
@@ -10,7 +10,7 @@ import { FontAwesome } from '@expo/vector-icons'
 import colors from '../constants/Colors'
 import { NotifyContext } from '../components/Notify'
 
-export default function topFansScreen({route, navigation}) {
+export default function topFansScreen({route, navigation}: any) {
    const {name} = route.params
    const [topFans, settopFans] = useState<{name: string, picture: string, points: string}[]>([])
    const [loading, setLoading] = useState(false)

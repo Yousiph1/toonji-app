@@ -9,15 +9,15 @@ import { RootStackScreenProps } from '../types'
 import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import { NotifyContext } from '../components/Notify'
-import { AuthContext } from '../navigation'
+import { AuthContext } from '../navigation/context'
 
-const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,navigation}) => {
+const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route}) => {
   const {name} = route.params
   const [current,setCurrent] = useState(0);
   const [timeStart,setTimeStart] = useState(0);
   const [totalPoints,setTotalPoints] = useState(0)
   const [generatedQuestions,setQuestions] = useState<{questionText: string; questionTitle: string; questionAnswer: string}[]>([]);
-  const [getCoins,setGetCoins] = useState(false)
+//  const [getCoins,setGetCoins] = useState(false)
   const [correct, setCorrect] = useState(false)
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
@@ -107,6 +107,7 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,n
      setAnswered(false)
      setInput("")
      setCurrent(current + 1)
+     setTimeStart(Date.now())
 
    }
   return(

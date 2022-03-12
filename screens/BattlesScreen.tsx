@@ -12,7 +12,7 @@ import { NotifyContext } from '../components/Notify'
 const BattlesScreen = ({route}:RootStackScreenProps<"Battles">) => {
   const [loading, setLoading] = useState(false)
   const [isEnd, setIsEnd] = useState(false)
-  const [nextFetch, setNextFech] = useState(false)
+//  const [nextFetch, setNextFech] = useState(false)
   const [faceoffData, setFaceOffData] = useState<{userOne: battleData, userTwo:battleData}[]>([])
   const {name, thisUser} = route.params
   const path = thisUser ? 'my/battle-records' : `battle-records/${name}`
@@ -32,7 +32,7 @@ const BattlesScreen = ({route}:RootStackScreenProps<"Battles">) => {
     .then(res => {
       setFaceOffData(prv => [...prv, ...res.data.data])
       setIsEnd(res.data.isEnd)
-      setNextFech(res.data.nextFech)
+    //  setNextFech(res.data.nextFech)
       setLoading(false)
       console.log(res.data)
     })

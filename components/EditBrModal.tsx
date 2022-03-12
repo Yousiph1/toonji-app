@@ -7,7 +7,7 @@ import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import axios from 'axios'
 import { BASEURL } from '../constants/Credentials'
-import { AuthContext } from '../navigation';
+import { AuthContext } from '../navigation/context';
 import { NotifyContext } from './Notify'
 export default function EditBrModal ({setModalVisible, isVisible, editData}:
   {setModalVisible:()=>void; isVisible:boolean; editData:{br: string; punchId: string; songId: string; id: string}}) {

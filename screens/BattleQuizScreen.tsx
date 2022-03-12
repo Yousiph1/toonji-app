@@ -17,9 +17,9 @@ import { ThemedText, ThemedView } from '../components/Themed';
 import colors from '../constants/Colors'
 import { SOCKETURL } from '../constants/Credentials';
 import layout from '../constants/Layout'
-import { RootStackParamList, RootStackScreenProps } from '../types';
+import { RootStackScreenProps } from '../types';
 import {NotifyContext} from '../components/Notify'
-import { AuthContext } from '../navigation';
+import { AuthContext } from '../navigation/context';
 let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 
@@ -45,7 +45,7 @@ export default function BattleQuizScreen({route}:RootStackScreenProps<"BattleQui
 socket = io(SOCKETURL +"-battle",{transports: ["websocket"]});
   useEffect(()=> {
 
-    socket.on("connect_error", (err) => {
+    socket.on("connect_error", (_err) => {
      socket.disconnect()
    });
 
@@ -54,6 +54,7 @@ socket = io(SOCKETURL +"-battle",{transports: ["websocket"]});
      })
 
     socket.on("all-set",(msg)=> {
+      setOwnersName(msg)
       setOpponentName(msg)
       setShowGetQuestions(true)
     })
@@ -287,6 +288,7 @@ function StartQuiz(props:any) {
      setInput("")
      setAnswered(false)
      setCurrent(current + 1)
+     setTimeStart(Date.now())
    }
 
 
