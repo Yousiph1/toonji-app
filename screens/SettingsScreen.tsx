@@ -123,6 +123,9 @@ const SettingsScreen: React.FC = () => {
   <ColorSetting color = "yellow" checked = {colorChecked} setChecked = {cacheColor} />
   <ColorSetting color = "blue" checked = {colorChecked} setChecked = {cacheColor} />
   <ColorSetting color = {colors.mainColor} checked = {colorChecked} setChecked = {cacheColor} />
+  <ColorSetting color = "white" checked = {colorChecked} setChecked = {cacheColor} />
+  <ColorSetting color = "green" checked = {colorChecked} setChecked = {cacheColor} />
+
   </View>
 
   <View style = {styles.itemContainer}>
@@ -180,10 +183,10 @@ const ColorSetting: React.FC<{color: string, checked: string, setChecked:any}> =
     <Pressable style ={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: 10}}
     onPress = {()=> setChecked(color)}
     >
-    <View style = {{width: 30, height: 30, backgroundColor: color}}></View>
+    <View style = {{width: 30, height: 30, backgroundColor: color, borderColor:'darkgray', borderWidth: 1}}></View>
     <RadioButton
          value={color}
-         color= {color}
+         color= {colors.mainColor}
          status={ checked === color ? 'checked' : 'unchecked' }
          onPress={() => setChecked(color)}
     />
