@@ -1,5 +1,5 @@
 import React,{useContext, useEffect,useState} from 'react'
-import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable} from 'react-native'
+import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable, TextStyle} from 'react-native'
 import { Link } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import Modal from "react-native-modal"
@@ -21,7 +21,7 @@ import { AuthContext } from '../navigation/context';
 import { NotifyContext } from '../components/Notify';
 import WebView from 'react-native-webview';
 import {AsyncStore as AsyncStorage} from '../funcs/AsyncStore';
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 export default function ReadScreen({route,navigation}: RootStackScreenProps<'Read'>) {
  const [isLoading, setIsLoading] = useState(false)
@@ -33,9 +33,9 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
  const [awardData, setAwardData] = useState<awardReq>({type:"breakdown", songId:""})
  const [awardsGiven, setAwardsGiven] = useState<string[]>([])
  const [bars, setBars] = useState([])
- const [FONT_SIZE,setFONT_SIZE] = useState(18)
- const [COLOR, setCOLOR] = useState('grey')
- const [FONT_FAMILY, setFONT_FAMILY] = useState("")
+ const [FONT_SIZE,setFONT_SIZE] = useState<TextStyle["fontSize"]>(18)
+ const [COLOR, setCOLOR] = useState<TextStyle["color"]>('gray')
+ const [FONT_FAMILY, setFONT_FAMILY] = useState<TextStyle["fontFamily"]>(undefined)
  const [pData, setPData] = useState([])
  const {color} = React.useContext(ThemeContext)
  const {signOut} = useContext(AuthContext)

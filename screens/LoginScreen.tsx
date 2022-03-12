@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React,{useContext, useState} from 'react'
 import {View, Text, TextInput,Pressable, StyleSheet, ActivityIndicator} from 'react-native'
-import { ThemeContext } from '../App'
+import { ThemeContext } from '../navigation/context'
 import { NotifyContext } from '../components/Notify'
 
 import {ThemedText, ThemedView} from '../components/Themed'

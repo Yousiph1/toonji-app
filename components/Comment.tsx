@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useContext} from 'react'
-import {View, Text, Pressable, TextInput, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform} from 'react-native'
+import {View, Pressable, TextInput, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform} from 'react-native'
 import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 
 import axios from 'axios'
@@ -10,11 +10,10 @@ import layout from '../constants/Layout'
 import { ThemedText } from './Themed'
 import {BASEURL} from '../constants/Credentials'
 import Award from './Award'
-import getToken from '../funcs/GetToken';
 import { AuthContext } from '../navigation/context';
 import { awardReq } from '../types';
 import { NotifyContext } from './Notify';
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 type songId = string;
 
@@ -33,7 +32,7 @@ export default function Comments({songId, showModal}: {songId: songId, showModal
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
   const {color} = useContext(ThemeContext)
-  
+
    useEffect(()=> {
      setIsLoading(true)
      axios.get(BASEURL + `comments/${songId}/${0}`)

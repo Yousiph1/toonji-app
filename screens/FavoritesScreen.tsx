@@ -14,7 +14,7 @@ import { ThemedText, ThemedView } from '../components/Themed';
 import { Link } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { NotifyContext } from '../components/Notify';
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 export default function FavoritesScreen() {
 

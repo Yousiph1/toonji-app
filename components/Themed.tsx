@@ -8,7 +8,7 @@ import { Text, View} from 'react-native';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import {ThemeContext} from '../App'
+import { ThemeContext } from '../navigation/context'
 export function useThemeColor(
   props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark

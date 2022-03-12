@@ -3,7 +3,7 @@ import {View,Text, Image, StyleSheet, Pressable,TouchableOpacity} from 'react-na
 import { Link } from '@react-navigation/native';
 import {ThemedText, ThemedView} from './Themed'
 import colors from '../constants/Colors'
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 
 

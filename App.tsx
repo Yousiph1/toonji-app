@@ -6,8 +6,7 @@ import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import {AsyncStore as AsyncStorage} from './funcs/AsyncStore';
-
-export const ThemeContext = React.createContext<{changeTheme: (val:"light"|"dark") => void; color: "light"|"dark"}>({changeTheme: ()=>{},color:"light"})
+import { ThemeContext } from './navigation/context'
 
 export default function App() {
   const isLoadingComplete = useCachedResources();

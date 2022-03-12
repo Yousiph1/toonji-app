@@ -16,7 +16,7 @@ import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
 import { AuthContext } from '../navigation/context';
 import { NotifyContext } from '../components/Notify';
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 
 

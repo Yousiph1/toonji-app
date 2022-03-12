@@ -12,7 +12,7 @@ import layout from '../constants/Layout'
 import {BASEURL} from '../constants/Credentials'
 import {ChartCard, ChartCardBar, ChartCardUser} from '../components/ChartCard'
 import { NotifyContext } from '../components/Notify';
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 
 export default function ChartsScreen(){

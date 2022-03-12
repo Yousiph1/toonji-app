@@ -13,7 +13,7 @@ import ScreenHeader from '../components/ScreenHeader'
 import { ThemedText, ThemedView } from '../components/Themed';
 import {NotifyContext} from '../components/Notify'
 import { FontAwesome5 } from '@expo/vector-icons';
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 
 

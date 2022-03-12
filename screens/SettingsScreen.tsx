@@ -8,7 +8,7 @@ import { AuthContext } from '../navigation/context'
 import { BASEURL } from '../constants/Credentials'
 import axios from 'axios'
 import { NotifyContext } from '../components/Notify'
-import {ThemeContext} from '../App'
+import { ThemeContext } from '../navigation/context'
 
 const SettingsScreen: React.FC = () => {
   const [checked,setChecked] = useState("15px")

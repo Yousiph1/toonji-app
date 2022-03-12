@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext,  useState } from 'react'
 import {View, StyleSheet, Pressable} from 'react-native'
 import {FontAwesome} from '@expo/vector-icons';
 
@@ -6,11 +6,10 @@ import {ThemedText, ThemedView} from './Themed'
 import { UserInfo} from './General'
 import Award from './Award'
 import { BASEURL } from '../constants/Credentials';
-import {AuthContext} from '../navigation/index'
+import { AuthContext } from '../navigation/context'
 
 import axios from 'axios';
-import getToken from '../funcs/GetToken';
-import { awardReq, brType } from '../types';
+import { brType } from '../types';
 import { NotifyContext } from './Notify';
 
 export default function Breakdown(props: brType ) {

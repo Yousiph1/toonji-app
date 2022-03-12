@@ -1,7 +1,8 @@
 import React,{useState, useEffect, useContext} from 'react'
-import {View, Text, StyleSheet, Pressable, ScrollView, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator} from 'react-native'
+import {View, StyleSheet, Pressable, ScrollView, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator, TextStyle} from 'react-native'
 import { FontAwesome, MaterialIcons, FontAwesome5, AntDesign, Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
+import * as Clipboard from 'expo-clipboard'
 
 import {ThemedText, ThemedView} from './Themed'
 import {BASEURL} from '../constants/Credentials'
@@ -9,11 +10,10 @@ import CardIcon from './LyricsIcons'
 import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import Breakdown from './Breakdown'
-import getToken from '../funcs/GetToken';
-import {AuthContext} from '../navigation/index'
-import { awardReq, brType } from '../types';
+import {AuthContext} from '../navigation/context'
+import { awardReq } from '../types';
 import { NotifyContext } from './Notify';
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 const mainColor = colors.mainColor
 
@@ -23,9 +23,9 @@ type bar = {
   hasIcons: boolean; songId:string;rated: boolean; rating: string;
  _id: string; artist: string; enabled: boolean;
  showModal: (dd:awardReq) => void;
- COLOR: string;
- FONT_SIZE: string;
- FONT_FAMILY: string;
+ COLOR: TextStyle["color"];
+ FONT_SIZE: TextStyle["fontSize"];
+ FONT_FAMILY: TextStyle["fontFamily"];
  showEditModal: (dd:{br: string; punchId: string; songId: string; id: string}) => void
 }
 
@@ -44,10 +44,18 @@ export default function Bar({indx, punchline,userFav, hasIcons, rated,
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
   const {color} = React.useContext(ThemeContext)
+  const [copied, setCopied] = useState(false)
 
    useEffect(()=> {
      setShow(enabled)
    },[enabled])
+
+   const copyToClipboard = () => {
+     let str = punchline + "\n" + "\t \t \t \t ~" + artist
+     Clipboard.setString(str)
+     setCopied(true)
+     newNotification("copied", "SUCCESS")
+   }
 
   const getBreakdowns = () => {
     setShowBreakdowns(!showBreakdowns)
@@ -149,9 +157,9 @@ const addBarToFavourites = () => {
     </ThemedText>
     </Pressable>
     {(hasIcons && show ) && <View style = {styles.iconsContainer}>
-    <Pressable>
+    <Pressable onPress ={copyToClipboard}>
     <CardIcon icon = {<FontAwesome size={18}
-                     name = "copy"  color = {mainColor}/>}/>
+                     name = "copy"  color = {copied ? mainColor : "lightgray"}/>}/>
     </Pressable>
 
     <Pressable onPress = {getBreakdowns}>

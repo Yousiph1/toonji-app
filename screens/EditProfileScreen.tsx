@@ -10,7 +10,7 @@ import { BASEURL } from '../constants/Credentials'
 import colors from '../constants/Colors'
 import { AuthContext } from '../navigation/context';
 import { NotifyContext } from '../components/Notify';
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 export default function EditProfileScreen({route}: any) {
   const {picture: img, bio: bi, prevName} = route.params

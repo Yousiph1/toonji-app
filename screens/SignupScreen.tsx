@@ -8,7 +8,7 @@ import {RootStackScreenProps} from '../types'
 import {BASEURL} from '../constants/Credentials'
 import { AuthContext } from '../navigation/context'
 import { NotifyContext } from '../components/Notify'
-import { ThemeContext } from '../App'
+import { ThemeContext } from '../navigation/context'
 
 export default function SignUpScreen({navigation}:RootStackScreenProps<'Signup'>) {
   const [name, setName] = useState('')

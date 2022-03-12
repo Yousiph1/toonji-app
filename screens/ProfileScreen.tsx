@@ -22,7 +22,7 @@ import BattlesScreen from './BattlesScreen'
 import SettingsScreen from './SettingsScreen'
 import { AuthContext } from '../navigation/context';
 import { NotifyContext } from '../components/Notify';
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 const Height_Max =  50/100 * layout.window.height
 const Height_Min = 53

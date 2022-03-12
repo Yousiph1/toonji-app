@@ -8,7 +8,7 @@ import { Link } from '@react-navigation/native';
 import { ThemedText, ThemedView } from '../components/Themed';
 import CardIcon from '../components/LyricsIcons'
 import colors from '../constants/Colors'
-import { ThemeContext } from '../App';
+import { ThemeContext } from '../navigation/context';
 
 
 type cardPops = {
