@@ -152,7 +152,6 @@ export default function ProfileScreen() {
 
   return (
     <View>
-    <StatusBar  style = "light" backgroundColor = "black"/>
     <Animated.View style = {[{position:'absolute', zIndex:1},{height}]}>
 
     <Animated.View style = {[styles.imageGradient,{backgroundColor:'black'},{height}]}>

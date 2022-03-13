@@ -1,12 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import {StatusBar as bar} from 'react-native'
+//import {StatusBar as bar} from 'react-native'
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import {AsyncStore as AsyncStorage} from './funcs/AsyncStore';
 import { ThemeContext } from './navigation/context'
+import Constants from 'expo-constants'
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -25,6 +26,10 @@ export default function App() {
 
   },[])
 
+  const status = useMemo(()=> {
+    return  <StatusBar style = {colorScheme === "dark" ? "light":"dark"} backgroundColor = {colorScheme === "dark" ? "black" : "white"}/>
+  },[colorScheme])
+
   const themeContext = useMemo(()=> ({
     changeTheme: (val: "light" | "dark") => {
       setColorScheme(val)
@@ -37,9 +42,9 @@ export default function App() {
   } else {
     return (
       <ThemeContext.Provider value = {themeContext} >
-      <SafeAreaProvider style = {{marginTop: bar.currentHeight}}>
+      <SafeAreaProvider style = {{marginTop: Constants.statusBarHeight}}>
         <Navigation colorScheme={colorScheme} />
-        <StatusBar style = "auto"/>
+        {status}
       </SafeAreaProvider>
       </ThemeContext.Provider>
     );

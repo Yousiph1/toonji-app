@@ -9,6 +9,8 @@ import axios from 'axios'
 import { BASEURL } from '../constants/Credentials'
 import { AuthContext } from '../navigation/context';
 import { NotifyContext } from './Notify'
+import { ThemeContext } from '../navigation/context';
+
 export default function EditBrModal ({setModalVisible, isVisible, editData}:
   {setModalVisible:()=>void; isVisible:boolean; editData:{br: string; punchId: string; songId: string; id: string}}) {
 
@@ -16,6 +18,8 @@ export default function EditBrModal ({setModalVisible, isVisible, editData}:
   const [loading, setLoading] = useState(false)
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
+  const {color} = useContext(ThemeContext)
+
   useEffect(()=> {
     setText(editData.br)
   },[editData])
@@ -31,6 +35,7 @@ export default function EditBrModal ({setModalVisible, isVisible, editData}:
    .then(res => {
      setLoading(false)
      newNotification(res.data.msg, 'SUCCESS')
+     setModalVisible()
    })
    .catch(e => {
       setLoading(false)
@@ -50,7 +55,7 @@ export default function EditBrModal ({setModalVisible, isVisible, editData}:
    <TextInput
      multiline = {true}
      value = {text}
-     style={[styles.input,{height: 150, marginBottom: 20,textAlignVertical: "top"}]}
+     style={[styles.input,{color: colors[`${color}` as const].text},{height: 150, marginBottom: 20,textAlignVertical: "top"}]}
      onChangeText= {handleTextChange}
    />
 

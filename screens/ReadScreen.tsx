@@ -148,6 +148,12 @@ const giveAward = () => {
    })
  }
 
+ const remove = (n: string) => {
+   setAwardsGiven(prv => [...prv.filter(a => a !== n)])
+ }
+ const add = (name: string) => {
+   setAwardsGiven(prv => [...prv, name])
+ }
   return (
     <>
     <ScreenHeader placeholder = "search bars" goBack = {<Back goBack = {navigation.goBack}/>}/>
@@ -235,32 +241,26 @@ const giveAward = () => {
           </ThemedText>
           <View>
           <View style = {styles.awardCollContainer}>
-          <AwardInfo numberOfCoins = {"10000"} awardName = "Platinum" remove = {(n: string) => {
-            setAwardsGiven(prv => [...prv.filter(a => a !== n)])
-          }}
-           image = {"../assets/images/platinum.png"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
-          <AwardInfo numberOfCoins = {"5000"} awardName = "Diamond" remove = {(n: string) => {
-            setAwardsGiven(prv => [...prv.filter(a => a !== n)])
-          }}
-           image = {"../assets/images/diamond.png"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
-          <AwardInfo numberOfCoins = {"1000"} awardName = "Gold" remove = {(n: string) => {
-            setAwardsGiven(prv => [...prv.filter(a => a !== n)])
-          }}
-           image = {"../assets/images/gold.png"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
+          <AwardInfo numberOfCoins = {"10000"} awardName = "Platinum" remove = {remove}
+           image = {"../assets/images/platinum.png"} add = {add}
+           />
+          <AwardInfo numberOfCoins = {"5000"} awardName = "Diamond" remove = {remove}
+           image = {"../assets/images/diamond.png"} add = {add}
+           />
+          <AwardInfo numberOfCoins = {"1000"} awardName = "Gold" remove = {remove}
+           image = {"../assets/images/gold.png"} add = {add}
+           />
            </View>
            <View style = {styles.awardCollContainer}>
-          <AwardInfo numberOfCoins = {"500"} awardName = "Silver" remove = {(n: string) => {
-            setAwardsGiven(prv => [...prv.filter(a => a !== n)])
-          }}
-           image = {"../assets/images/silver.jpg"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
-          <AwardInfo numberOfCoins = {"100"} awardName = "Bronze" remove = {(n: string) => {
-            setAwardsGiven(prv => [...prv.filter(a => a !== n)])
-          }}
-           image = {"../assets/images/bronze.jpg"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
-          <AwardInfo numberOfCoins = {"10"} awardName = "Copper" remove = {(n: string) => {
-            setAwardsGiven(prv => [...prv.filter(a => a !== n)])
-          }}
-           image = {"../assets/images/copper.jpg"} add = {(name:string) => setAwardsGiven(prv => [...prv,name])}/>
+          <AwardInfo numberOfCoins = {"500"} awardName = "Silver" remove = {remove}
+           image = {"../assets/images/silver.jpg"} add = {add}
+           />
+          <AwardInfo numberOfCoins = {"100"} awardName = "Bronze" remove = {remove}
+           image = {"../assets/images/bronze.jpg"} add = {add}
+           />
+          <AwardInfo numberOfCoins = {"10"} awardName = "Copper" remove = {remove}
+           image = {"../assets/images/copper.jpg"} add = {add}
+           />
            </View>
           </View>
 
