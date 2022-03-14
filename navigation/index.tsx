@@ -28,6 +28,8 @@ import TopFansScreen from '../screens/TopFansScreen';
 import BattlesScreen from '../screens/BattlesScreen';
 import TopFanQuizScreen from '../screens/TopFanQuizScreen';
 import BattleQuizScreen from '../screens/BattleQuizScreen'
+import LyricsCardScreen from '../screens/LyricsCardScreen'
+
 import Notify, { NotifyContext } from '../components/Notify'
 import {AuthContext} from './context'
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -128,6 +130,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           <Stack.Screen name = "TopFanQuiz" component = {TopFanQuizScreen} options = {{title: "Top Fan Quiz"}} />
           <Stack.Screen name = "BattleQuizReady" component = {BattleQuizScreen} options = {{title: "Battle Quiz"}} />
           <Stack.Screen name = "Notifications" component = {NotificationsScreen}   />
+          <Stack.Screen name = "LyricsCard" component = {LyricsCardScreen} />
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
             <Stack.Screen name = "Followers" component = {FollowersScreen} />
             <Stack.Screen name = "TopFans" component = {TopFansScreen} />

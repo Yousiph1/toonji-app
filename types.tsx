@@ -45,6 +45,7 @@ export type RootStackParamList = {
   Signup: undefined;
   Splash: undefined;
   Login: undefined;
+  LyricsCard: {songTitle: string, songArtists: string, artist:string, bar: string, picture: string} | undefined
   Modal: undefined;
   NotFound: undefined;
 };

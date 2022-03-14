@@ -230,6 +230,14 @@ export default function ProfileScreen() {
     <Achievement thisUser = {true} userName = {userInfo.name} top = {userInfo.battleRecord} bottom = "battles" navigate navigation = {navigation}/>
     </ThemedView>
 
+    <ThemedView style = {{paddingLeft: 15, flexDirection: 'row', justifyContent: 'space-between'}}>
+    <Pressable onPress = {()=> navigation.navigate('LyricsCard') } style = {({pressed})=> [{opacity: pressed ? 0.7 : 1},
+      styles.button,{flex: 0}]}>
+    <Text style = {styles.buttonText}>Lyrics card</Text>
+    </Pressable>
+    <View></View>
+    </ThemedView>
+
     <ThemedView style = {{padding: 20,marginHorizontal:5, borderRadius: 10}}>
     <ThemedText style = {{fontWeight: 'bold'}}>Bio</ThemedText>
     <View style = {{height: 3, width: 20, backgroundColor: colors.mainColor, marginBottom:10}}></View>
@@ -361,7 +369,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
     alignContent: 'space-between',
-    marginVertical: 20,
+    marginTop: 20,
     marginHorizontal: 5,
     borderRadius: 10,
     paddingVertical: 20,
