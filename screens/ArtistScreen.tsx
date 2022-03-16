@@ -13,7 +13,7 @@ import {Achievement} from '../components/General'
 import layout from '../constants/Layout'
 import colors from '../constants/Colors'
 import {BASEURL} from '../constants/Credentials'
-import { AuthContext } from '../navigation/context'
+import { AuthContext, ThemeContext } from '../navigation/context'
 import {NotifyContext} from '../components/Notify'
 
 
@@ -37,6 +37,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
 
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
+  const {color} = useContext(ThemeContext)
 
   const scrollY = useRef(new Animated.Value(0)).current
   const height = scrollY.interpolate({
@@ -193,7 +194,7 @@ export default function ArtistScreen({route, navigation}:RootStackScreenProps<'A
 
     </Animated.View>
 
-    <ScrollView contentContainerStyle = {styles.scrollContainer}
+    <ScrollView contentContainerStyle = {[styles.scrollContainer,{backgroundColor: colors[`${color}` as const].darkgray}]}
      scrollEventThrottle = {16}
      onScroll = {Animated.event([{ nativeEvent: {contentOffset: {y: scrollY}}}],{useNativeDriver:false})}
     >

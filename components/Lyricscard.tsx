@@ -152,8 +152,7 @@ const styles = StyleSheet.create({
        fontSize: 18
      },
      hardestBarView: {
-       paddingVertical: 10,
-       paddingHorizontal: 5,
+       padding: 10,
      },
      hardestBar: {
        fontSize: 18

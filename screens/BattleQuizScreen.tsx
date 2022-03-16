@@ -19,7 +19,7 @@ import { SOCKETURL } from '../constants/Credentials';
 import layout from '../constants/Layout'
 import { RootStackScreenProps } from '../types';
 import {NotifyContext} from '../components/Notify'
-import { AuthContext } from '../navigation/context';
+import { AuthContext, ThemeContext } from '../navigation/context';
 let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 
@@ -221,6 +221,8 @@ function StartQuiz(props:any) {
        const [answered, setAnswered] = useState(false)
        const [correct, setCorrect] = useState(false)
 
+       const {color} = useContext(ThemeContext)
+
          useEffect(()=>{
             if(props.socket){
               props.socket.on("opponent-points", (points: number) => {
@@ -315,7 +317,7 @@ function StartQuiz(props:any) {
     </ScrollView>
     <View>
     <TextInput
-      style={styles.input}
+      style={[styles.input,{color: colors[`${color}` as const].text}]}
       placeholder="Answer"
       value = {input}
       onChangeText = {(text) => setInput(text)}

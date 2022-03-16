@@ -9,7 +9,7 @@ import { RootStackScreenProps } from '../types'
 import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import { NotifyContext } from '../components/Notify'
-import { AuthContext } from '../navigation/context'
+import { AuthContext, ThemeContext } from '../navigation/context'
 
 const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route}) => {
   const {name} = route.params
@@ -26,6 +26,7 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route})
   const [question, setQuestion] = useState<{questionText: string; questionTitle: string; questionAnswer: string}>({})
   const {newNotification} = useContext(NotifyContext)
   const {signOut} = useContext(AuthContext)
+  const {color} = useContext(ThemeContext)
 
       useEffect(()=>{
         setLoading(true)
@@ -119,7 +120,7 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route})
         <ThemedText style = {{fontSize: 18, marginBottom: 20}}>{question.questionText}</ThemedText>
 
         <TextInput
-          style={styles.input}
+          style={[styles.input,{color: colors[`${color}` as const].text}]}
           placeholder="Answer"
           value = {input}
           onChangeText = {(text) => setInput(text)}

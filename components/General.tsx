@@ -61,20 +61,23 @@ export const UserInfo = ({name,points,date, options, picture}:{name:string;
 }
 
 export const User: React.FC<{name: string; points: string;
-   picture: string}> = ({name, points, picture}) => {
+   picture: string; topFan: boolean}> = ({name, points, picture, topFan}) => {
   return (
     <View style = {{flexDirection: 'row', justifyContent: "space-between",
      paddingRight: 20, alignItems: "center"}}>
-     <View style = {styles.userInfoContainer}>
-     <Image source = {{uri: picture}} style = {styles.image}/>
-     <View style = {styles.userInfoTextContainer}>
+     <View style = {[styles.userInfoContainer,{flexBasis: '70%'}]}>
+     <Image source = {{uri: picture}} style = {[styles.image,{marginRight: 10}]}/>
      <Link to = {{screen:"Users",params:{userName: name}}}>
      <ThemedText style = {{fontWeight: 'bold', fontSize: 20}}>
-     {name} <Text style = {{color: colors.mainColor}}>{ points} points</Text>
+     {name} {!topFan &&
+       <Text style = {{color: colors.mainColor}}>{ points} points</Text>
+     }
      </ThemedText>
      </Link>
      </View>
-     </View>
+     {topFan &&
+       <Text style = {{marginTop: -7, fontSize: 17, color: colors.mainColor}}>{points} pts.</Text>
+     }
      </View>
   )
 }
