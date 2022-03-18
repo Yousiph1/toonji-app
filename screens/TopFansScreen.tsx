@@ -15,10 +15,10 @@ export default function topFansScreen({route, navigation}: any) {
    const [topFans, settopFans] = useState<{name: string, picture: string, points: string}[]>([])
    const [loading, setLoading] = useState(false)
    const [isEnd, setIsEnd] = useState(false)
-   const [nextFech, setNextFech] = useState(0)
+   const [nextFetch, setNextFetch] = useState(0)
    const {newNotification} = useContext(NotifyContext)
 
-   const url = `${BASEURL}p/top-fans/${name}/${nextFech}`
+   const url = `${BASEURL}p/top-fans/${name}/${nextFetch}`
    useLayoutEffect(()=> {
      navigation.setOptions({
        title: `${name}'s  Top Fans`
@@ -31,7 +31,7 @@ export default function topFansScreen({route, navigation}: any) {
     .then(res => {
       settopFans(res.data.data)
       setIsEnd(res.data.isEnd)
-      setNextFech(res.data.nextFech)
+      setNextFetch(res.data.nextFetch)
       setLoading(false)
 
     })

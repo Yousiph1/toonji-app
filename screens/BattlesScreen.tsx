@@ -2,7 +2,7 @@ import { Link } from '@react-navigation/native'
 import React,{ useCallback, useContext, useEffect, useState } from 'react'
 import {View,Text,ScrollView, ActivityIndicator, Image, StyleSheet, Pressable} from 'react-native'
 import axios from 'axios'
-import { ThemedView } from '../components/Themed'
+import { ThemedText, ThemedView } from '../components/Themed'
 import { FontAwesome } from '@expo/vector-icons'
 import { BASEURL } from '../constants/Credentials'
 import colors from '../constants/Colors'
@@ -12,29 +12,34 @@ import { NotifyContext } from '../components/Notify'
 const BattlesScreen = ({route}:RootStackScreenProps<"Battles">) => {
   const [loading, setLoading] = useState(false)
   const [isEnd, setIsEnd] = useState(false)
-//  const [nextFetch, setNextFech] = useState(false)
+  const [nextFetch, setNextFetch] = useState(false)
   const [faceoffData, setFaceOffData] = useState<{userOne: battleData, userTwo:battleData}[]>([])
   const {name, thisUser} = route.params
   const path = thisUser ? 'my/battle-records' : `battle-records/${name}`
   const {newNotification} = useContext(NotifyContext)
   useEffect(()=> {
-    axios.get(BASEURL + path)
+    setLoading(true)
+    axios.get(BASEURL + path + `/${0}`)
             .then(res =>{
-               setFaceOffData(res.data)
+              console.log(res.data.data)
+               setFaceOffData(res.data.data)
+               setIsEnd(res.data.isEnd)
+               setNextFetch(res.data.nextFetch)
+               setLoading(false)
             }).catch(e =>{
+               setLoading(false)
                newNotification(e.response?.data.msg, 'ERROR')
             })
   },[])
 
   const loadMore = useCallback(() => {
     setLoading(true)
-    axios.get(BASEURL + path)
+    axios.get(BASEURL + path + `/${nextFetch}`)
     .then(res => {
       setFaceOffData(prv => [...prv, ...res.data.data])
       setIsEnd(res.data.isEnd)
-    //  setNextFech(res.data.nextFech)
+      setNextFetch(res.data.nextFetch)
       setLoading(false)
-      console.log(res.data)
     })
     .catch(err => {
       setLoading(false)
@@ -73,19 +78,24 @@ const Battle: React.FC<{userData: battleData; opponentData: battleData}> = (prop
   let userPoints = props.userData.points
      let oppPoints = props.opponentData.points
    return (
-     <View style = {{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center"}}>
+     <ScrollView contentContainerStyle = {{paddingHorizontal: 5, paddingRight: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: "center"}}>
       <View style = {styles.userInfoContainer}>
       <Image source = {{uri: props.userData.picture}} style = {styles.image}/>
-      <Link to = {{screen:"Users",params:{userName: props.userData.name}}}><Text>{'  ' + props.userData.name}</Text></Link>
-      <Text style = {[{color: userPoints > oppPoints ? "green": userPoints < oppPoints ? "red":colors.mainColor}]}>{'  '+userPoints}</Text>
+      <Link to = {{screen:"Users",params:{userName: props.userData.name}}}>
+      <ThemedText>{props.userData.name}</ThemedText>
+      </Link>
+      <Text style = {[{flexBasis: '15%'},{color: userPoints > oppPoints ? "green": userPoints < oppPoints ? "red":colors.mainColor}]}>{userPoints}</Text>
       </View>
-      <Text style = {{marginRight: 10, fontWeight: 'bold'}}> vs </Text>
+      <ThemedText style = {{marginLeft:25, marginTop: -7,
+                  fontWeight: 'bold', marginHorizontal:20}}> vs </ThemedText>
       <View style = {styles.userInfoContainer}>
+      <Text style = {[{flexBasis: '15%'},{color: userPoints > oppPoints ? "red": userPoints < oppPoints ? "green":colors.mainColor}]}>{oppPoints}</Text>
+      <Link to = {{screen:"Users",params:{userName: props.opponentData.name}}}>
+      <ThemedText>{props.opponentData.name}</ThemedText>
+      </Link>
       <Image source = {{uri: props.opponentData.picture}} style = {styles.image}/>
-      <Link to = {{screen:"Users",params:{userName: props.opponentData.name}}}><Text>{'  ' + props.opponentData.name}</Text></Link>
-      <Text style = {[{color: userPoints > oppPoints ? "red": userPoints < oppPoints ? "green":colors.mainColor}]}>{'  '+ oppPoints}</Text>
       </View>
-     </View>
+     </ScrollView>
    )
 }
 
@@ -93,6 +103,7 @@ const styles = StyleSheet.create({
   userInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 10,
     flexBasis: '40%',
   },
@@ -100,7 +111,8 @@ const styles = StyleSheet.create({
      height: 40,
      width: 40,
      borderRadius: 50,
-     backgroundColor: 'gray'
+     backgroundColor: 'gray',
+     flexBasis: '30%'
    },
    userInfoTextContainer: {
      marginLeft: 10,
