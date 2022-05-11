@@ -1,5 +1,5 @@
 import React,{useEffect, useState} from 'react'
-import {StyleSheet, TextInput} from 'react-native'
+import {Platform, StyleSheet, TextInput} from 'react-native'
 import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import {ThemedView} from './Themed'
@@ -25,8 +25,6 @@ export default function ScreenHeader({placeholder, logo, goBack, searchFunc}:
 }
 
 
-
-
 const headerStyles = StyleSheet.create({
   container: {
     width: layout.window.width,
@@ -38,7 +36,7 @@ const headerStyles = StyleSheet.create({
   },
   searchBox: {
     paddingHorizontal: 5,
-    paddingVertical: 1,
+    paddingVertical:Platform.OS === 'ios' ? 5 : 1,
     flexBasis: layout.window.width,
     flexShrink:1,
     backgroundColor: 'lightgray',

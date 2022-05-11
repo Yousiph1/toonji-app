@@ -1,5 +1,5 @@
 import React,{useContext, useEffect,useState} from 'react'
-import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable, TextStyle} from 'react-native'
+import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable, TextStyle, Platform} from 'react-native'
 import { Link } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import Modal from "react-native-modal"
@@ -34,7 +34,7 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
  const [awardsGiven, setAwardsGiven] = useState<string[]>([])
  const [bars, setBars] = useState([])
  const [FONT_SIZE,setFONT_SIZE] = useState<TextStyle["fontSize"]>(18)
- const [COLOR, setCOLOR] = useState<TextStyle["color"]>('gray')
+ const [COLOR, setCOLOR] = useState<TextStyle["color"]>('black')
  const [FONT_FAMILY, setFONT_FAMILY] = useState<TextStyle["fontFamily"]>(undefined)
  const [pData, setPData] = useState([])
  const {color} = React.useContext(ThemeContext)
@@ -49,12 +49,15 @@ const {newNotification} = useContext(NotifyContext)
  useEffect(()=> {
    const getData = async () => {
      try {
-       const value = await AsyncStorage.getItem('fontSize')
-       if(value) setFONT_SIZE(Number(value))
-       const cc = await AsyncStorage.getItem("color")
-       if(cc) setCOLOR(cc)
-       const ff = await AsyncStorage.getItem("fontFamily")
-       if(ff) setFONT_FAMILY(ff)
+       let lyricsSetting = await AsyncStorage.getItem('lyricsSettings')
+       if(lyricsSetting) {
+          let lyricsSettings: {fontSize: string, color: string, fontFamily: string; theme: string} = JSON.parse(lyricsSetting)
+          if(lyricsSettings){
+            setFONT_SIZE(Number(lyricsSettings.fontSize))
+            setCOLOR(lyricsSettings.color)
+            setFONT_FAMILY(lyricsSettings.fontFamily)
+          }
+       }
      } catch(e) {
        // error reading value
      }
@@ -342,13 +345,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   controllsContainer: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    paddingVertical: Platform.OS === "ios" ? 10 : 5
   },
   stars: {
     flexDirection: "row",
     alignItems: 'center',
     marginHorizontal: 20
   },
+
   performanceContainer: {
     width: 90/100 * layout.window.width,
     borderRadius: 5,

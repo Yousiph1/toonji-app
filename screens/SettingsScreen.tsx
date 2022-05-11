@@ -11,8 +11,8 @@ import { NotifyContext } from '../components/Notify'
 import { ThemeContext } from '../navigation/context'
 
 const SettingsScreen: React.FC = () => {
-  const [checked,setChecked] = useState("15px")
-  const [colorChecked, setColorChecked] = useState('grey')
+  const [checked,setChecked] = useState("18px")
+  const [colorChecked, setColorChecked] = useState('black')
   const [themeChecked, setThemeChecked] = useState("Light")
   const [fontFamily, setFontFamily] = useState("")
   const {signOut} = useContext(AuthContext)
@@ -22,21 +22,46 @@ const SettingsScreen: React.FC = () => {
   useEffect(()=> {
     const getData = async () => {
       try {
-        const value = await AsyncStorage.getItem('fontSize')
-        if(value) setChecked(value.toString() + "px")
-        const cc = await AsyncStorage.getItem("color")
-        if(cc) setColorChecked(cc)
-        const theme  = await AsyncStorage.getItem("theme")
-        if(theme) setThemeChecked(theme)
-        const ff = await AsyncStorage.getItem("fontFamily")
-        if(ff) setFontFamily(ff)
+        let lyricsSetting = await AsyncStorage.getItem('lyricsSettings')
+        if(lyricsSetting) {
+           let lyricsSettings: {fontSize: string, color: string, fontFamily: string; theme: string} = JSON.parse(lyricsSetting)
+
+           if(lyricsSettings){
+             setChecked(lyricsSettings.fontSize + "px")
+             setColorChecked(lyricsSettings.color)
+             setFontFamily(lyricsSettings.fontFamily)
+             setThemeChecked(lyricsSettings.theme)
+           }
+
+        }
+
+        // if(value) setChecked(value.toString() + "px")
+        // const cc = await AsyncStorage.getItem("color")
+        // if(cc) setColorChecked(cc)
+        // const theme  = await AsyncStorage.getItem("theme")
+        // if(theme) setThemeChecked(theme)
+        // const ff = await AsyncStorage.getItem("fontFamily")
+        // if(ff) setFontFamily(ff)
       } catch(e) {
         // error reading value
       }
     }
      getData()
+     return () => {
+
+     }
   },[])
 
+
+ useEffect(()=>{
+   let lyricsSettings = JSON.stringify({
+      fontSize: checked.substr(0, checked.length - 2),
+      color: colorChecked,
+      fontFamily: fontFamily,
+      theme: themeChecked
+    })
+    AsyncStorage.setItem("lyricsSettings",lyricsSettings)
+ },[checked, colorChecked, fontFamily, themeChecked])
 
   const  cacheChecked = async (val: string) => {
      const newVal = val.substr(0,2)

@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
       shadowOffset: {width: 0, height: 0},
       shadowRadius: 5,
       shadowOpacity: 0.2,
-      shadowColor: 'blue',
+      shadowColor: "black",
       marginBottom: 20,
     },
     cardImage: {

@@ -222,7 +222,8 @@ const addBarToFavourites = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: layout.isSmallDevice ? 95/ 100 * layout.window.width : 75 / 100 * layout.window.width,
+    paddingTop: 10,
+    width: 0.95 * layout.window.width,
   },
   bar: {
     marginLeft: 20

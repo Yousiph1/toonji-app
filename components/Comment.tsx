@@ -26,7 +26,7 @@ export default function Comments({songId, showModal}: {songId: songId, showModal
   const [isEnd, setIsEnd] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [comment, setComment] = useState("")
-  const [inputHeight, setInputHeight] = useState(40)
+  const [inputHeight, setInputHeight] = Platform.OS === 'ios' ? useState(70) : useState(40)
   const [sending, setSending] = useState(false)
 
   const {signOut} = useContext(AuthContext)
@@ -124,7 +124,7 @@ const deleteComment = (id: string) => {
      }}
     >
     <TextInput
-      style={[styles.input,{color: colors[`${color}` as const].text},{height: inputHeight}]}
+      style={[styles.input,{color: colors[`${color}` as const].text}]}
       placeholder="write comment"
       onChangeText= {handleTextChange}
       onContentSizeChange={(event) => {
@@ -142,7 +142,7 @@ const deleteComment = (id: string) => {
                  <Ionicons name="send-sharp" size={22} color="white" />}
     </Pressable>
     </KeyboardAvoidingView>
-
+   <View>
     {comments.map((c,indx) => {
       return <Comment key = {indx} {...c} songId = {songId}
       deleteComment = {deleteComment}
@@ -153,6 +153,7 @@ const deleteComment = (id: string) => {
       <FontAwesome name = "refresh" size = {18} color = {colors.mainColor} />
        </Pressable>
     }
+    </View>
     </View>
   )
 }
@@ -248,7 +249,8 @@ const Comment = (props: commentType ) => {
 const styles = StyleSheet.create({
    commentsContainer: {
      alignItems: 'center',
-     paddingBottom: 20
+     paddingBottom: 20,
+     flex: 1
    },
    title: {
      alignSelf: 'flex-start',
@@ -269,6 +271,7 @@ const styles = StyleSheet.create({
      borderWidth: 1,
      borderColor: colors.mainColor,
      padding: 10,
+     fontSize: 17,
      marginBottom: 5
    },
    button: {

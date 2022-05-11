@@ -5,33 +5,34 @@ import * as React from 'react';
 import { ColorSchemeName, Pressable, TextInput, View, StyleSheet,Text } from 'react-native';
 import { FontAwesome, MaterialIcons, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
-import axios from 'axios'
+import axios from 'axios';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import HomeScreen from '../screens/HomeScreen';
-import ArtistScreen from '../screens/ArtistScreen'
+import ArtistScreen from '../screens/ArtistScreen';
 import ChartsScreen from '../screens/ChartsScreen';
-import FavoritesScreen from '../screens/FavoritesScreen'
-import ProfileScreen from '../screens/ProfileScreen'
-import ReadScreen from '../screens/ReadScreen'
+import FavoritesScreen from '../screens/FavoritesScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import ReadScreen from '../screens/ReadScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import UsersScreen from '../screens/UsersScreen';
 import SignUpScreen from '../screens/SignupScreen';
 import LoginScreen from '../screens/LoginScreen';
-import NotificationsScreen from '../screens/NotificationsScreen'
+import NotificationsScreen from '../screens/NotificationsScreen';
 import { ThemedText, ThemedView } from '../components/Themed';
 import FollowersScreen from '../screens/FollowersScreen';
 import TopFansScreen from '../screens/TopFansScreen';
 import BattlesScreen from '../screens/BattlesScreen';
 import TopFanQuizScreen from '../screens/TopFanQuizScreen';
-import BattleQuizScreen from '../screens/BattleQuizScreen'
-import LyricsCardScreen from '../screens/LyricsCardScreen'
+import BattleQuizScreen from '../screens/BattleQuizScreen';
+import LyricsCardScreen from '../screens/LyricsCardScreen';
 
-import Notify, { NotifyContext } from '../components/Notify'
-import {AuthContext} from './context'
+import Notify, { NotifyContext } from '../components/Notify';
+import {AuthContext, ThemeContext} from './context';
+import colors from '../constants/Colors';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 axios.defaults.withCredentials = true
@@ -212,6 +213,8 @@ function BottomTabNavigator() {
 
 const BattleQuiz = ({navigation}:RootTabScreenProps<"BattleQuiz">) =>  {
   const [battleId, setBattleId] = React.useState("")
+  const {color} = React.useContext(ThemeContext)
+
   const getBattleId = (text: string) => {
     let isUrl = text.lastIndexOf("/")
     if(isUrl > 0) {
@@ -225,8 +228,9 @@ const BattleQuiz = ({navigation}:RootTabScreenProps<"BattleQuiz">) =>  {
     <ThemedView style = {{flex: 1, justifyContent: 'center'}}>
 
     <View style = {{paddingHorizontal: 10}}>
+    <ThemedText style ={{marginBottom: 10}}>Enter Batlle ID: </ThemedText>
     <TextInput
-      style={styles.input}
+      style={[styles.input,{color: colors[`${color}` as const].text}]}
       placeholder= "Enter battle ID"
       value = {battleId}
       onChangeText = {getBattleId}
