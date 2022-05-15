@@ -1,6 +1,8 @@
 import React,{useState,useEffect, useCallback, useContext} from 'react';
-import { View, StyleSheet, ScrollView,  RefreshControl, ActivityIndicator} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
+import {Picker, View, StyleSheet, ScrollView,  RefreshControl, ActivityIndicator} from 'react-native';
+//import {Picker} from '@react-native-picker/picker';
+import RNPickerSelect from 'react-native-picker-select';
+
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import axios from 'axios'
 
@@ -13,6 +15,7 @@ import {BASEURL} from '../constants/Credentials'
 import {ChartCard, ChartCardBar, ChartCardUser} from '../components/ChartCard'
 import { NotifyContext } from '../components/Notify';
 import { ThemeContext } from '../navigation/context';
+
 
 
 export default function ChartsScreen(){
@@ -105,14 +108,15 @@ const Today = () => {
   return (
 <>
     <View style = {{width: layout.window.width}}>
-    <Picker
-        selectedValue={selectedValue}
-        style={styles.picker}
-        onValueChange={(itemValue) => setSelectedValue(itemValue)}
-      >
-        <Picker.Item label="Lyrics" value="Songs" />
-        <Picker.Item label="Bars" value="Punchlines" />
-      </Picker>
+
+      <RNPickerSelect
+           onValueChange={(value) => setSelectedValue(value)}
+           items={[
+               { label: 'Lyrics', value: 'Songs' },
+               { label: 'Bars', value: 'Punchlines' },
+           ]}
+           style = {pickerSelectStyles}
+       />
       </View>
       <ScrollView contentContainerStyle = {{backgroundColor: colors[`${color}` as const].darkgray}}
       refreshControl={
@@ -172,14 +176,15 @@ const Week = () => {
   return (
     <>
   <View style = {{width: layout.window.width}}>
-    <Picker
-        selectedValue={selectedValue}
-        style={styles.picker}
-        onValueChange={(itemValue) => setSelectedValue(itemValue)}
-      >
-        <Picker.Item label="Lyrics" value="Songs" />
-        <Picker.Item label="Bars" value="Punchlines" />
-      </Picker>
+       <RNPickerSelect
+            onValueChange={(value) => setSelectedValue(value)}
+            items={[
+                { label: 'Lyrics', value: 'Songs' },
+                { label: 'Bars', value: 'Punchlines' },
+            ]}
+            value= "Songs"
+            style = {pickerSelectStyles}
+        />
     </View>
       <ScrollView
       contentContainerStyle = {{paddingBottom: 10, backgroundColor: colors[`${color}` as const].darkgray}}
@@ -252,17 +257,17 @@ const AllTime = () => {
   return (
     <>
     <View style = {{width: layout.window.width}}>
-    <Picker
-        selectedValue={selectedValue}
-        itemStyle = {styles.itemStyle}
-        style={styles.picker}
-        onValueChange={(itemValue) => setSelectedValue(itemValue)}
-      >
-        <Picker.Item label="Lyrics" value="Songs" />
-        <Picker.Item label="Bars" value="Punchlines" />
-        <Picker.Item label="Artists" value="Artists" />
-        <Picker.Item label="Users" value="Users" />
-      </Picker>
+      <RNPickerSelect
+           onValueChange={(value) => setSelectedValue(value)}
+           items={[
+               { label: 'Lyrics', value: 'Songs' },
+               { label: 'Bars', value: 'Punchlines' },
+               { label: 'Artists', value: "Artists"},
+               { label: "Users", value: "Users"}
+           ]}
+           value = "Songs"
+           style = {pickerSelectStyles}
+       />
       </View>
       <ScrollView
       contentContainerStyle = {{paddingBottom: 10, backgroundColor: colors[`${color}` as const].darkgray}}
@@ -291,7 +296,6 @@ const styles = StyleSheet.create({
     picker : {
        color: 'white',
        fontWeight: 'bold',
-       fontSize: 18,
        backgroundColor: colors.mainColor
      },
      itemStyle: {
@@ -307,3 +311,24 @@ const styles = StyleSheet.create({
     },
 
 })
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    color: 'white',
+    fontWeight: 'bold',
+    backgroundColor: colors.mainColor,
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    color: 'white',
+    fontWeight: 'bold',
+    backgroundColor: colors.mainColor,
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+});

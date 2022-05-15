@@ -231,7 +231,7 @@ const BattleQuiz = ({navigation}:RootTabScreenProps<"BattleQuiz">) =>  {
     <ThemedText style ={{marginBottom: 10}}>Enter Batlle ID: </ThemedText>
     <TextInput
       style={[styles.input,{color: colors[`${color}` as const].text}]}
-      placeholder= "Enter battle ID"
+      placeholder= "Battle ID"
       value = {battleId}
       onChangeText = {getBattleId}
      />
