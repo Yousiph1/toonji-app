@@ -1,7 +1,7 @@
-import React,{useContext, useEffect,useState} from 'react'
-import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable, TextStyle, Platform} from 'react-native'
+import React,{useContext, useEffect,useRef,useState} from 'react'
+import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable, TextStyle, Platform, TextInput, KeyboardAvoidingView} from 'react-native'
 import { Link } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal"
 import axios from 'axios'
 
@@ -9,7 +9,7 @@ import {awardReq, RootStackScreenProps} from '../types'
 import {ThemedText, ThemedView} from '../components/Themed'
 import CardIcon from '../components/LyricsIcons'
 import ScreenHeader from '../components/ScreenHeader'
-import Comments from '../components/Comment'
+import Comments, { commentType } from '../components/Comment'
 import Back from '../constants/Back'
 import Bar from '../components/Bar'
 import colors from '../constants/Colors'
@@ -42,9 +42,29 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
  const [headerData, setHeaderData] = useState({songTitle:'-',songArtist: '-', rating: '-', raters:'-',
                                                views:'-', favourited:false, noFavourited: '-',
                                                otherArtists: '-',youtubeVideo:''})
-const [userRating, setUserRating] = useState(0)
+ const [userRating, setUserRating] = useState(0)
+ const [commentS, setCommentS] = useState<commentType[] | undefined>(undefined)
+ const [comment, setComment] = useState("")
+ const [showInput, setShowInput] = useState(false)
+ const inputRef = useRef<TextInput>(null)
+
+ const [sendingComm, setSendingComm] = useState(false)
+
+ const showInputFunc = () => {
+   setShowInput(true)
+   inputRef.current?.focus()
+ }
+
+ const closeInput = () => {
+   setShowInput(false)
+   inputRef.current?.blur()
+ }
 
 const {newNotification} = useContext(NotifyContext)
+const handleTextChange = (text:string) => {
+  if(text.length > 500) return
+  setComment(text)
+}
 
  useEffect(()=> {
    const getData = async () => {
@@ -97,6 +117,25 @@ const showEditModal = (data:{br:string; songId: string; punchId: string; id: str
      newNotification(err.response?.data.msg, 'ERROR')
    })
  },[])
+
+ const submitComment = async () => {
+   setSendingComm(true)
+   if(comment === '') return
+       axios.post(BASEURL + 'comment/'+ route.params.songId,{comment})
+       .then((res)=>{
+         setCommentS(res.data.userComment)
+         setComment("")
+         newNotification(res.data.msg, 'SUCCESS')
+         setSendingComm(false)
+         closeInput()
+       })
+       .catch((err)=>{
+         setSendingComm(false)
+         closeInput()
+         let msg = err.response?.data.msg
+         if(err.response?.status === 401){signOut()}else{newNotification(msg,'ERROR')}
+       })
+ }
 
 const giveAward = () => {
    const path = awardData.type === "breakdown" ? `${BASEURL}award-breakdown`: `${BASEURL}award-comment`
@@ -232,10 +271,35 @@ const giveAward = () => {
       style={{height: 200, width: layout.window.width * 0.8}}
       source={{uri: `https://www.youtube.com/embed/${headerData.youtubeVideo}`}}
       />
-     <Comments songId = {route.params.songId} showModal = {showModal} />
+     <Comments comment = {commentS} songId = {route.params.songId} showModal = {showModal} showInput = {showInputFunc}/>
 
     </ScrollView>
+    {showInput ? <KeyboardAvoidingView
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    style = {{
+      width: layout.window.width,
+      paddingHorizontal: 10,
+     }}
+    >
+    <TextInput
+      ref = {inputRef}
+      style={[styles.input,{color: colors[`${color}` as const].text}]}
+      placeholder={'Write comment'}
+      onChangeText = {handleTextChange}
+      value = {comment}
+      autoFocus
+      multiline
+      onBlur = {closeInput}
+    />
+    <Pressable onPress = {submitComment}
+    style = {({pressed}) => [styles.button,{opacity: comment.length ? !pressed ? 1 : 0.7 : 0.7}]}
+    >
 
+    {sendingComm ? <ActivityIndicator size = "small" color = 'white' /> :
+                 <Ionicons name="send-sharp" size={22} color="white" />}
+    </Pressable>
+    </KeyboardAvoidingView> : null
+  }
       <Modal isVisible={isModalVisible}>
         <ThemedView style={{ padding: 20, alignSelf:"center", borderRadius: 5,
                        width:"98%"}}>
@@ -374,11 +438,15 @@ const styles = StyleSheet.create({
    marginBottom: 20
   },
   button: {
+   display: 'flex',
+   alignItems: 'center',
    paddingVertical: 5,
-   paddingHorizontal: 20,
    borderRadius: 4,
    backgroundColor: colors.mainColor,
    marginBottom: 7,
+   width: 50,
+   textAlign: 'center',
+   alignSelf: 'flex-end'
   },
   input : {
      width: '100%',

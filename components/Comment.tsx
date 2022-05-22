@@ -1,4 +1,4 @@
-import React,{useState, useEffect, useContext} from 'react'
+import React,{useState, useEffect, useContext, useCallback} from 'react'
 import {View, Pressable, TextInput, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform} from 'react-native'
 import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 
@@ -19,15 +19,14 @@ type songId = string;
 
 
 
-export default function Comments({songId, showModal}: {songId: songId, showModal: (dd: awardReq) => void}) {
+export default function Comments({songId, showModal, showInput, comment}:
+  {comment: commentType[] | undefined, showInput: ()=>void, songId: songId, showModal: (dd: awardReq) => void}) {
 
   const [comments, setComments] = useState([])
   const [nextFetch, setNextFetch] = useState(0)
   const [isEnd, setIsEnd] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
-  const [comment, setComment] = useState("")
-  const [inputHeight, setInputHeight] = Platform.OS === 'ios' ? useState(70) : useState(40)
-  const [sending, setSending] = useState(false)
+
 
   const {signOut} = useContext(AuthContext)
   const {newNotification} = useContext(NotifyContext)
@@ -71,30 +70,15 @@ export default function Comments({songId, showModal}: {songId: songId, showModal
    }
 
 
-const sendComment = async () => {
-  setSending(true)
+useEffect(() => {
+  if(comment !== undefined){
+    console.log(comment)
+    let comm: never[] = [...comment!,...comments] as never[]
+    setComments([])
+    setComments(comm)
+  }
+},[comment])
 
-  if(comment === '') return
-      axios.post(BASEURL + 'comment/'+songId,{comment})
-      .then((res)=>{
-        const data = res.data
-         setComment('')
-         let comm: never[] = [...data.userComment,...comments] as never[]
-         setComments([])
-         setComments(comm)
-       setSending(false)
-      })
-      .catch((err)=>{
-        let msg = err.response?.data.msg
-        if(err.response?.status === 401){signOut()}else{newNotification(msg,'ERROR')}
-      })
-}
-
-
-const handleTextChange = (text:string) => {
-  if(text.length > 500) return
-  setComment(text)
-}
 
 const deleteComment = (id: string) => {
    axios.post(`${BASEURL}delete/comment/${songId}/${id}`)
@@ -114,34 +98,13 @@ const deleteComment = (id: string) => {
   return (
     <View style = {styles.commentsContainer}>
     <ThemedText style = {styles.title}>Comments</ThemedText>
-    <KeyboardAvoidingView
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
-    style = {{
-      width: layout.window.width,
-      paddingHorizontal: 10,
-      borderBottomWidth: 1,
-      marginBottom: 20
-     }}
-    >
-    <TextInput
-      style={[styles.input,{color: colors[`${color}` as const].text}]}
-      placeholder="write comment"
-      onChangeText= {handleTextChange}
-      onContentSizeChange={(event) => {
-           setInputHeight(event.nativeEvent.contentSize.height)
-       }}
-      value={comment}
-      multiline
-    />
-    <Pressable
-    style = {({pressed}) => [styles.button,{opacity: comment.length ? !pressed ? 1 : 0.7 : 0.7}]}
-    onPress = {sendComment}
-    >
-
-    {sending ? <ActivityIndicator size = "small" color = 'white' /> :
-                 <Ionicons name="send-sharp" size={22} color="white" />}
+ <Pressable onPress = {showInput}>
+    <ThemedText
+      style={[styles.input,{color: colors[`${color}` as const].gray}]}>
+      Write comment
+      </ThemedText>
     </Pressable>
-    </KeyboardAvoidingView>
+
    <View>
     {comments.map((c,indx) => {
       return <Comment key = {indx} {...c} songId = {songId}
@@ -159,7 +122,7 @@ const deleteComment = (id: string) => {
 }
 
 
-interface commentType {
+export interface commentType {
   name: string;
   points: string;
   date: string;

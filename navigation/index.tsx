@@ -179,20 +179,20 @@ function BottomTabNavigator() {
         name="Home"
         component={HomeScreen}
         options={() => ({
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} iconsProvider = "material"/>
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />
         })}
       />
       <BottomTab.Screen
         name="Charts"
         component={ChartsScreen}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="bar-graph" color={color} iconsProvider = "entypo"/>,
+          tabBarIcon: ({ color }) => <TabBarIcon name="bar-graph" color={color} />,
         }}
       />
 
       <BottomTab.Screen name="Favorites" component = {FavoritesScreen}
        options = {{
-         tabBarIcon: ({color}) => <TabBarIcon name = "heart" color = {color} iconsProvider = "fontawesome"/>
+         tabBarIcon: ({color}) => <TabBarIcon name = "heart" color = {color} />
        }}
        />
 
@@ -203,7 +203,7 @@ function BottomTabNavigator() {
 
        <BottomTab.Screen name = "Profile" component = {ProfileScreen}
         options = {{
-          tabBarIcon: ({color}) =>  <TabBarIcon name = "user" color = {color} iconsProvider = "fontawesome"/>}}
+          tabBarIcon: ({color}) =>  <TabBarIcon name = "user" color = {color} />}}
         />
 
     </BottomTab.Navigator>
@@ -267,19 +267,19 @@ const styles = StyleSheet.create({
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
-  iconsProvider: 'entypo' | 'fontawesome' | 'material'
+  name: 'home' | 'bar-graph' | 'heart' | 'user'
+
 }) {
-  const {iconsProvider,...otherProps} = props
+  const {name,...otherProps} = props
   let icon = <FontAwesome size = {25} style = {{}} name = "code"/>
 
-  if(iconsProvider === "material") {
-    icon = <MaterialIcons size = {25} {...otherProps} />
-  }else if(iconsProvider === 'fontawesome') {
-    icon = <FontAwesome size = {25} style = {{}} {...otherProps} />
+  if(name === 'home') {
+    icon = <MaterialIcons size = {25} {...otherProps} name = {name}/>
+  }else if(name === 'bar-graph') {
+    icon = <Entypo size = {25} style = {{}} {...otherProps} name = {name} />
   }else {
-    icon = <Entypo size = {25} style = {{}} {...otherProps} />
+      icon = <FontAwesome size = {25} style = {{}} {...otherProps} name = {name}/>
   }
 
   return icon
