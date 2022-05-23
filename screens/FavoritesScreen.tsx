@@ -132,8 +132,7 @@ const Bars = () => {
      const res = await axios.get(BASEURL + `my/favourites/bars`)
      if(res.data.type !== 'ERROR') setBars(res.data)
 
-    }catch(err) {
-      console.log(err)
+   }catch(err) {
       if(err.response?.status === 401){
         signOut()
       }
@@ -181,8 +180,26 @@ type favBar = {
 }
 
 const Bar = (props: favBar) => {
-   const {bar, userFav, songId, songTitle, songArtist, otherArtists, saidBy} = props
+   const {bar, userFav, songId, songTitle, songArtist, otherArtists, saidBy, id} = props
    const [fav, setFav] = useState(userFav)
+   const {signOut} = useContext(AuthContext)
+   const {newNotification} = useContext(NotifyContext)
+
+   const toggleFavourite = async () => {
+     setFav(!fav)
+     try{
+       const res = await axios.post(`${BASEURL}bar-favourited/${songId}/${id}`)
+       newNotification(res.data?.msg, 'SUCCESS')
+     }catch(err) {
+       setFav(!fav)
+       if(err.response?.status === 401){
+         signOut()
+       }
+       newNotification(err.response?.data.msg, 'ERROR')
+     }
+   }
+
+
    return (
      <ThemedView style = {styles.barContainer}>
 
@@ -206,9 +223,7 @@ const Bar = (props: favBar) => {
      <ThemedText style = {{marginBottom: 10}}>{bar}</ThemedText>
 
       <View style = {{flexDirection: 'row', justifyContent: 'space-between'}}>
-      <Pressable
-      onPress  ={() => setFav(!fav)}
-      >
+      <Pressable onPress={toggleFavourite}>
       <FontAwesome name = "heart" size = {20} color = {fav ? colors.mainColor : "gray"} />
       </Pressable>
       <ThemedText>~{saidBy}</ThemedText>

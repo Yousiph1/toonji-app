@@ -115,6 +115,7 @@ const Today = () => {
                { label: 'Lyrics', value: 'Songs' },
                { label: 'Bars', value: 'Punchlines' },
            ]}
+           placeholder = {{}}
            style = {pickerSelectStyles}
        />
       </View>
@@ -182,8 +183,8 @@ const Week = () => {
                 { label: 'Lyrics', value: 'Songs' },
                 { label: 'Bars', value: 'Punchlines' },
             ]}
-            value= "Songs"
             style = {pickerSelectStyles}
+            placeholder = {{}}
         />
     </View>
       <ScrollView
@@ -265,8 +266,8 @@ const AllTime = () => {
                { label: 'Artists', value: "Artists"},
                { label: "Users", value: "Users"}
            ]}
-           value = "Songs"
            style = {pickerSelectStyles}
+           placeholder = {{}}
        />
       </View>
       <ScrollView

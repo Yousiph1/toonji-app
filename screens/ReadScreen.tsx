@@ -1,5 +1,5 @@
 import React,{useContext, useEffect,useRef,useState} from 'react'
-import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable, TextStyle, Platform, TextInput, KeyboardAvoidingView} from 'react-native'
+import {Text, View,ScrollView, StyleSheet, Switch, ActivityIndicator, Pressable, TextStyle, Platform, TextInput, KeyboardAvoidingView, Keyboard} from 'react-native'
 import { Link } from '@react-navigation/native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal"
@@ -39,6 +39,7 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
  const [pData, setPData] = useState([])
  const {color} = React.useContext(ThemeContext)
  const {signOut} = useContext(AuthContext)
+ const {newNotification} = useContext(NotifyContext)
  const [headerData, setHeaderData] = useState({songTitle:'-',songArtist: '-', rating: '-', raters:'-',
                                                views:'-', favourited:false, noFavourited: '-',
                                                otherArtists: '-',youtubeVideo:''})
@@ -60,11 +61,24 @@ export default function ReadScreen({route,navigation}: RootStackScreenProps<'Rea
    inputRef.current?.blur()
  }
 
-const {newNotification} = useContext(NotifyContext)
+
 const handleTextChange = (text:string) => {
   if(text.length > 500) return
   setComment(text)
 }
+
+useEffect(()=> {
+  const keyboardDidHideListener = Keyboard.addListener(
+     'keyboardDidHide',
+     () => {
+       inputRef.current?.blur()
+     }
+   );
+
+   return () => {
+     keyboardDidHideListener.remove();
+   };
+},[])
 
  useEffect(()=> {
    const getData = async () => {
@@ -73,8 +87,14 @@ const handleTextChange = (text:string) => {
        if(lyricsSetting) {
           let lyricsSettings: {fontSize: string, color: string, fontFamily: string; theme: string} = JSON.parse(lyricsSetting)
           if(lyricsSettings){
+            if(color === 'dark' && lyricsSettings.color === "black"){
+                setCOLOR("white")
+            }else if(color === 'light' && lyricsSettings.color === "white") {
+                setCOLOR("black")
+            }else {
+                setCOLOR(lyricsSettings.color)
+            }
             setFONT_SIZE(Number(lyricsSettings.fontSize))
-            setCOLOR(lyricsSettings.color)
             setFONT_FAMILY(lyricsSettings.fontFamily)
           }
        }
@@ -283,8 +303,8 @@ const giveAward = () => {
     >
     <TextInput
       ref = {inputRef}
-      style={[styles.input,{color: colors[`${color}` as const].text}]}
-      placeholder={'Write comment'}
+      style={[styles.input,{color: colors[`${color}` as const].text},{maxHeight:200}]}
+      placeholder='Write comment'
       onChangeText = {handleTextChange}
       value = {comment}
       autoFocus
@@ -444,7 +464,7 @@ const styles = StyleSheet.create({
    borderRadius: 4,
    backgroundColor: colors.mainColor,
    marginBottom: 7,
-   width: 50,
+   width: 60,
    textAlign: 'center',
    alignSelf: 'flex-end'
   },
