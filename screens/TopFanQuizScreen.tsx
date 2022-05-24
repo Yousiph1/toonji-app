@@ -1,7 +1,7 @@
 import axios from 'axios'
 import strSimilarity from 'string-similarity'
 import React, { useContext, useEffect, useState } from 'react'
-import {View, Text, Pressable, ActivityIndicator, TextInput, StyleSheet, ScrollView} from 'react-native'
+import {View, Text, Pressable, ActivityIndicator, TextInput, StyleSheet, ScrollView, Alert, BackHandler} from 'react-native'
 import { ThemedText, ThemedView } from '../components/Themed'
 import { BASEURL } from '../constants/Credentials'
 import { RootStackScreenProps } from '../types'
@@ -10,8 +10,9 @@ import colors from '../constants/Colors'
 import layout from '../constants/Layout'
 import { NotifyContext } from '../components/Notify'
 import { AuthContext, ThemeContext } from '../navigation/context'
+import Ionicons from '@expo/vector-icons/build/Ionicons'
 
-const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route}) => {
+const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route,navigation}) => {
   const {name} = route.params
   const [current,setCurrent] = useState(0);
   const [timeStart,setTimeStart] = useState(0);
@@ -58,9 +59,39 @@ const TopFanQuizScreen: React.FC<RootStackScreenProps<'TopFanQuiz'>> = ({route})
         }
       },[finished])
 
+      const backAction = () => {
+        Alert.alert("Hold on!", "If you go back your points won't be counted. \n \nAre you sure you want to go back?", [
+          {
+            text: "NO",
+            onPress: () => null,
+            style: "cancel"
+          },
+          { text: "YES", onPress: () => navigation.goBack() }
+        ]);
+        return true;
+      };
+
       useEffect(() => {
-        setQuestion(generatedQuestions[current])
-      },[current,generatedQuestions])
+          setQuestion(generatedQuestions[current])
+        },[current,generatedQuestions])
+
+        React.useLayoutEffect(() => {
+        navigation.setOptions({
+          headerLeft: () => (
+            <Pressable onPress={backAction} style = {({pressed})=>[{marginRight: 50},{opacity: pressed ? 0.5: 1}]}>
+            <ThemedText><Ionicons name="ios-arrow-back-sharp" size={25} color={color === "light" ? "black": "white"} /></ThemedText>
+            </Pressable>
+          ),
+        });
+      }, [navigation]);
+
+    useEffect(() => {
+           const backHandler = BackHandler.addEventListener(
+             "hardwareBackPress",
+             backAction
+           );
+           return () => backHandler.remove();
+      },[]);
 
     const submit = () =>{
                if(answered) return

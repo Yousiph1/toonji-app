@@ -2,6 +2,8 @@ import { DefaultEventsMap } from '@socket.io/component-emitter';
 import React,{useEffect, useState, useContext} from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  BackHandler,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -20,11 +22,12 @@ import layout from '../constants/Layout'
 import { RootStackScreenProps } from '../types';
 import {NotifyContext} from '../components/Notify'
 import { AuthContext, ThemeContext } from '../navigation/context';
+import { Ionicons } from '@expo/vector-icons';
 let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 
 
-export default function BattleQuizScreen({route}:RootStackScreenProps<"BattleQuizReady">){
+export default function BattleQuizScreen({route, navigation}:RootStackScreenProps<"BattleQuizReady">){
   const battleId = route.params.roomId
   const [getQuestions,setGetQuestions] = useState(false)
   const [questions,setQuestions] = useState([])
@@ -41,6 +44,7 @@ export default function BattleQuizScreen({route}:RootStackScreenProps<"BattleQui
 
  const {newNotification} = useContext(NotifyContext)
  const {signOut} = useContext(AuthContext)
+ const {color} = useContext(ThemeContext)
 
 socket = io(SOCKETURL +"-battle",{transports: ["websocket"]});
   useEffect(()=> {
@@ -115,6 +119,37 @@ const emitForQuestions = () => {
       newNotification("Something went wrong",'ERR0R')
    }
 }
+
+const backAction = () => {
+  Alert.alert("Hold on!", "If you go back you won't be able to join again and complete the questions. \n \nAre you sure you want to go back?", [
+    {
+      text: "NO",
+      onPress: () => null,
+      style: "cancel"
+    },
+    { text: "YES", onPress: () => navigation.goBack() }
+  ]);
+  return true;
+};
+
+  React.useLayoutEffect(() => {
+  navigation.setOptions({
+    headerLeft: () => (
+      <Pressable onPress={backAction} style = {({pressed})=>[{marginRight: 50},{opacity: pressed ? 0.5: 1}]}>
+      <ThemedText><Ionicons name="ios-arrow-back-sharp" size={25} color={color === "light" ? "black": "white"} /></ThemedText>
+      </Pressable>
+    ),
+  });
+}, [navigation]);
+
+useEffect(() => {
+     const backHandler = BackHandler.addEventListener(
+       "hardwareBackPress",
+       backAction
+     );
+     return () => backHandler.remove();
+},[]);
+
 
   return (
   <ThemedView style = {{flex: 1, justifyContent: 'center'}}>
